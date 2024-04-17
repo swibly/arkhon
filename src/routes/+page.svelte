@@ -1,32 +1,28 @@
-<script lang="ts">
-    let count: number = 0;
-</script>
-
-<p>
-    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde inventore tenetur, fugit ducimus
-    ab eius incidunt sapiente optio, quia voluptatum hic dolorum quisquam ea nobis aperiam
-    laboriosam sint soluta assumenda!
-</p>
-
-<button aria-label="Counter" on:click={() => count++} class="btn">{count} clicks</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-primary">
-    {count} clicks
-</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-secondary">
-    {count} clicks
-</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-accent">{count} clicks</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-success">
-    {count} clicks
-</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-info">{count} clicks</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-warning">
-    {count} clicks
-</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-error">{count} clicks</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-neutral">
-    {count} clicks
-</button>
-<button aria-label="Counter" on:click={() => count++} class="btn btn-outline">
-    {count} clicks
-</button>
+<div class="my-12">
+    <div class="flex justify-center">
+        <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />
+    </div>
+    <h1 class="flex justify-center text-3xl">Arkhon</h1>
+    <p class="flex justify-center text-xl">Sua plataforma de arquitetura</p>
+</div>
+<div class="flex justify-center gap-4">
+    <button class="btn btn-primary w-36">Login</button>
+    <button class="btn btn-neutral w-36 text-primary">Registro</button>
+</div>
+<div class="flex justify-center">
+    <img src="/gallery/plano.png" alt="Planta" />
+</div>
+<div
+    class="relative w-full h-80 overflow-hidden flex justify-center flex-col items-center"    
+>
+    <img src="/gallery/background01.png" class="w-full absolute z-[-1] filter brightness-50" alt="Banner">
+    <h1 class="pt-12 text-white text-3xl">
+        Papel e caneta tornaram-se obsoletos na prototipação
+    </h1>
+    <div class="flex justify-center align-items">
+        <button class="btn btn-neutral w-36 text-black-500 m-4">Saiba mais</button>
+    </div>
+</div>
+<div>
+    <h1>Descubra novos horizontes</h1>
+</div>

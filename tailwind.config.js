@@ -7,7 +7,7 @@ export default {
                 light: {
                     primary: '#0175af',
                     secondary: '#ffa333',
-                    neutral: '#000000',
+                    neutral: '#D9D9D9',
                     'base-100': '#f5f5f5',
                     success: '#4fd35c',
                     warning: '#ead45f',
