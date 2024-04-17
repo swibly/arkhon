@@ -23,6 +23,37 @@
         <button class="btn btn-neutral w-36 text-black-500 m-4">Saiba mais</button>
     </div>
 </div>
-<div>
-    <h1>Descubra novos horizontes</h1>
+<div class="m-8">
+    <h1 class="flex justify-center text-2xl text-secondary font-bold">Descubra novos horizontes</h1>
+    <div class="flex justify-center gap-8 m-8">
+        <div class="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
+            <div class="card-body">
+              <h2 class="card-title">
+                Shoes!
+                <div class="badge badge-secondary">NEW</div>
+              </h2>
+              <p>If a dog chews shoes whose shoes does he choose?</p>
+              <div class="card-actions justify-end">
+                <div class="badge badge-outline">Fashion</div> 
+                <div class="badge badge-outline">Products</div>
+              </div>
+            </div>
+          </div>
+          <div class="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
+            <div class="card-body">
+              <h2 class="card-title">
+                Shoes!
+                <div class="badge badge-secondary">NEW</div>
+              </h2>
+              <p>If a dog chews shoes whose shoes does he choose?</p>
+              <div class="card-actions justify-end">
+                <div class="badge badge-outline">Fashion</div> 
+                <div class="badge badge-outline">Products</div>
+              </div>
+            </div>
+          </div>
+    </div>
 </div>
+
