@@ -5,7 +5,7 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '#0175af',
+                    primary: '16213A',
                     secondary: '#ffa333',
                     neutral: '#D9D9D9',
                     'base-100': '#f5f5f5',
