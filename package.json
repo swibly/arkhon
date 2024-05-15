@@ -39,5 +39,8 @@
   "type": "module",
   "trustedDependencies": [
     "svelte-preprocess"
-  ]
+  ],
+  "dependencies": {
+    "@iconify/svelte": "^4.0.2"
+  }
 }
