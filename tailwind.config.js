@@ -5,10 +5,11 @@ export default {
         themes: [
             {
                 light: {
-                    primary: '16213A',
-                    secondary: '#ffa333',
+                    primary: '#0175AF',
+                    secondary: '#FFA333',
                     neutral: '#D9D9D9',
-                    'base-100': '#f5f5f5',
+                    accent: '#E6C883',                    
+                    'base-100': '#f8f8f8',
                     success: '#4fd35c',
                     warning: '#ead45f',
                     error: '#da3030'
