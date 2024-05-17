@@ -28,7 +28,7 @@
 </div>
 
 <h1 class="mt-10 text-center text-2xl text-secondary font-bold">Descubra novos horizontes</h1>
-<div class="flex flex-wrap mt-10 justify-center">    
+<div class="flex flex-wrap mt-10 justify-center">
     <Card
         hidden
         data={Date.now()}
@@ -36,13 +36,13 @@
         banner="/gallery/placeholder01.png"
         alt="Placeholder"
         author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'D', 'E']}               
+        tags={['Acessibilidade', 'D', 'E']}
     >
         edsadfaefeafeaffeaeaf
     </Card>
 
     <Card
-        special        
+        special
         data={Date.now()}
         likes={1209}
         banner="/gallery/placeholder01.png"
@@ -65,16 +65,16 @@
     </Card>
 
     <Card
-    show
-    data={Date.now()}
-    likes={1209}
-    banner="/gallery/placeholder01.png"
-    alt="Placeholder"
-    author="Gustavinxx7Ousadozz"
-    tags={['Acessibilidade', 'D', 'E']}
->
-    edsadfaefeafeaffeaeaf
-</Card>
+        show
+        data={Date.now()}
+        likes={1209}
+        banner="/gallery/placeholder01.png"
+        alt="Placeholder"
+        author="Gustavinxx7Ousadozz"
+        tags={['Acessibilidade', 'D', 'E']}
+    >
+        edsadfaefeafeaffeaeaf
+    </Card>
 </div>
 
 <div class="flex justify-between mt-20">

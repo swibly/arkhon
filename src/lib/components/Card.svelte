@@ -64,29 +64,28 @@
 
 <style>
     .card-special {
-        background-color: rgb(202 138 4);     
+        background-color: rgb(202 138 4);
     }
 
     .card-default {
-        background-color: rgb(3 105 161);        
+        background-color: rgb(3 105 161);
     }
 
     @media only screen and (max-width: 1440px) {
-        .card-hidden-default {            
+        .card-hidden-default {
             display: none;
         }
     }
 
-    @media only screen and (min-width: 1440px) {        
-        .card-show-default {            
+    @media only screen and (min-width: 1440px) {
+        .card-show-default {
             display: none;
         }
     }
 
     @media only screen and (max-width: 960px) {
-        .card-default{
+        .card-default {
             margin-bottom: 50px;
         }
-
     }
 </style>
