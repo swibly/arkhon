@@ -17,10 +17,10 @@
         <img src="/gallery/logo2.png" class="h-40 w-40" alt="Logo" />
     </div>
     <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white">
-        Para iniciar seus projetos e dominar a arquitetura
+        Insira seu email abaixo
     </h1>
     <h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-accent">
-        Inicie sua sessão na Arkhon.
+        Enviaremos um email de recuperação de senha caso o endereço exista
     </h2>
     <section class="mx-12 mt-8">
         <form>
@@ -34,35 +34,13 @@
                     placeholder="Email"
                 />
             </label>
-
-            <label class="input input-bordered flex items-center gap-2 mb-8">
-                <Icon icon="material-symbols:lock" />
-                <input
-                    type={showPassword ? 'text' : 'password'}
-                    class="password w-full"
-                    id="password"
-                    name="password"
-                    placeholder="Senha"
-                />
-                <button on:click={() => (showPassword = !showPassword)} class="ml-auto">
-                    {#if showPassword}
-                        <Icon icon="mdi:eye" />
-                    {:else}
-                        <Icon icon="ph:eye-closed" />
-                    {/if}
-                </button>
-            </label>
-
             <button class="text-white mt-4 pb-4 mx-auto w-fit block"
                 ><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></button
             >
         </form>
         <h2 class="text-center text-white">
-             <a href="/auth/login/forgotPass/" class="text-accent">Esqueci a senha</a>
-        </h2>
-        <h2 class="text-center text-white">
-            Não possui uma conta? <a href="/auth/register/" class="text-accent">Clique aqui!</a>
-        </h2>
+            <a href="/auth/login/" class="text-accent">Voltar para a página de login</a>
+       </h2>
     </section>
 </main>
 

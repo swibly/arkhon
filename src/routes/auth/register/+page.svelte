@@ -4,6 +4,8 @@
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
 
+    let showBubble: boolean = false;
+
     const fetchImage = (async () => {
         const response = await fetch('https://restcountries.com/v3.1/all');
         return await response.json();
@@ -49,8 +51,12 @@
                     {#await fetchImage}
                         <p>...waiting</p>
                     {:then data}
-                        {#each data.toSorted((a,b) => a.name.common.localeCompare(b.name.common)) as country (country.name.common)}
-                        <option selected={country.name.common === "Brazil"} value={country.name.common}>{country.flag} {country.name.common}</option>
+                        {#each data.toSorted( (a, b) => a.name.common.localeCompare(b.name.common) ) as country (country.name.common)}
+                            <option
+                                selected={country.name.common === 'Brazil'}
+                                value={country.name.common}
+                                >{country.flag} {country.name.common}</option
+                            >
                         {/each}
                     {:catch error}
                         <p>An error occurred!</p>
@@ -122,6 +128,7 @@
                 ><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></button
             >
         </form>
+        <h2 class="text-center text-white">Já possui uma conta? <a href="/auth/login/" class="text-accent">Clique aqui!</a></h2>
     </section>
 </main>
 
