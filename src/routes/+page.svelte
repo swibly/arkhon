@@ -9,7 +9,7 @@
     <p class="flex justify-center text-xl">Sua plataforma de arquitetura</p>
 </div>
 <div class="flex justify-center gap-4">
-    <a href="/auth/register/" class="btn btn-primary w-36">Iniciar Sessão</a>
+    <a href="/auth/login/" class="btn btn-primary w-36">Iniciar Sessão</a>
     <a href="/auth/register/" class="btn btn-neutral w-36 text-primary">Criar Conta</a>
 </div>
 <div class="flex justify-center">

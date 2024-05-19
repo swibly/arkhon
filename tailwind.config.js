@@ -15,9 +15,10 @@ export default {
                     error: '#da3030'
                 },
                 dark: {
-                    primary: '#0175af',
+                    primary: '#252627',
                     secondary: '#ffa333',
-                    neutral: '#000000',
+                    neutral: '#38414A',
+                    accent: '33BBFF',
                     'base-100': '#000000',
                     success: '#4fd35c',
                     warning: '#ead45f',
