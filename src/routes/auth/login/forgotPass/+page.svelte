@@ -1,5 +1,6 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
+    import { lightMode } from '$lib/stores/theme.js';
 
     let theme: boolean = true;
 
@@ -10,13 +11,8 @@
 </script>
 
 <label class="swap swap-rotate text-white float-right pr-4">
-    <input
-        type="checkbox"
-        class="theme-controller"
-        value="dark"
-        on:click={() => (theme = !theme)}
-    />
-    {#if theme}
+    <input type="checkbox" class="theme-controller" on:click={() => ($lightMode = !$lightMode)}/>
+    {#if $lightMode}
         <style>
             .bleed {
                 clip-path: inset(0, -100vmax);
@@ -48,7 +44,7 @@
     >
 </label>
 
-<main class="bg-primary w-full min-h-screen max-w-[800px] mx-auto bleed">
+<main class="bg-primary w-full min-h-screen max-w-[800px] mx-auto bleed" data-theme={$lightMode ? 'light' : 'dark'}>
     <div class="flex justify-center m-12">
         <img src="/gallery/logo2.png" class="h-40 w-40" alt="Logo" />
     </div>
@@ -71,7 +67,7 @@
                 />
             </label>
             <button class="text-white mt-4 pb-4 mx-auto w-fit block"
-                ><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></button
+                ><a href = "index.svelte"><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></a></button
             >
         </form>
         <h2 class="text-center text-white">

@@ -1,5 +1,6 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
+    import { lightMode } from '$lib/stores/theme.js';
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
@@ -12,13 +13,10 @@
 </script>
 
 <label class="swap swap-rotate text-white float-right pr-4">
-    <input
-        type="checkbox"
-        class="theme-controller"
-        value="dark"
-        on:click={() => (theme = !theme)}
-    />
-    {#if theme}
+    <input type="checkbox" class="theme-controller" on:click={() => ($lightMode = !$lightMode)}/>
+    {#if $lightMode}
+        <!--Light mode-->
+        <!--Light mode-->
         <style>
             .bleed {
                 clip-path: inset(0, -100vmax);
@@ -26,6 +24,8 @@
             }
         </style>
     {:else}
+        <!--Dark mode-->
+        <!--Dark mode-->
         <style>
             .bleed {
                 clip-path: inset(0, -100vmax);
@@ -50,7 +50,10 @@
     >
 </label>
 
-<main class="bg-primary w-full min-h-screen max-w-[800px] mx-auto bleed">
+<main
+    class="bg-primary w-full min-h-screen max-w-[800px] mx-auto bleed"
+    data-theme={$lightMode ? 'light' : 'dark'}
+>
     <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
         Crie sua conta na Arkhon
     </h1>
