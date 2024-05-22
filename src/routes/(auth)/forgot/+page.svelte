@@ -1,6 +1,5 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';
-    import { lightMode } from '$lib/stores/theme';
+    import Icon from '@iconify/svelte';    
 </script>
 
 <div class="flex justify-center m-12">
@@ -21,13 +20,13 @@
         </label>
         
         <button class="text-white mt-4 pb-4 mx-auto w-fit block">
-            <a href="/">
+            <a href="/forgot/otp">
                 <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
             </a>
         </button>
     </form>
 
     <p class="text-center text-white">
-        <a href="/login/" class="text-accent">Voltar para a página de login</a>
+        <a href="/login" class="text-accent">Voltar para a página de login</a>
     </p>
 </section>
