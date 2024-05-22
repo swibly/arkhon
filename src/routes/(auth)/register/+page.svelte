@@ -1,6 +1,5 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';
-    import { lightMode, toggle } from '$lib/stores/theme';
+    import Icon from '@iconify/svelte';    
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
@@ -8,7 +7,7 @@
     const fetchImage = (async () => {
         const response = await fetch('https://restcountries.com/v3.1/all');
         return await response.json();
-    })();
+    })();    
 </script>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
@@ -122,6 +121,6 @@
     </form>
 
     <h2 class="text-center text-white mb-4">
-        Já possui uma conta? <a href="/auth/login/" class="text-accent">Clique aqui!</a>
+        Já possui uma conta? <a href="/login/" class="text-accent">Clique aqui!</a>
     </h2>
 </section>

@@ -1,5 +1,25 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
+    import { onMount } from 'svelte';
+
+    const amountDigits = 6;
+    const arrayInputs = new Array<HTMLInputElement | null>(amountDigits);
+
+    onMount(function () {
+        for (const input of arrayInputs) {
+            input!.addEventListener('input', function (e: Event) {
+                const event = e as KeyboardEvent;
+                const target = event.target as HTMLInputElement;                
+
+                if (/^[0-9]*$/g.test(target.value) === false) {
+                    target.value = '';
+                }
+
+                if(target.value === '') (input!.previousElementSibling as HTMLInputElement).focus();
+                if (target.value !== '') (input!.nextElementSibling as HTMLInputElement).focus();
+            });
+        }
+    });
 </script>
 
 <div class="flex justify-center m-12">
@@ -17,16 +37,18 @@
 <section class="mx-12 mt-8">
     <form>
         <section class="flex justify-center gap-4 mx-4 *:sm:size-12">
-            <input type="number" class="n1 w-8 h-8 text-center rounded-xl" />
-            <input type="number" class="n2 w-8 h-8 text-center rounded-xl" />
-            <input type="number" class="n3 w-8 h-8 text-center rounded-xl" />
-            <input type="number" class="n4 w-8 h-8 text-center rounded-xl" />
-            <input type="number" class="n5 w-8 h-8 text-center rounded-xl" />
-            <input type="number" class="n6 w-8 h-8 text-center rounded-xl" />
+            {#each arrayInputs as input}
+                <input
+                    type="text"
+                    class="w-8 h-8 text-center rounded-xl text-black font-bold"
+                    bind:this={input}
+                    maxlength="1"
+                />
+            {/each}
         </section>
 
         <button class="text-white mt-4 pb-4 mx-auto w-fit block">
-            <a href="/">
+            <a href="/forgot/otp/change/">
                 <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
             </a>
         </button>
