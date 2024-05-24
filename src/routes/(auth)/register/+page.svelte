@@ -116,7 +116,7 @@
         </label>
 
         <button class="text-white mt-8 pb-4 mx-auto w-fit block">
-            <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
+            <a href="/home/"><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></a>
         </button>
     </form>
 

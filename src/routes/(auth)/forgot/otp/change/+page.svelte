@@ -53,7 +53,7 @@
 
         <button class="text-white mt-4 pb-4 mx-auto w-fit block">
             <a href="/forgot/otp">
-                <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
+                <a href="/home/"><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></a>
             </a>
         </button>
     </form>
