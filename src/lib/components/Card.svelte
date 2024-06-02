@@ -12,11 +12,10 @@
     export let show: boolean = false;
 </script>
 
-<div class="group">
+<div>
     <div
-        class="hover: card w-96 bg-base-100 shadow-xl text-white mx-12 p-5"
-        class:card-special={special}
-        class:card-default={!special}
+        class="card w-full h-92 md:w-72 md:h-92 bg-neutral shadow-xl text-black mx-4 md:mx-12 p-5 mb-8"
+        class:card-special={special}        
         class:card-hidden={!hidden}
         class:card-hidden-default={hidden}
         class:card-show={!show}
@@ -37,17 +36,15 @@
         <figure>
             <img src={banner} {alt} class="rounded-xl" />
         </figure>
-        <div class="card-body">
-            <div class="flex gap-2 items-center">
+        <div class="card-body">            
                 <div class="flex gap-2 align-items">
                     <Icon icon="mingcute:user-4-line" />
                     <h2 class="card-title text-sm">{author}</h2>
-                </div>
-            </div>
-            <p>
+                </div>            
+            <p class="text-center text-sm mt-4">
                 <slot />
             </p>
-            <div class="card-actions justify-end pt-4">
+            <div class="card-actions pt-4">
                 {#each tags as tag}
                     <div class="badge badge-outline">{tag}</div>
                 {/each}
@@ -65,11 +62,7 @@
 <style>
     .card-special {
         background-color: rgb(202 138 4);
-    }
-
-    .card-default {
-        background-color: rgb(3 105 161);
-    }
+    }    
 
     @media only screen and (max-width: 1440px) {
         .card-hidden-default {
