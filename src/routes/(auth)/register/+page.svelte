@@ -14,7 +14,7 @@
     Crie sua conta na Arkhon
 </h1>
 
-<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-accent">
+<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-secondary">
     Registrar-se garante acesso as ferramentas da Arkhon
 </h2>
 
@@ -121,6 +121,6 @@
     </form>
 
     <h2 class="text-center text-white mb-4">
-        Já possui uma conta? <a href="/login/" class="text-accent">Clique aqui!</a>
+        Já possui uma conta? <a href="/login/" class="text-secondary">Clique aqui!</a>
     </h2>
 </section>

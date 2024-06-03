@@ -10,7 +10,7 @@
     <Icon icon="ph:moon" class="swap-on size-8" />
 </label>
 
-<main class="bg-primary w-full min-h-screen max-w-[800px] mx-auto bleed" data-theme={$lightMode ? 'light' : 'dark'}>
+<main class="bg-accent w-full min-h-screen max-w-[800px] mx-auto bleed" data-theme={$lightMode ? 'light' : 'dark'}>
     <slot />
 </main>
 

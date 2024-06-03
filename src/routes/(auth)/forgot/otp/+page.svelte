@@ -30,7 +30,7 @@
     Insira o código enviado para seu email
 </h1>
 
-<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-accent">
+<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-secondary">
     Enviamos um código de 6 digitos para a sua caixa de entrada
 </h2>
 
@@ -55,7 +55,7 @@
     </form>
 
     <p class="text-center text-white">
-        <a href="/login" class="text-accent">Voltar para a página de login</a>
+        <a href="/login" class="text-secondary">Voltar para a página de login</a>
     </p>
 </section>
 

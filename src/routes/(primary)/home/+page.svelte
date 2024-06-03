@@ -2,6 +2,7 @@
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
     import Project from '$lib/components/Project.svelte';
+    import Add from '$lib/components/Add.svelte';
 
     var change: boolean = true;
 </script>
@@ -92,15 +93,16 @@
             </div>
 
             {#if change}
-                <div class="mx-16 sm:mx-12 ml:mx-40 py-12">
+                <div class="mx-16 sm:mx-12 mlg:mx-40 py-12">
                     <div class="w-full flex justify-center flex-wrap gap-4">
+                        <Add />
                         {#each Array(8) as i}
                             <Project />
                         {/each}
                     </div>
                 </div>
             {:else}
-                <div class="mx-16 sm:mx-12 ml:mx-40 py-12">
+                <div class="mx-16 sm:mx-12 mlg:mx-40 py-12">
                     <div class="w-full flex justify-center flex-wrap gap-4">
                         {#each Array(3) as i}
                             <Project favorite />

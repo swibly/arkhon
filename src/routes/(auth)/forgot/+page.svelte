@@ -8,7 +8,7 @@
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white">Insira seu email abaixo</h1>
 
-<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-accent">
+<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-secondary">
     Enviaremos um email de recuperação de senha caso o endereço exista
 </h2>
 
@@ -27,6 +27,6 @@
     </form>
 
     <p class="text-center text-white">
-        <a href="/login" class="text-accent">Voltar para a página de login</a>
+        <a href="/login" class="text-secondary">Voltar para a página de login</a>
     </p>
 </section>
