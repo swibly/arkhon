@@ -13,7 +13,7 @@
 </script>
 
 <div
-    class="card w-full h-60 md:w-80 md:h-92 bg-neutral shadow-xl mx-4 md:mx-12 mb-8"
+    class="card w-96 h-full md:w-80 md:h-92 bg-neutral shadow-xl mx-4 md:mx-12 my-4"
     class:card-special={special}
     class:card-hidden={!hidden}
     class:card-hidden-default={hidden}
@@ -32,13 +32,13 @@
             <Icon icon="mdi:heart-outline" />
         </div>
     </div>
-    <figure class="rounded-lg"><img src="/gallery/placeholder01.png" alt="Project" class="object-center px-5" /></figure>
+    <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center px-5 rounded-lg" /></figure>
     <div class="card-body">
         <div class="flex gap-2 align-items">
             <Icon icon="mingcute:user-4-line" />
             <h2 class="card-title text-sm">{author}</h2>
         </div>
-        <p class="text-justify text-sm">
+        <p class="text-justify text-sm hidden md:inline">
             <slot />
         </p>
         <div class="card-actions pt-4">

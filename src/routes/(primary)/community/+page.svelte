@@ -52,10 +52,12 @@
                 </label>
             </div>
 
-            <div class="sm:mx-12 py-12">
-                <div class="w-full flex justify-center flex-wrap">
+            <div class="py-12 mx-12 sm:mx-16 lg:mx-24 2xl:mx-28">
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4"
+                >
                     {#each Array(8) as i}
-                        <Card                            
+                        <Card
                             data={Date.now()}
                             likes={1209}
                             banner="/gallery/placeholder01.png"
@@ -63,7 +65,10 @@
                             author="Usuário"
                             tags={['Acessibilidade', 'Edifício', 'Moderno']}
                         >
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos porro, odit reprehenderit nam eveniet consequatur, alias excepturi libero ipsam doloribus ipsum dolorum voluptatem nisi consectetur, velit tempore? Tempora, corrupti labore!
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos
+                            porro, odit reprehenderit nam eveniet consequatur, alias excepturi
+                            libero ipsam doloribus ipsum dolorum voluptatem nisi consectetur, velit
+                            tempore? Tempora, corrupti labore!
                         </Card>
                     {/each}
                 </div>

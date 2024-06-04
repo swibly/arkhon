@@ -83,8 +83,10 @@
             </div>
 
             {#if change}
-                <div class="mx-16 sm:mx-12 mlg:mx-40 py-12">
-                    <div class="w-full flex justify-center flex-wrap gap-4">
+                <div class="my-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-28 3xl:mx-64">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 place-items-center gap-4"
+                    >
                         <Add />
                         {#each Array(8) as i}
                             <Project />
@@ -92,8 +94,10 @@
                     </div>
                 </div>
             {:else}
-                <div class="mx-16 sm:mx-12 mlg:mx-40 py-12">
-                    <div class="w-full flex justify-center flex-wrap gap-4">
+                <div class="my-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-28 3xl:mx-64">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 place-items-center gap-4"
+                    >
                         {#each Array(3) as i}
                             <Project favorite />
                         {/each}
