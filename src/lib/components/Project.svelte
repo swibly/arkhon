@@ -5,7 +5,7 @@
 </script>
 
 <div
-    class="card card-compact bg-teste dark:bg-teste-dark w-full h-40 sm:w-64 sm:h-40 shadow-xl transition-all duration-150 ease-in-out sm:hover:w-72 sm:hover:h-48 border border-primary"
+    class="card card-compact w-full h-40 sm:w-64 sm:h-40 shadow-xl transition-all duration-150 ease-in-out sm:hover:w-72 sm:hover:h-48 border border-primary"
     onclick="my_modal_1.showModal()"
 >
     <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center" /></figure>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';    
+    import Icon from '@iconify/svelte';
 </script>
 
 <div
@@ -14,10 +14,22 @@
 </div>
 
 <dialog id="my_modal_2" class="modal">
-    <div class="modal-box max-w-full ">
+    <div class="modal-box">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
-        <h1 class="font-bold text-5xl text-center">Título</h1>        
+        <h1 class="font-bold text-3xl sm:text-5xl text-center">Criar novo projeto</h1>
+        <div class="flex justify-center">
+            <form class="mt-4 sm:mt-12">
+                <label class="input input-bordered flex items-center gap-2 w-full sm:w-96">
+                    <input type="text" placeholder="Nome do Projeto" />
+                </label>
+                <textarea
+                    placeholder="Descrição"
+                    class="textarea textarea-bordered textarea-md w-full sm:w-96 block my-4"
+                />
+                <button class="btn btn-primary w-full">Criar</button>
+            </form>
+        </div>
     </div>
 </dialog>
