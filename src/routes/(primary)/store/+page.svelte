@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
-    import Community from '$lib/components/Community.svelte';
+    import Component from '$lib/components/Component.svelte';
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
@@ -18,19 +18,19 @@
         <header class="flex justify-center gap-4 h-16">
             <a
                 href="/home/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-secondary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-primary mt-8"
             >
                 Projeto
             </a>
             <a
                 href="/community/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 border-b-4 border-primary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-primary mt-8"
             >
                 Comunidade
             </a>
             <a
                 href="/store/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-secondary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 border-b-4 border-secondary mt-8"
             >
                 Loja
             </a>
@@ -38,10 +38,10 @@
 
         <section>
             <h1 class="text-2xl sm:text-4xl text-secondary text-center font-bold mt-12">
-                Comunidade
+                Loja
             </h1>
             <h2 class="text-lg sm:text-2xl text-secondary text-center font-bold mb-6">
-                Navegue por nossos criadores e suas obras
+                Adquira componentes personalizados através de Arkhoins
             </h2>
             <div class="px-8">
                 <label
@@ -54,16 +54,10 @@
 
             <div class="py-12 mx-12 sm:mx-28 lg:mx-40 3xl:mx-96">
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4"
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 place-items-center gap-4"
                 >
                     {#each Array(9) as i}
-                        <Community data={Date.now()}
-                        likes={1209} tags={['Urbano', 'Ecológico', 'Acessibilidade']}
-                            >Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae libero,
-                            explicabo fugiat corporis quasi nihil quam consequatur voluptatum sequi
-                            asperiores, itaque id, animi incidunt quae ratione aperiam mollitia
-                            reiciendis amet!</Community
-                        >
+                        <Component></Component>                        
                     {/each}
                 </div>
             </div>

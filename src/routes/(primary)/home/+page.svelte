@@ -20,7 +20,7 @@
         </div>
         <header class="flex justify-center gap-4 h-16">
             <a
-                href="/"
+                href="/home/"
                 class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 border-b-4 border-primary mt-8"
             >
                 Projeto
@@ -32,7 +32,7 @@
                 Comunidade
             </a>
             <a
-                href="/"
+                href="/store/"
                 class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-secondary mt-8"
             >
                 Loja
@@ -40,9 +40,12 @@
         </header>
 
         <section>
-            <h1 class="text-2xl sm:text-4xl text-secondary text-center font-bold my-12">
+            <h1 class="text-2xl sm:text-4xl text-secondary text-center font-bold mt-12">
                 Homepage
             </h1>
+            <h2 class="text-lg sm:text-2xl text-secondary text-center font-bold mb-6">
+                Gerencie os seus projetos e favoritos
+            </h2>
             <div class="px-8">
                 <label
                     class="input max-sm:input-sm bg-neutral flex items-center mx-auto max-w-[800px]"
