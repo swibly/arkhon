@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
-    import Card from '$lib/components/Card.svelte';
+    import Community from '$lib/components/Community.svelte';
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
@@ -52,24 +52,18 @@
                 </label>
             </div>
 
-            <div class="py-12 mx-12 sm:mx-16 lg:mx-24 2xl:mx-28">
+            <div class="py-12 mx-12 sm:mx-28 lg:mx-40 3xl:mx-96">
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4"
                 >
-                    {#each Array(8) as i}
-                        <Card
-                            data={Date.now()}
-                            likes={1209}
-                            banner="/gallery/placeholder01.png"
-                            alt="Placeholder"
-                            author="Usuário"
-                            tags={['Acessibilidade', 'Edifício', 'Moderno']}
+                    {#each Array(9) as i}
+                        <Community data={Date.now()}
+                        likes={1209} tags={['Urbano', 'Ecológico', 'Acessibilidade']}
+                            >Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vitae libero,
+                            explicabo fugiat corporis quasi nihil quam consequatur voluptatum sequi
+                            asperiores, itaque id, animi incidunt quae ratione aperiam mollitia
+                            reiciendis amet!</Community
                         >
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos
-                            porro, odit reprehenderit nam eveniet consequatur, alias excepturi
-                            libero ipsam doloribus ipsum dolorum voluptatem nisi consectetur, velit
-                            tempore? Tempora, corrupti labore!
-                        </Card>
                     {/each}
                 </div>
             </div>

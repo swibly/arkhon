@@ -3,7 +3,7 @@
 </script>
 
 <div
-    class="card card-compact w-full h-40 sm:w-64 sm:h-40 bg-base-300 shadow-xl transition-all duration-150 ease-in-out sm:hover:w-72 sm:hover:h-48 border border-primary"
+    class="card card-compact w-full h-40 sm:w-full sm:h-40 bg-base-300 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-primary border-2"
     onclick="my_modal_2.showModal()"
 >
     <div class="card-body">

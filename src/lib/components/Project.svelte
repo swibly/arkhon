@@ -5,7 +5,7 @@
 </script>
 
 <div
-    class="card card-compact w-full h-40 sm:w-64 sm:h-40 shadow-xl transition-all duration-150 ease-in-out sm:hover:w-72 sm:hover:h-48 border border-primary my-4"
+    class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-primary border-2 my-4"
     onclick="my_modal_1.showModal()"
 >
     <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center" /></figure>
@@ -46,6 +46,8 @@
             {/if}
         </div>
 
-        <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-cover object-center w-full h-96 mt-4 rounded-xl" /></figure>
+        <h1 class="text-md pt-4">Descrição:</h1>
+        <p class="text-sm text-justify pt-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!</p>
+        <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-primary border-4" /></figure>
     </div>
 </dialog>

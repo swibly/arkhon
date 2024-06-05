@@ -83,7 +83,7 @@
             </div>
 
             {#if change}
-                <div class="my-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-28 3xl:mx-64">
+                <div class="py-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-24 3xl:mx-64">
                     <div
                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 place-items-center gap-4"
                     >
@@ -94,7 +94,7 @@
                     </div>
                 </div>
             {:else}
-                <div class="my-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-28 3xl:mx-64">
+                <div class="py-12 mx-12 sm:mx-16 lg:mx-20 2xl:mx-28 3xl:mx-64">
                     <div
                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 place-items-center gap-4"
                     >

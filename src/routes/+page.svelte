@@ -36,9 +36,11 @@
         banner="/gallery/placeholder01.png"
         alt="Placeholder"
         author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'D', 'E']}
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
-        edsadfaefeafeaffeaeaf
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
     </Card>
 
     <Card
@@ -48,9 +50,11 @@
         banner="/gallery/placeholder01.png"
         alt="Placeholder"
         author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'D', 'E']}
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
-        edsadfaefeafeaffeaeaf
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
     </Card>
 
     <Card
@@ -59,9 +63,11 @@
         banner="/gallery/placeholder01.png"
         alt="Placeholder"
         author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'D', 'E']}
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
-        edsadfaefeafeaffeaeaf
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
     </Card>
 
     <Card
@@ -71,17 +77,20 @@
         banner="/gallery/placeholder01.png"
         alt="Placeholder"
         author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'D', 'E']}
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
-        edsadfaefeafeaffeaeaf
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
     </Card>
 </div>
 
-<div class="flex justify-between mt-20">
+<div class="flex justify-between mt-4 sm:mt-20">
     <img src="/gallery/background02.png" alt="bg-2" class="max-sm:hidden max-w-48 w-full" />
     <div class="flex flex-1 flex-col items-center justify-center py-20 px-10">
         <h1 class="text-5xl max-md:text-3xl text-center font-bold">Seja novo. Seja Arkhon!</h1>
-        <button class="btn btn-primary mt-20 btn-lg max-sm:btn-md">Comece a projetar</button>
+        <button class="btn btn-primary mt-4 sm:mt-12 btn-lg max-sm:btn-md">Comece a projetar</button
+        >
     </div>
     <img src="/gallery/background03.png" alt="bg-2" class="max-sm:hidden max-w-48 w-full" />
 </div>
