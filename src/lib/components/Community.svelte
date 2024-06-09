@@ -4,17 +4,25 @@
     export let data: number;
     export let likes: number;
     export let tags: string[];
+
+    let modalRef: any;
+
+    function showModal() {
+        if (modalRef) {
+            modalRef.showModal();
+        }
+    }
 </script>
 
 <div
     class="card card-compact w-full h-72 sm:w-full sm:h-72 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-40 2xl:hover:w-64 2xl:hover:h-40 border border-primary border-2 my-4"
-    onclick="my_modal_1.showModal()"
+    on:click={showModal}
 >
     <figure class="hover:hidden">
         <img src="/gallery/placeholder02.jpg" alt="Project" class="object-center" />
     </figure>
     <div class="card-body">
-        <div class="hidden hover:flex hover:justify-between hover:pb-4 ">
+        <div class="hidden hover:flex hover:justify-between hover:pb-4">
             <h2>{Intl.DateTimeFormat('pt-br').format(data)}</h2>
             <div class="flex gap-4 items-center">
                 <h2>
@@ -40,7 +48,7 @@
     </div>
 </div>
 
-<dialog id="my_modal_1" class="modal">
+<dialog id="my_modal_1" bind:this={modalRef} class="modal">
     <div class="modal-box max-w-full">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -53,7 +61,7 @@
                     <p class="text-md pt-2">De Placeholder</p>
                 </div>
                 <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
-                <p class="sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
+                <p class="pt-4 sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
             </div>
             <button class="btn btn-primary btn-sm mt-2">Visualizar</button>
         </div>

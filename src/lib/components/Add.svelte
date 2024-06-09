@@ -28,7 +28,7 @@
                     placeholder="Descrição"
                     class="textarea textarea-bordered textarea-md w-full sm:w-96 block my-4"
                 />
-                <button class="btn btn-primary w-full">Criar</button>
+                <a href="/editor/"><button class="btn btn-primary w-full">Criar</button></a>
             </form>
         </div>
     </div>

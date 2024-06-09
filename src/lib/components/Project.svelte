@@ -2,11 +2,19 @@
     import Icon from '@iconify/svelte';
 
     export let favorite: boolean = false;
+
+    let modalRef: any;
+
+    function showModal() {
+        if (modalRef) {
+            modalRef.showModal();
+        }
+    }
 </script>
 
 <div
     class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-primary border-2 my-4"
-    onclick="my_modal_1.showModal()"
+    on:click={showModal}
 >
     <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center" /></figure>
     <div class="card-body">
@@ -20,8 +28,8 @@
     </div>
 </div>
 
-<dialog id="my_modal_1" class="modal">
-    <div class="modal-box max-w-full ">
+<dialog id="my_modal_1" bind:this={modalRef} class="modal">
+    <div class="modal-box max-w-full">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
@@ -33,10 +41,10 @@
                     <p class="text-md pt-2">De Placeholder</p>
                 </div>
                 <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
-                <p class="sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
+                <p class="pt-4 sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
                 {#if favorite}
-                    <div class="divider divider-horizontal h-6 mt-2" />
-                    <p class="text-md pt-2">Favoritado</p>
+                <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
+                    <p class="text-md sm:pt-2 sm:pr-12 text-primary">Favoritado</p>
                 {/if}
             </div>
             {#if favorite}
@@ -47,7 +55,31 @@
         </div>
 
         <h1 class="text-md pt-4">Descrição:</h1>
-        <p class="text-sm text-justify pt-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!</p>
-        <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-primary border-4" /></figure>
+        <p class="text-sm text-justify pt-2">
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia quidem
+            placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem quos,
+            explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet
+            consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid
+            consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores
+            consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur nesciunt
+            praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur quaerat
+            debitis!Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, earum mollitia
+            quidem placeat, fugiat natus aliquid consectetur nesciunt praesentium et sequi autem
+            quos, explicabo odio vel! Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit
+            amet consectetur adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus
+            aliquid consectetur nesciunt praesentium et sequi autem quos, explicabo odio vel!
+            Asperiores consequuntur quaerat debitis!Lorem ipsum dolor, sit amet consectetur
+            adipisicing elit. Rem, earum mollitia quidem placeat, fugiat natus aliquid consectetur
+            nesciunt praesentium et sequi autem quos, explicabo odio vel! Asperiores consequuntur
+            quaerat debitis!
+        </p>
+        <figure>
+            <img
+                src="/gallery/placeholder01.png"
+                alt="Project"
+                class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-primary border-4"
+            />
+        </figure>
     </div>
 </dialog>
