@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';    
+    import Icon from '@iconify/svelte';
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
@@ -7,7 +7,7 @@
     const fetchImage = (async () => {
         const response = await fetch('https://restcountries.com/v3.1/all');
         return await response.json();
-    })();    
+    })();
 </script>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
@@ -50,7 +50,7 @@
                 {#await fetchImage}
                     <p>...waiting</p>
                 {:then data}
-                    {#each data.toSorted( (a, b) => a.name.common.localeCompare(b.name.common) ) as country (country.name.common)}
+                    {#each data.sort( (a, b) => a.name.common.localeCompare(b.name.common) ) as country (country.name.common)}
                         <option
                             selected={country.name.common === 'Brazil'}
                             value={country.name.common}

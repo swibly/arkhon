@@ -3,6 +3,8 @@
 
     let modalRef: any;
 
+    export let editor: boolean = false;
+
     function showModal() {
         if (modalRef) {
             modalRef.showModal();
@@ -10,17 +12,30 @@
     }
 </script>
 
-<div
-    class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-40 sm:hover:h-48 border border-primary border-2 my-4"
-    on:click={showModal}
->
-    <div class="card-body">
-        <div class="grid place-items-center">
-            <Icon icon="material-symbols:chair" font-size="70px" />
-            <p class="text-lg font-semibold text-center">Nome do Componente</p>
+{#if editor === false}
+    <div
+        class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-40 sm:hover:h-48 border border-primary border-2 my-4"
+        on:click={showModal}
+    >
+        <div class="card-body">
+            <div class="grid place-items-center">
+                <Icon icon="material-symbols:chair" font-size="70px" />
+                <p class="text-lg font-semibold text-center">Nome do Componente</p>
+            </div>
         </div>
     </div>
-</div>
+{:else if editor}
+    <div
+        class="card card-compact w-20 h-20 border border-primary border-2 my-4"
+        on:click={showModal}
+    >
+        <div class="card-body">
+            <div class="grid place-items-center pt-1">
+                <Icon icon="material-symbols:chair" font-size="35px" />                 
+            </div>
+        </div>
+    </div>
+{/if}
 
 <dialog id="my_modal_1" bind:this={modalRef} class="modal">
     <div class="modal-box max-w-[700px] lg:max-w-[1000px]">
@@ -31,7 +46,7 @@
             class="grid place-items-center lg:flex lg:justify-center lg:items-center lg:gap-12 my-12"
         >
             <div class="component">
-                <Icon icon="material-symbols:chair"/>
+                <Icon icon="material-symbols:chair" />
             </div>
             <div class="w-full">
                 <h1 class="text-4xl sm:text-5xl font-bold">Nome do Componente</h1>
@@ -62,14 +77,14 @@
 </dialog>
 
 <style>
-    @media(min-width: 1024px){
-        .component{
+    @media (min-width: 1024px) {
+        .component {
             font-size: 400px;
         }
     }
 
-    @media(max-width: 1024px){
-        .component{
+    @media (max-width: 1024px) {
+        .component {
             font-size: 250px;
         }
     }
