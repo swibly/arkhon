@@ -6,7 +6,7 @@
 
     let activeButton: String = 'project';
 
-    let seeComponents: boolean;
+    let seeComponents: boolean = false;
     let seeCategory: boolean = false;
 
     function setActiveButton(value: String) {
@@ -40,7 +40,7 @@
             <Icon icon="bxs:down-arrow" />
         </div>
     </nav>
-    <main class="flex h-screen">
+    <main class="flex h-[calc(100vh-4rem)]">
         <aside class="w-1/6 bg-base-200 overflow-y-scroll scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
@@ -110,7 +110,12 @@
                             <button class="btn btn-primary w-64 rounded-xl">Ver mais</button>
                         </div>
                     {:else if seeCategory === true}
-                        <div>
+                        <div
+                            class="pl-4"
+                            on:click={() => {
+                                seeCategory = false;
+                            }}
+                        >
                             <Icon icon="mingcute:close-fill" font-size="30px" />
                         </div>
                         {#if seeComponents === false}

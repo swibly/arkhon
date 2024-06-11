@@ -1,10 +1,18 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
+
+    let modalRef: any;
+
+    function showModal() {
+        if (modalRef) {
+            modalRef.showModal();
+        }
+    }
 </script>
 
 <div
     class="card card-compact w-full h-40 sm:w-full sm:h-40 bg-base-300 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-primary border-2"
-    onclick="my_modal_2.showModal()"
+    on:click={showModal}
 >
     <div class="card-body">
         <div class="flex justify-center items-center h-full">
@@ -13,7 +21,7 @@
     </div>
 </div>
 
-<dialog id="my_modal_2" class="modal">
+<dialog id="my_modal_2" bind:this={modalRef} class="modal">
     <div class="modal-box">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>

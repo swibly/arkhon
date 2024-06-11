@@ -3,11 +3,6 @@
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
-
-    const fetchImage = (async () => {
-        const response = await fetch('https://restcountries.com/v3.1/all');
-        return await response.json();
-    })();
 </script>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
@@ -21,7 +16,7 @@
 <section class="mx-12 mt-8">
     <form>
         <div class="lg:flex justify-center gap-2">
-            <label class="input input-bordered flex items-center gap-2 mb-8 lg:flex-1 bg-neutral">
+            <label class="input input-bordered flex items-center gap-2 mb-4 lg:flex-1 bg-neutral">
                 <Icon icon="material-symbols:person" />
                 <input
                     type="text"
@@ -32,7 +27,7 @@
                 />
             </label>
 
-            <label class="input input-bordered flex items-center gap-2 mb-8 lg:flex-1 bg-neutral">
+            <label class="input input-bordered flex items-center gap-2 mb-4 lg:flex-1 bg-neutral">
                 <Icon icon="material-symbols:person" />
                 <input
                     type="text"
@@ -44,28 +39,9 @@
             </label>
         </div>
 
-        <label class="input input-bordered flex items-center gap-2 mb-8 bg-neutral">
-            <Icon icon="ic:baseline-place" />
-            <select class="bg-transparent w-full">
-                {#await fetchImage}
-                    <p>...waiting</p>
-                {:then data}
-                    {#each data.sort( (a, b) => a.name.common.localeCompare(b.name.common) ) as country (country.name.common)}
-                        <option
-                            selected={country.name.common === 'Brazil'}
-                            value={country.name.common}
-                            class="bg-neutral">{country.flag} {country.name.common}</option
-                        >
-                    {/each}
-                {:catch error}
-                    <p>An error occurred!</p>
-                {/await}
-            </select>
-        </label>
-
         <article class="divider before:bg-white after:bg-white" />
 
-        <label class="input input-bordered flex items-center gap-2 mt-4 mb-8 bg-neutral">
+        <label class="input input-bordered flex items-center gap-2 my-8 bg-neutral">
             <Icon icon="ic:baseline-email" />
             <input type="email" class="email w-full" id="email" name="email" placeholder="Email" />
         </label>

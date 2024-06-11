@@ -7,7 +7,7 @@
     var change: boolean = true;
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen overflow-x-hidden">
     <main>
         <header class="w-screen bg-base-300 shadow-lg">
             <div class="flex justify-between align-items py-2">
