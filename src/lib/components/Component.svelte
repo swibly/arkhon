@@ -3,6 +3,8 @@
 
     let modalRef: any;
 
+    export let name: string;
+
     export let editor: boolean = false;
 
     function showModal() {
@@ -20,7 +22,7 @@
         <div class="card-body">
             <div class="grid place-items-center">
                 <Icon icon="material-symbols:chair" font-size="70px" />
-                <p class="text-lg font-semibold text-center">Nome do Componente</p>
+                <p class="text-lg font-semibold text-center">{name}</p>
             </div>
         </div>
     </div>
@@ -49,7 +51,7 @@
                 <Icon icon="material-symbols:chair" />
             </div>
             <div class="w-full">
-                <h1 class="text-4xl sm:text-5xl font-bold">Nome do Componente</h1>
+                <h1 class="text-4xl sm:text-5xl font-bold">{name}</h1>
                 <h1 class="pt-4 text-md sm:text-lg text-primary">Criado por Usuário</h1>
                 <div class="flex mt-2">
                     {#each Array(4) as i}
