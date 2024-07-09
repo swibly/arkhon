@@ -3,22 +3,31 @@
     import { lightMode, toggle } from '$lib/stores/theme';
     import Category from '$lib/components/Category.svelte';
     import Component from '$lib/components/Component.svelte';
+    import Pagination from '$lib/components/Pagination.svelte';
+    import { writable } from 'svelte/store';
 
     let activeButton: String = 'project';
 
-    let seeComponents: boolean = false;
-    let seeCategory: boolean = false;
-
-    let qtdComponents: number = 120;
-
-    let paginas: number = Math.ceil(qtdComponents / 12) 
-    
-    let fodase:number = paginas - (paginas - 1)
-
-    let lista = [...Array(qtdComponents)].map((_,i) => {return {Name: `${i + 1}`}});
-
     function setActiveButton(value: String) {
         activeButton = value;
+    }
+
+    let components = [...Array(120)].map((_, i) => {
+        return { Name: `${i + 1}` };
+    });
+
+    let categories = [...Array(80)].map((_, i) => {
+        return { Name: `${i + 1}` };
+    });
+
+    let currentPageStore = writable(1);
+
+    function start(currentPage: number): number {
+        return (currentPage - 1) * 8;
+    }
+
+    function end(currentPage: number): number {
+        return start(currentPage) + 8;
     }
 </script>
 
@@ -49,7 +58,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-4rem)]">
-        <aside class="w-1/6 bg-base-200 overflow-y-scroll scrollbar-thin">
+        <aside class="w-1/5 bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -102,78 +111,22 @@
                     </details>
                 {/if}
                 {#if activeButton == 'component'}
-                    {#if seeCategory === false}
-                        <div class="grid grid-cols-2 place-items-center">
-                            {#each Array(8) as i}
-                                <div
-                                    on:click={() => {
-                                        seeCategory = true;
-                                    }}
-                                >
-                                    <Category />
-                                </div>
+                    <Pagination bind:currentPageStore qtd={80}>
+                        <div class="grid grid-cols-2 place-items-center mx-8">
+                            {#each categories.slice(start($currentPageStore), end($currentPageStore)) as i}
+                                <Component name={i.Name} editor />
                             {/each}
                         </div>
-                        <div class="grid place-items-center mt-4">
-                            <button class="btn btn-primary w-64 rounded-xl">Ver mais</button>
-                        </div>
-                    {:else if seeCategory === true}
-                        <div
-                            class="pl-4"
-                            on:click={() => {
-                                seeCategory = false;
-                            }}
-                        >
-                            <Icon icon="mingcute:close-fill" font-size="30px" />
-                        </div>
-                        {#if seeComponents === false}
-                            <div class="grid grid-cols-2 place-items-center mx-8">
-                                {#each Array(8) as i}
-                                    <Component name={i.Name} editor />
-                                {/each}
-                            </div>
-                            <div class="grid place-items-center mt-4">
-                                <button
-                                    class="btn btn-primary w-64 rounded-xl"
-                                    on:click={() => {
-                                        seeComponents = true;
-                                    }}>Ver mais</button
-                                >
-                            </div>
-                        {:else}
-                            <div class="grid grid-cols-2 place-items-center mx-8">
-                                {#each Array(23) as i}
-                                    <Component name={i.Name} editor />
-                                {/each}
-                            </div>
-
-                            <div class="grid place-items-center mt-4">
-                                <button
-                                    class="btn btn-primary w-64 rounded-xl"
-                                    on:click={() => {
-                                        seeComponents = false;
-                                    }}>Ver menos</button
-                                >
-                            </div>
-                        {/if}
-                    {/if}
+                    </Pagination>
                 {/if}
                 {#if activeButton == 'store'}
-                    <div class="grid grid-cols-1 place-items-center mb-8">
-                        <div class="join gap-1">
-                            
-                            <button class="join-item btn btn-primary">1</button>
-                            <button class="join-item btn btn-secondary">2</button>
-                            <button class="join-item btn btn-secondary">...</button>
-                            <button class="join-item btn btn-secondary">29</button>
-                            <button class="join-item btn btn-secondary">30</button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 place-items-center mx-8">
-                        {#each lista.slice(13, 24) as i}
-                            <Component name={i.Name}></Component>
-                        {/each}
-                    </div>                    
+                    <Pagination bind:currentPageStore qtd={120}>
+                        <div class="grid grid-cols-2 place-items-center mx-8">
+                            {#each components.slice(start($currentPageStore), end($currentPageStore)) as i}
+                                <Component name={i.Name} editor />
+                            {/each}
+                        </div></Pagination
+                    >                    
                 {/if}
             </main>
         </aside>

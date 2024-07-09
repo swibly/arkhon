@@ -28,12 +28,13 @@
     </div>
 {:else if editor}
     <div
-        class="card card-compact w-20 h-20 border border-primary border-2 my-4"
+        class="card card-compact w-32 h-32 border border-primary border-2 my-4"
         on:click={showModal}
     >
         <div class="card-body">
-            <div class="grid place-items-center pt-1">
-                <Icon icon="material-symbols:chair" font-size="35px" />                 
+            <div class="grid place-items-center h-full">
+                <Icon icon="material-symbols:chair" font-size="35px" />
+                <p class="text-lg font-semibold text-center">{name}</p>                 
             </div>
         </div>
     </div>
