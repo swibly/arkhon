@@ -8,7 +8,7 @@
     <main>
         <header class="w-screen bg-base-300 shadow-lg">
             <div class="flex justify-between align-items py-2">
-                <Icon icon="gg:profile" class="ml-4 mt-1" font-size="30px" />
+                <a href="profile"><Icon icon="gg:profile" class="ml-4 mt-1" font-size="30px" /></a>
                 <h1 class="text-3xl font-bold">Arkhon</h1>
                 <label class="swap swap-rotate float-right pr-8">
                     <input type="checkbox" class="theme-controller" on:click={toggle} />
@@ -75,25 +75,3 @@
         </section>
     </main>
 </body>
-
-{#if $lightMode}
-    <style>
-        .bleed {
-            clip-path: inset(0, -100vmax);
-            box-shadow: 0 0 0 100vmax #f8f8f8;
-        }
-
-        label {
-            color: black;
-        }
-    </style>
-{:else}
-    <style>
-        .bleed {
-        }
-
-        label {
-            color: white;
-        }
-    </style>
-{/if}

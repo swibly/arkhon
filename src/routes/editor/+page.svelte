@@ -1,7 +1,6 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
-    import { lightMode, toggle } from '$lib/stores/theme';
-    import Category from '$lib/components/Category.svelte';
+    import { lightMode, toggle } from '$lib/stores/theme';    
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
