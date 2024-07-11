@@ -10,7 +10,7 @@
             <div class="flex justify-between align-items py-2">
                 <Icon icon="gg:profile" class="ml-4 mt-1" font-size="30px" />
                 <h1 class="text-3xl font-bold">Arkhon</h1>
-                <label class="swap swap-rotate float-right pr-4">
+                <label class="swap swap-rotate float-right pr-8">
                     <input type="checkbox" class="theme-controller" on:click={toggle} />
 
                     <Icon icon="ph:moon" class="swap-on size-8" />
