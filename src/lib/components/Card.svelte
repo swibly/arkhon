@@ -14,13 +14,11 @@
 
 <div class="group">
     <div
-        class="hover: card w-96 bg-base-100 shadow-xl text-white mx-12 p-5"
+        class="card w-72 bg-base-100 shadow-xl text-white mx-12 p-5"
         class:card-special={special}
-        class:card-default={!special}
-        class:card-hidden={!hidden}
-        class:card-hidden-default={hidden}
-        class:card-show={!show}
-        class:card-show-default={show}
+        class:card-default={!special}        
+        class:card-hidden={hidden}        
+        class:card-show={show}
     >
         <div class="flex justify-between pb-4">
             <h2>{Intl.DateTimeFormat('pt-br').format(data)}</h2>
@@ -38,16 +36,14 @@
             <img src={banner} {alt} class="rounded-xl" />
         </figure>
         <div class="card-body">
-            <div class="flex gap-2 items-center">
-                <div class="flex gap-2 align-items">
-                    <Icon icon="mingcute:user-4-line" />
-                    <h2 class="card-title text-sm">{author}</h2>
-                </div>
+            <div class="grid place-items-center">
+                <Icon icon="mingcute:user-4-line" />
+                <h2 class="card-title text-sm">{author}</h2>
             </div>
-            <p>
+            <div class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline">
                 <slot />
-            </p>
-            <div class="card-actions justify-end pt-4">
+            </div>
+            <div class="card-actions pt-4 flex justify-center">
                 {#each tags as tag}
                     <div class="badge badge-outline">{tag}</div>
                 {/each}
@@ -71,14 +67,14 @@
         background-color: rgb(3 105 161);
     }
 
-    @media only screen and (max-width: 1440px) {
-        .card-hidden-default {
+    @media only screen and (max-width: 1152px) {
+        .card-hidden {
             display: none;
         }
     }
 
-    @media only screen and (min-width: 1440px) {
-        .card-show-default {
+    @media only screen and (min-width: 1152px) {
+        .card-show {
             display: none;
         }
     }

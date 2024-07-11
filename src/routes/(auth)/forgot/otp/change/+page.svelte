@@ -11,7 +11,7 @@
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white">Troque a sua senha</h1>
 
-<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-accent">Escolha uma senha forte e inesquecível</h2>
+<h2 class="text-xl text-center sm:text-2xl mt-4 px-4 text-secondary">Escolha uma senha forte e inesquecível</h2>
 
 <section class="mx-12 mt-8">
     <form>
@@ -53,12 +53,12 @@
 
         <button class="text-white mt-4 pb-4 mx-auto w-fit block">
             <a href="/forgot/otp">
-                <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
+                <a href="/home/"><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></a>
             </a>
         </button>
     </form>
 
     <p class="text-center text-white">
-        <a href="/login" class="text-accent">Voltar para a página de login</a>
+        <a href="/login" class="text-secondary">Voltar para a página de login</a>
     </p>
 </section>
