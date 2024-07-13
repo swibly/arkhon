@@ -5,9 +5,9 @@
     import Component from '$lib/components/Component.svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
-    <main class="flex">
-        <aside class="w-2/6 h-screen bg-base-300">
+<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen overflow-x-hidden">
+    <main class="flex w-screen min-h-screen justify-end">
+        <aside class="w-2/6 min-h-screen bg-base-300 fixed top-0 left-0">
             <div class="flex justify-between px-12 py-8">
                 <a href="home"><Icon icon="fe:arrow-left" font-size="40px" /></a>
                 <Icon icon="material-symbols:settings" font-size="40px" />
@@ -44,13 +44,13 @@
                         <p class="flex items-center gap-4">
                             <Icon icon="game-icons:laurels" font-size="20px" />157/10k XP
                         </p>
-                        <progress class="progress progress-primary w-56" value="2" max="100" />
+                        <progress class="progress progress-secondary w-56" value="2" max="100" />
                     </div>
                 </section>
             </section>
         </aside>
-        <main class="w-4/6 h-screen bg-base-100">
-            <label class="swap swap-rotate float-right pr-4 pt-4">
+        <main class="w-4/6 min-h-screen bg-base-100">
+            <label class="swap swap-rotate float-right pr-8 pt-4">
                 <input type="checkbox" class="theme-controller" on:click={toggle} />
 
                 <Icon icon="ph:moon" class="swap-on size-8" />
@@ -58,23 +58,34 @@
             </label>
             <section class="pt-20 mx-20">
                 <h1 class="text-3xl text-secondary font-bold">Projetos Recentes</h1>
-                <div class="grid grid-cols-4 gap-4 pt-4">
-                    {#each Array(5) as i}
+                <div class="grid grid-cols-4 gap-4 py-4">
+                    {#each Array(11) as i}
                         <Project />
                     {/each}
                 </div>
 
+                <div class="divider divider-primary"></div>
+
                 <h1 class="text-3xl text-secondary font-bold pt-4">Favoritos</h1>
-                <div class="grid grid-cols-4 gap-4 pt-4">
-                    {#each Array(3) as i}
+                <div class="grid grid-cols-4 gap-4 py-4">
+                    {#each Array(7) as i}
                         <Project favorite/>
                     {/each}
                 </div>
 
+                <div class="divider divider-primary"></div>
+
+                <h1 class="text-3xl text-secondary font-bold pt-4">Postados na comunidade</h1>
+                <div class="grid grid-cols-4 gap-4 py-4">
+                    <h1 class="text-xl">Nenhum projeto encontrado</h1>
+                </div>
+
+                <div class="divider divider-primary"></div>
+
                 <h1 class="text-3xl text-secondary font-bold pt-4">Componentes adquridos</h1>
-                <div class="grid grid-cols-4 gap-4 pt-4">
-                    {#each Array(3) as i}
-                        <Component name="Nome do Componente"/>
+                <div class="grid grid-cols-4 gap-4 py-4">
+                    {#each Array(9) as i}
+                        <Component name="Nome do Componente" store/>
                     {/each}
                 </div>
             </section>

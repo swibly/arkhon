@@ -13,7 +13,7 @@
 </script>
 
 <div
-    class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-primary border-2 my-4"
+    class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-secondary border-2 my-4"
     on:click={showModal}
 >
     <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center" /></figure>
@@ -44,13 +44,13 @@
                 <p class="pt-4 sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
                 {#if favorite}
                 <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
-                    <p class="text-md sm:pt-2 sm:pr-12 text-primary">Favoritado</p>
+                    <p class="text-md sm:pt-2 sm:pr-12 text-secondary">Favoritado</p>
                 {/if}
             </div>
             {#if favorite}
-                <button class="btn btn-primary btn-sm mt-2">Visualizar</button>
+                <button class="btn btn-secondary btn-sm mt-2">Visualizar</button>
             {:else}
-                <button class="btn btn-primary btn-sm mt-2">Editar</button>
+                <button class="btn btn-secondary btn-sm mt-2">Editar</button>
             {/if}
         </div>
 
@@ -78,7 +78,7 @@
             <img
                 src="/gallery/placeholder01.png"
                 alt="Project"
-                class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-primary border-4"
+                class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-secondary border-4"
             />
         </figure>
     </div>

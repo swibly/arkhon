@@ -60,7 +60,7 @@
                     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 place-items-center gap-4"
                 >
                     {#each Array(9) as i}
-                        <Component name="Nome do Usuário"></Component>                        
+                        <Component name="Nome do Usuário" store></Component>                        
                     {/each}
                 </div>
             </div>

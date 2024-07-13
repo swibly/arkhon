@@ -5,6 +5,7 @@
 
     export let name: string;
 
+    export let store: boolean = false;
     export let editor: boolean = false;
 
     function showModal() {
@@ -14,27 +15,31 @@
     }
 </script>
 
-{#if editor === false}
-    <div
-        class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-40 sm:hover:h-48 border border-primary border-2 my-4"
-        on:click={showModal}
-    >
-        <div class="card-body">
-            <div class="grid place-items-center">
-                <Icon icon="material-symbols:chair" font-size="70px" />
-                <p class="text-lg font-semibold text-center">{name}</p>
+{#if store}
+    <div class="w-full h-full group">
+        <div class="grid place-items-center">
+            <div
+                class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out group-hover:w-64 group-hover:h-40 group-hover:sm:w-40 group-hover:sm:h-48 border border-secondary border-2 my-4"
+                on:click={showModal}
+            >
+                <div class="card-body">
+                    <div class="grid place-items-center">
+                        <Icon icon="material-symbols:chair" font-size="70px" />
+                        <p class="text-lg font-semibold text-center">{name}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 {:else if editor}
     <div
-        class="card card-compact w-32 h-32 border border-primary border-2 my-4"
+        class="card card-compact w-32 h-32 border border-secondary border-2 my-4"
         on:click={showModal}
     >
         <div class="card-body">
             <div class="grid place-items-center h-full">
                 <Icon icon="material-symbols:chair" font-size="35px" />
-                <p class="text-lg font-semibold text-center">{name}</p>                 
+                <p class="text-lg font-semibold text-center">{name}</p>
             </div>
         </div>
     </div>
@@ -53,7 +58,7 @@
             </div>
             <div class="w-full">
                 <h1 class="text-4xl sm:text-5xl font-bold">{name}</h1>
-                <h1 class="pt-4 text-md sm:text-lg text-primary">Criado por Usuário</h1>
+                <h1 class="pt-4 text-md sm:text-lg text-secondary">Criado por Usuário</h1>
                 <div class="flex mt-2">
                     {#each Array(4) as i}
                         <Icon icon="material-symbols:star" />
@@ -66,7 +71,7 @@
                         <img src="/gallery/Arkhoin.png" alt="Arkhoin" class="w-12 -ml-1" />
                     </figure>
                 </div>
-                <button class="btn btn-primary w-full mt-4">Comprar</button>
+                <button class="btn btn-secondary w-full mt-4">Comprar</button>
                 <div class="divider" />
                 <h1 class="text-lg sm:text-xl">Descrição:</h1>
                 <p>

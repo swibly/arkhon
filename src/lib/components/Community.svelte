@@ -14,36 +14,38 @@
     }
 </script>
 
-<div
-    class="card card-compact w-full h-72 sm:w-full sm:h-72 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-40 2xl:hover:w-64 2xl:hover:h-40 border border-primary border-2 my-4"
-    on:click={showModal}
->
-    <figure class="hover:hidden">
-        <img src="/gallery/placeholder02.jpg" alt="Project" class="object-center" />
-    </figure>
-    <div class="card-body">
-        <div class="hidden hover:flex hover:justify-between hover:pb-4">
-            <h2>{Intl.DateTimeFormat('pt-br').format(data)}</h2>
-            <div class="flex gap-4 items-center">
-                <h2>
-                    {Intl.NumberFormat('en-us', {
-                        notation: 'compact',
-                        compactDisplay: 'short'
-                    }).format(likes)}
-                </h2>
-                <Icon icon="mdi:heart-outline" />
+<div class="w-full h-80 group grid grid-cols-1 place-items-center">
+    <div
+        class="card card-compact w-full h-72 md:w-60 md:h-72 lg:w-64 lg:h-72 shadow-xl transition-all duration-150 ease-in-out group-hover:w-96 group-hover:h-64 group-hover:md:w-72 group-hover:md:h-40 group-hover:2xl:w-64 group-hover:2xl:h-40 border border-secondary border-2 my-4"
+        on:click={showModal}
+    >
+        <figure class="hover:hidden">
+            <img src="/gallery/placeholder02.jpg" alt="Project" class="object-center" />
+        </figure>
+        <div class="card-body">
+            <div class="hidden hover:flex hover:justify-between hover:pb-4">
+                <h2>{Intl.DateTimeFormat('pt-br').format(data)}</h2>
+                <div class="flex gap-4 items-center">
+                    <h2>
+                        {Intl.NumberFormat('en-us', {
+                            notation: 'compact',
+                            compactDisplay: 'short'
+                        }).format(likes)}
+                    </h2>
+                    <Icon icon="mdi:heart-outline" />
+                </div>
             </div>
-        </div>
-        <h2 class="card-title text-center">Título</h2>
-        <div
-            class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline"
-        >
-            <slot />
-        </div>
-        <div class="card-actions pt-2 flex justify-center">
-            {#each tags as tag}
-                <div class="badge badge-outline">{tag}</div>
-            {/each}
+            <h2 class="card-title text-center">Título</h2>
+            <div
+                class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline"
+            >
+                <slot />
+            </div>
+            <div class="card-actions pt-2 flex justify-center">
+                {#each tags as tag}
+                    <div class="badge badge-outline">{tag}</div>
+                {/each}
+            </div>
         </div>
     </div>
 </div>
@@ -63,7 +65,7 @@
                 <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
                 <p class="pt-4 sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
             </div>
-            <button class="btn btn-primary btn-sm mt-2">Visualizar</button>
+            <button class="btn btn-secondary btn-sm mt-2">Visualizar</button>
         </div>
 
         <h1 class="text-md pt-4">Descrição:</h1>
@@ -90,7 +92,7 @@
             <img
                 src="/gallery/placeholder01.png"
                 alt="Project"
-                class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-primary border-4"
+                class="object-cover object-center w-full h-96 mt-8 rounded-xl border border-secondary border-4"
             />
         </figure>
     </div>

@@ -97,11 +97,11 @@
                 {#if activeButton == 'project'}
                     <details class="dropdown w-full mt-4">
                         <summary
-                            class="text-white btn w-full bg-primary hover:bg-base-300 hover:border hover:border-primary rounded-none"
+                            class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
                             >Andar 1</summary
                         >
                         <div
-                            class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-primary"
+                            class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
                         >
                             <button class="flex items-center gap-4 btn bg-base-300 border-0"
                                 ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button

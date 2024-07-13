@@ -57,9 +57,9 @@
 
             <div class="py-12 mx-12 sm:mx-28 lg:mx-40 3xl:mx-96">
                 <div
-                    class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4"
+                    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4"
                 >
-                    {#each Array(9) as i}
+                    {#each Array(11) as i}
                         <Community
                             data={Date.now()}
                             likes={1209}
