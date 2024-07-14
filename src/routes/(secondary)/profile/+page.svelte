@@ -10,7 +10,7 @@
         <aside class="w-2/6 min-h-screen bg-base-300 fixed top-0 left-0">
             <div class="flex justify-between px-12 py-8">
                 <a href="home"><Icon icon="fe:arrow-left" font-size="40px" /></a>
-                <Icon icon="material-symbols:settings" font-size="40px" />
+                <a href="settings"><Icon icon="material-symbols:settings" font-size="40px" /></a>
             </div>
 
             <section class="grid place-items-center">
