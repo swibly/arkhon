@@ -12,19 +12,23 @@
     }
 </script>
 
-<div
-    class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out hover:w-64 hover:h-40 sm:hover:w-72 sm:hover:h-48 2xl:hover:w-64 2xl:hover:h-44 border border-secondary border-2 my-4"
-    on:click={showModal}
->
-    <figure><img src="/gallery/placeholder01.png" alt="Project" class="object-center" /></figure>
-    <div class="card-body">
-        <div class="flex align-items justify-between">
-            <h2 class="card-title">Título</h2>
-            {#if favorite}
-                <Icon icon="material-symbols:star" class="mt-2" />
-            {/if}
+<div class="grid place-items-center group">
+    <div
+        class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out group-hover:w-64 group-hover:h-40 group-hover:sm:w-72 group-hover:sm:h-48 group-hover:2xl:hover:w-64 group-hover:2xl:hover:h-44 border border-secondary border-2 my-4"
+        on:click={showModal}
+    >
+        <figure>
+            <img src="/gallery/placeholder01.png" alt="Project" class="object-center" />
+        </figure>
+        <div class="card-body">
+            <div class="flex align-items justify-between">
+                <h2 class="card-title">Título</h2>
+                {#if favorite}
+                    <Icon icon="material-symbols:star" class="mt-2" />
+                {/if}
+            </div>
+            <p>Editado há 3 dias</p>
         </div>
-        <p>Editado há 3 dias</p>
     </div>
 </div>
 
@@ -43,7 +47,9 @@
                 <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
                 <p class="pt-4 sm:text-md sm:pt-2 sm:mr-4">Editado há 3 dias</p>
                 {#if favorite}
-                <div class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2" />
+                    <div
+                        class="invisible sm:visible sm:divider sm:divider-horizontal sm:h-6 sm:mt-2"
+                    />
                     <p class="text-md sm:pt-2 sm:pr-12 text-secondary">Favoritado</p>
                 {/if}
             </div>
