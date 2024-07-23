@@ -16,7 +16,7 @@
 
 <div class="w-full h-80 group grid grid-cols-1 place-items-center">
     <div
-        class="card card-compact w-full h-72 md:w-60 md:h-72 lg:w-64 lg:h-72 shadow-xl transition-all duration-150 ease-in-out group-hover:w-96 group-hover:h-64 group-hover:md:w-72 group-hover:md:h-40 group-hover:2xl:w-64 group-hover:2xl:h-40 border border-secondary border-2 my-4"
+        class="card card-compact w-full h-72 md:w-full md:h-72 lg:w-full lg:h-72 shadow-xl transition-all duration-150 ease-in-out group-hover:sm:w-96 group-hover:sm:h-64 group-hover:md:w-72 group-hover:md:h-40 group-hover:2xl:w-64 group-hover:2xl:h-40 border border-secondary border-2 my-4"
         on:click={showModal}
     >
         <figure class="hover:hidden">

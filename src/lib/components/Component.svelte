@@ -19,7 +19,7 @@
     <div class="w-full h-full group">
         <div class="grid place-items-center">
             <div
-                class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out group-hover:w-64 group-hover:h-40 group-hover:sm:w-40 group-hover:sm:h-48 border border-secondary border-2 my-4"
+                class="card card-compact w-full h-40 sm:w-full sm:h-40 shadow-xl transition-all duration-150 ease-in-out group-hover:sm:w-40 group-hover:sm:h-48 border border-secondary border-2 my-4"
                 on:click={showModal}
             >
                 <div class="card-body">
