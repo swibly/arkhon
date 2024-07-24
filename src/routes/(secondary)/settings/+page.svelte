@@ -147,13 +147,17 @@
                             >Conheça a Arkhon</button
                         >
                     {:else}
-                        <button
-                            class="w-full h-16 bg-base-200 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
-                            >FAQ</button
+                        <a href="faq"
+                            ><button
+                                class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
+                                >FAQ</button
+                            ></a
                         >
-                        <button
-                            class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
-                            >Contatar a gente</button
+                        <a href="contact"
+                            ><button
+                                class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
+                                >Contatar a gente</button
+                            ></a
                         >
                     {/if}
                 </div>

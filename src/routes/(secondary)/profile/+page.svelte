@@ -135,7 +135,7 @@
                 <button
                     class={`btn rounded-none w-1/4 text-xs sm:text-base ${
                         option === 'community' ? 'btn-primary' : 'btn-secondary'
-                    }`}
+                    }`}  
                     on:click={() => changeOption('community')}>Comunidade</button
                 >
                 <button

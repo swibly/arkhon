@@ -51,7 +51,7 @@
             </h2>
             <div class="px-8">
                 <label
-                    class="input max-sm:input-sm bg-neutral flex items-center mx-auto max-w-[800px]"
+                    class="input input-bordered max-sm:input-sm bg-neutral flex items-center mx-auto max-w-[800px]"
                 >
                     <input type="text" class="grow text-center" placeholder="Pesquisar projeto" />
                     <Icon icon="material-symbols:search" />
