@@ -5,14 +5,14 @@
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
     <main class="w-full min-h-screen flex justify-end">
-        <aside class="w-2/5 h-screen bg-base-300 fixed top-0 left-0 grid place-items-center">
+        <aside class="w-1/3 h-screen bg-base-300 fixed top-0 left-0 grid place-items-center">
             <img
-                src="https://blognano.com.br/wp-content/uploads/2021/02/arquitetura-moderna.jpg"
+                src="/gallery/bg-placeholder2.jpg"
                 alt="bg-image"
-                class="w-full h-screen bg-cover bg-center"
+                class="w-full h-screen object-cover"
             />
         </aside>
-        <section class="w-3/5 min-h-screen">
+        <section class="w-2/3 min-h-screen px-12">
             <div class="flex justify-between items-center w-full px-12 pt-8">
                 <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
                 <label class="swap swap-rotate">
@@ -60,7 +60,7 @@
                             class="w-80 h-80 bg-base-300 border-2 border-secondary rounded-2xl flex flex-col justify-center items-center px-6"
                         >
                             <Icon icon="mdi:gear" font-size="80px" />
-                            <h1 class="text-2xl text-center font-bold pt-2">Interface Intuitivo</h1>
+                            <h1 class="text-2xl text-center font-bold pt-2">Interface Intuitiva</h1>
                             <p class="text-lg text-center">
                                 A plataforma Arkhon é fácil de usar, permitindo criar e ajustar
                                 plantas arquitetônicas rapidamente.
@@ -95,8 +95,8 @@
             </div>
             <div
                 class="w-11/12 h-40 mx-auto mt-24 bg-center bg-cover"
-                style="background-image: url(https://img.freepik.com/fotos-gratis/villa-com-piscina-de-luxo-design-contemporaneo-espetacular-arte-digital-imoveis-casa-e-propriedade-ilustracao-generativa-de-ia_1258-151616.jpg?t=st=1721832107~exp=1721835707~hmac=cfdb6750f7b5d3ffe9d9286ee1593052fe6a9faf6decc9c4266f4e53c16b8fc9&w=1800);"
-            />
+                style="background-image: url(/gallery/bg-placeholder.jpg);"
+            />            
             <div class="py-8">
                 <h1 class="text-4xl text-secondary font-bold text-center">Quem somos?</h1>
                 <div class="grid grid-cols-3 place-items-center pt-4 mx-40">
@@ -119,9 +119,9 @@
                     </div>
                     <div class="grid place-items-center pt-8">
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/2048px-LEGO_logo.svg.png"
+                            src="/gallery/victor.png"
                             alt="photo"
-                            class="w-40 h-40"
+                            class="w-40 h-40 object-cover rounded-xl"
                         />
                         <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>ndré <span class="text-secondary">V</span>ictor</p>
                     </div>
