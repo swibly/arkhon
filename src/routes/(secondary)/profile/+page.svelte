@@ -17,7 +17,7 @@
         <aside
             class="w-full xl:w-2/6 h-[40rem] sm:h-[50rem] md:h-[46rem] xl:min-h-screen bg-base-300 xl:fixed top-0 left-0"
         >
-            <div class="flex justify-between px-12 py-4 xl:py-8">
+            <div class="flex justify-between px-12 py-4 xl:py-4">
                 <a href="home"><Icon icon="fe:arrow-left" font-size="40px" /></a>
                 <a href="settings"><Icon icon="material-symbols:settings" font-size="40px" /></a>
             </div>
@@ -26,7 +26,7 @@
                 <div class="icon">
                     <Icon icon="healthicons:ui-user-profile" />
                 </div>
-                <h1 class="text-3xl sm:text-5xl font-bold">Nome do Usuário</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold">Nome do Usuário</h1>
                 <h2 class="text-lg sm:text-2xl">Apelido do usuário</h2>
                 <div class="mx-0 sm:mx-20 xl:grid xl:place-items-center xl:block xl:mx-0 xl:pt-0">
                     <p class="px-12 py-4 sm:py-8 text-justify">
@@ -255,7 +255,7 @@
 
     @media (min-width: 1280px) {
         .icon {
-            font-size: 300px;
+            font-size: 200px;
         }
     }
 </style>

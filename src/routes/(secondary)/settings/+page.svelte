@@ -71,7 +71,7 @@
                             : 'bg-base-200'
                     }`}
                     on:click={() => changeButton('settings')}
-                    ><Icon icon="material-symbols:settings" font-size="25px" /> Configurações</button
+                    ><Icon icon="material-symbols:settings" font-size="25px" />Configurações</button
                 >
                 <button
                     class={`w-full py-2 font-semibold flex items-center gap-2 pl-4 ${
@@ -80,7 +80,7 @@
                             : 'bg-base-200'
                     }`}
                     on:click={() => changeButton('about')}
-                    ><Icon icon="material-symbols:help" font-size="25px" /> Sobre</button
+                    ><Icon icon="material-symbols:help" font-size="25px" />Sobre</button
                 >
                 <button
                     class={`w-full py-2 font-semibold flex items-center gap-2 pl-4 ${
@@ -89,7 +89,7 @@
                             : 'bg-base-200'
                     }`}
                     on:click={() => changeButton('help')}
-                    ><Icon icon="mdi:about" font-size="25px" /> Ajuda</button
+                    ><Icon icon="mdi:about" font-size="25px" />Ajuda</button
                 >
             </div>
         </div>
@@ -142,9 +142,11 @@
                             >Acessibilidade</button
                         >
                     {:else if activeButton === 'about'}
-                        <button
-                            class="w-full h-16 bg-base-200 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
-                            >Conheça a Arkhon</button
+                        <a href="arkhon"
+                            ><button
+                                class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
+                                >Conheça a Arkhon e seus criadores</button
+                            ></a
                         >
                     {:else}
                         <a href="faq"
