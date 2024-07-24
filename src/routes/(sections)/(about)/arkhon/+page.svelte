@@ -5,11 +5,11 @@
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
     <main class="w-full min-h-screen flex justify-end">
-        <aside class="w-2/5 h-screen bg-red-500 fixed top-0 left-0">
+        <aside class="w-2/5 h-screen bg-base-300 fixed top-0 left-0 grid place-items-center">
             <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/2048px-LEGO_logo.svg.png"
+                src="https://blognano.com.br/wp-content/uploads/2021/02/arquitetura-moderna.jpg"
                 alt="bg-image"
-                class="w-full h-screen"
+                class="w-full h-screen bg-cover bg-center"
             />
         </aside>
         <section class="w-3/5 min-h-screen">
@@ -25,7 +25,7 @@
             <div class="w-full h-screen pt-16">
                 <h1 class="text-7xl text-secondary font-bold pl-8">Sobre nós</h1>
                 <p class="text-4xl font-semibold pl-8">Muito mais do que uma simples plataforma</p>
-                <div class="grid grid-cols-2 gap-8 mt-12">
+                <div class="grid grid-cols-2 gap-8 pt-12">
                     <p class="text-xl font-medium pl-8">
                         Bem-vindo ao Arkhon, sua plataforma digital dedicada à criação de plantas de
                         arquitetura com precisão e facilidade. Aqui, cada projeto ganha vida através
@@ -52,27 +52,103 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-4xl text-secondary font-semibold pl-8 pt-8">Por que escolher a Arkhon?</h1>
+                    <h1 class="text-4xl text-secondary font-semibold pl-8 pt-8">
+                        Por que escolher a Arkhon?
+                    </h1>
+                    <div class="grid grid-cols-3 place-items-center pt-12">
+                        <div
+                            class="w-80 h-80 bg-base-300 border-2 border-secondary rounded-2xl flex flex-col justify-center items-center px-6"
+                        >
+                            <Icon icon="mdi:gear" font-size="80px" />
+                            <h1 class="text-2xl text-center font-bold pt-2">Interface Intuitivo</h1>
+                            <p class="text-lg text-center">
+                                A plataforma Arkhon é fácil de usar, permitindo criar e ajustar
+                                plantas arquitetônicas rapidamente.
+                            </p>
+                        </div>
+                        <div
+                            class="w-80 h-80 bg-base-300 border-2 border-secondary rounded-2xl flex flex-col justify-center items-center px-6"
+                        >
+                            <Icon icon="ic:twotone-window" font-size="80px" />
+                            <h1 class="text-2xl text-center font-bold pt-2">
+                                Biblioteca de Componentes
+                            </h1>
+                            <p class="text-lg text-center">
+                                O Arkhon oferece uma ampla biblioteca de componentes, desde
+                                estruturas a decorações, para personalização das plantas.
+                            </p>
+                        </div>
+                        <div
+                            class="w-80 h-80 bg-base-300 border-2 border-secondary rounded-2xl flex flex-col justify-center items-center px-6"
+                        >
+                            <Icon icon="bi:people-fill" font-size="80px" />
+                            <h1 class="text-2xl text-center font-bold pt-2">
+                                Colaboração e Compartilhamento
+                            </h1>
+                            <p class="text-lg text-center">
+                                A plataforma facilita a colaboração entre usuários, ideal para
+                                trabalho em equipe em ambientes profissionais.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/2048px-LEGO_logo.svg.png"
-                alt="bg-placeholder"
-                class="w-11/12 h-40 mx-auto"
+            <div
+                class="w-11/12 h-40 mx-auto mt-24 bg-center bg-cover"
+                style="background-image: url(https://img.freepik.com/fotos-gratis/villa-com-piscina-de-luxo-design-contemporaneo-espetacular-arte-digital-imoveis-casa-e-propriedade-ilustracao-generativa-de-ia_1258-151616.jpg?t=st=1721832107~exp=1721835707~hmac=cfdb6750f7b5d3ffe9d9286ee1593052fe6a9faf6decc9c4266f4e53c16b8fc9&w=1800);"
             />
             <div class="py-8">
                 <h1 class="text-4xl text-secondary font-bold text-center">Quem somos?</h1>
-                <div class="grid grid-cols-3 place-items-center pt-4 mx-32">
-                    {#each Array(6) as i}
-                        <div class="grid place-items-center pt-8">
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/2048px-LEGO_logo.svg.png"
-                                alt="photo"
-                                class="w-40 h-40"
-                            />
-                            <p class="text-lg text-center font-bold">Nome do Integrante</p>
-                        </div>
-                    {/each}
+                <div class="grid grid-cols-3 place-items-center pt-4 mx-40">
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="/gallery/ana.jpg"
+                            alt="
+                            ana"
+                            class="w-40 h-40 object-cover rounded-xl"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>na <span class="text-secondary">B</span>uzana</p>
+                    </div>
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="/gallery/luis.jpg"
+                            alt="photo"
+                            class="w-40 h-40 rounded-xl"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>ndré <span class="text-secondary">A</span>lbanese</p>
+                    </div>
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/2048px-LEGO_logo.svg.png"
+                            alt="photo"
+                            class="w-40 h-40"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>ndré <span class="text-secondary">V</span>ictor</p>
+                    </div>
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="/gallery/carlos.png"
+                            alt="photo"
+                            class="w-40 h-40 rounded-xl"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">C</span>arlos <span class="text-secondary">D</span>aniel</p>
+                    </div>
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="/gallery/dudu.jpg"
+                            alt="photo"
+                            class="w-40 h-40 object-cover rounded-xl"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">E</span>duardo <span class="text-secondary">L</span>ima</p>
+                    </div>
+                    <div class="grid place-items-center pt-8">
+                        <img
+                            src="/gallery/gustavo.jpg"
+                            alt="photo"
+                            class="w-40 h-40 object-cover rounded-xl"
+                        />
+                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">G</span>ustavo <span class="text-secondary">M</span>arques</p>
+                    </div>
                 </div>
             </div>
         </section>
