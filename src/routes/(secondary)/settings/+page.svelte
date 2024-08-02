@@ -129,18 +129,18 @@
             <main class="pt-12">
                 <div class="pt-6">
                     {#if activeButton === 'settings'}
-                        <button
+                        <a href="general"><button
                             class="w-full h-16 bg-base-200 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
                             >Configurações Gerais</button
-                        >
-                        <button
+                        ></a>
+                        <a href="user"><button
                             class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
                             >Configurações do Perfil</button
-                        >
-                        <button
+                        ></a>
+                        <a href="acessibility"><button
                             class="w-full h-16 bg-base-200 mt-8 rounded-xl text-left pl-4 text-lg font-semibold hover:bg-secondary"
                             >Acessibilidade</button
-                        >
+                        ></a>
                     {:else if activeButton === 'about'}
                         <a href="arkhon"
                             ><button
