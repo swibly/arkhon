@@ -10,14 +10,14 @@ export function toggle() {
 }
 
 export function convertLight() {
-    lightMode.update((e) => {
+    lightMode.update(() => {
         localStorage.setItem("theme", `${true}`)
         return true;
     });
 }
 
 export function convertDark() {
-    lightMode.update((e) => {
+    lightMode.update(() => {
         localStorage.setItem("theme", `${false}`)
         return false;
     });

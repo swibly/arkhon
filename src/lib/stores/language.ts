@@ -1,7 +1,17 @@
 import { writable, type Writable } from 'svelte/store';
 
-export const language: Writable<string> = writable("pt");
+let initialLanguage = 'pt';
 
-export function changeLanguage(value: string){
+if (typeof window !== 'undefined') {    
+    initialLanguage = localStorage.getItem('language') || 'pt';
+}
+
+export const language: Writable<string> = writable(initialLanguage);
+
+export function changeLanguage(value: string) {        
     language.set(value);
+    
+    if (typeof window !== 'undefined') {
+        localStorage.setItem("language", value);
+    }
 }
