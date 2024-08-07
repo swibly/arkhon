@@ -2,33 +2,55 @@
     import Icon from '@iconify/svelte';
     import { SwiblyClient } from 'swibly-sdk';
 
-    const client = new SwiblyClient( {key: "api-key-here"} );
+    const client = new SwiblyClient({ key: 'api-kere-here' });
 
-    if(await client.canConnect()){
-        console.log("True");
-    }else{
-        console.log("False");
+    if (await client.canConnect()) {
+        console.log('True');
+    } else {
+        console.log('False');
     }
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
-    
+
     let firstnameInput: HTMLInputElement;
     let lastnameInput: HTMLInputElement;
+    let usernameInput: HTMLInputElement;
     let emailInput: HTMLInputElement;
     let passwordInput: HTMLInputElement;
     let confirm_passInput: HTMLInputElement;
+    let errorInput: HTMLHeadingElement;
+    let tos = true;
 
-    function handleSubmit(e: Event){
+    async function handleSubmit(e: Event) {
         e.preventDefault();
 
         const firstname = firstnameInput.value;
         const lastname = lastnameInput.value;
         const email = emailInput.value;
+        const username = usernameInput.value;
         const password = passwordInput.value;
         const confirm_pass = confirm_passInput.value;
 
-        console.log(firstname);
+        if (password === confirm_pass) {
+            const register = await client.auth.register({
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                username: username,
+                password: password
+            });
+            if (register.error) {
+                const error = register.error;
+                if (typeof error === 'string') {
+                    errorInput.innerHTML = error as string;
+                } else {
+                    errorInput.innerHTML = Object.values(error)[0] as string;
+                }
+            }
+        } else {
+            errorInput.innerHTML = 'As senhas são diferentes';
+        }
     }
 </script>
 
@@ -68,11 +90,30 @@
             </label>
         </div>
 
+        <label class="input input-bordered flex items-center gap-2 my-8 bg-neutral flex">
+            <Icon icon="material-symbols:person" />
+            <input
+                type="text"
+                class="username w-full"
+                id="username"
+                bind:this={usernameInput}
+                name="username"
+                placeholder="Nome de usuário"
+            />
+        </label>
+
         <article class="divider before:bg-white after:bg-white" />
 
         <label class="input input-bordered flex items-center gap-2 my-8 bg-neutral">
             <Icon icon="ic:baseline-email" />
-            <input type="email" class="email w-full" id="email" bind:this={emailInput} name="email" placeholder="Email" />
+            <input
+                type="email"
+                class="email w-full"
+                id="email"
+                bind:this={emailInput}
+                name="email"
+                placeholder="Email"
+            />
         </label>
 
         <label class="input input-bordered flex items-center gap-2 mb-8 bg-neutral">
@@ -113,18 +154,21 @@
             </button>
         </label>
 
+        <h1
+            bind:this={errorInput}
+            class="text-center font-bold text-md sm:text-xl text-error pt-8"
+        />
+
         <label class="text-white flex mt-8 gap-2 align-items">
-            <input type="checkbox" checked class="checkbox bg-white" /> Concordo com os Termos de Uso
+            <input type="checkbox" checked class="checkbox bg-white" on:click={() => {tos = !tos}} /> Concordo
+            com os Termos de Uso
         </label>
 
-        <label class="text-white flex mt-4 gap-2 align-items">
-            <input type="checkbox" checked class="checkbox bg-white" /> Desejo receber notícias sobre
-            arquitetura em meu email
-        </label>
-
-        <button class="text-white mt-8 pb-4 mx-auto w-fit block">
-            <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
-        </button>
+        {#if tos === true}
+            <button class="text-white mt-8 pb-4 mx-auto w-fit block">
+                <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
+            </button>
+        {/if}
     </form>
 
     <h2 class="text-center text-white mb-4">
