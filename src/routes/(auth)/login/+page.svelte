@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import Icon from '@iconify/svelte';
-
+    
     let showPassword: boolean = false;
 </script>
 
@@ -17,10 +18,12 @@
 </h2>
 
 <section class="mx-12 mt-8">
-    <form>
+    <form method="POST" use:enhance={() => {
+        return ({ update }) => update({ reset: false }); 
+    }}>
         <label class="input input-bordered flex items-center gap-2 mt-4 mb-8 bg-neutral">
             <Icon icon="ic:baseline-email" />
-            <input type="email" class="w-full" id="email" name="email" placeholder="Email" />
+            <input type="text" class="w-full" id="login" name="login" placeholder="Email ou Nome de Usuário" />
         </label>
 
         <label class="input input-bordered flex items-center gap-2 mb-8 bg-neutral">

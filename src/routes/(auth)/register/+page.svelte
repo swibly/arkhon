@@ -1,57 +1,8 @@
 <script context="module" lang="ts">
     import Icon from '@iconify/svelte';
-    import { SwiblyClient } from 'swibly-sdk';
-
-    const client = new SwiblyClient({ key: 'api-kere-here' });
-
-    if (await client.canConnect()) {
-        console.log('True');
-    } else {
-        console.log('False');
-    }
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
-
-    let firstnameInput: HTMLInputElement;
-    let lastnameInput: HTMLInputElement;
-    let usernameInput: HTMLInputElement;
-    let emailInput: HTMLInputElement;
-    let passwordInput: HTMLInputElement;
-    let confirm_passInput: HTMLInputElement;
-    let errorInput: HTMLHeadingElement;
-    let tos = true;
-
-    async function handleSubmit(e: Event) {
-        e.preventDefault();
-
-        const firstname = firstnameInput.value;
-        const lastname = lastnameInput.value;
-        const email = emailInput.value;
-        const username = usernameInput.value;
-        const password = passwordInput.value;
-        const confirm_pass = confirm_passInput.value;
-
-        if (password === confirm_pass) {
-            const register = await client.auth.register({
-                firstname: firstname,
-                lastname: lastname,
-                email: email,
-                username: username,
-                password: password
-            });
-            if (register.error) {
-                const error = register.error;
-                if (typeof error === 'string') {
-                    errorInput.innerHTML = error as string;
-                } else {
-                    errorInput.innerHTML = Object.values(error)[0] as string;
-                }
-            }
-        } else {
-            errorInput.innerHTML = 'As senhas são diferentes';
-        }
-    }
 </script>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
@@ -63,15 +14,14 @@
 </h2>
 
 <section class="mx-12 mt-8">
-    <form on:submit={handleSubmit}>
+    <form method="POST">
         <div class="lg:flex justify-center gap-2">
             <label class="input input-bordered flex items-center gap-2 mb-4 lg:flex-1 bg-neutral">
                 <Icon icon="material-symbols:person" />
                 <input
                     type="text"
                     class="firstname w-full"
-                    id="firstname"
-                    bind:this={firstnameInput}
+                    id="firstname"                    
                     name="firstname"
                     placeholder="Nome"
                 />
@@ -82,8 +32,7 @@
                 <input
                     type="text"
                     class="lastname w-full"
-                    id="lastname"
-                    bind:this={lastnameInput}
+                    id="lastname"                    
                     name="lastname"
                     placeholder="Sobrenome"
                 />
@@ -95,8 +44,7 @@
             <input
                 type="text"
                 class="username w-full"
-                id="username"
-                bind:this={usernameInput}
+                id="username"                
                 name="username"
                 placeholder="Nome de usuário"
             />
@@ -109,8 +57,7 @@
             <input
                 type="email"
                 class="email w-full"
-                id="email"
-                bind:this={emailInput}
+                id="email"           
                 name="email"
                 placeholder="Email"
             />
@@ -122,7 +69,6 @@
                 type={showPassword ? 'text' : 'password'}
                 class="password w-full"
                 id="password"
-                bind:this={passwordInput}
                 name="password"
                 placeholder="Senha"
             />
@@ -141,7 +87,6 @@
                 type={showPasswordConfirm ? 'text' : 'password'}
                 class="confirm_pass w-full"
                 id="confirm_pass"
-                bind:this={confirm_passInput}
                 name="confirm_pass"
                 placeholder="Confirmar Senha"
             />
@@ -155,20 +100,17 @@
         </label>
 
         <h1
-            bind:this={errorInput}
             class="text-center font-bold text-md sm:text-xl text-error pt-8"
         />
 
         <label class="text-white flex mt-8 gap-2 align-items">
-            <input type="checkbox" checked class="checkbox bg-white" on:click={() => {tos = !tos}} /> Concordo
+            <input type="checkbox" checked class="checkbox bg-white"/> Concordo
             com os Termos de Uso
         </label>
 
-        {#if tos === true}
             <button class="text-white mt-8 pb-4 mx-auto w-fit block">
                 <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
             </button>
-        {/if}
     </form>
 
     <h2 class="text-center text-white mb-4">
