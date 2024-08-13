@@ -8,7 +8,7 @@ if (typeof window !== 'undefined') {
 
 export const notification: Writable<boolean> = writable(initialNotification === 'true' ? true : false);
 
-export function enable() {
+export function enableNotification() {
     notification.set(true);
 
     if (typeof window !== 'undefined') {        
@@ -16,7 +16,7 @@ export function enable() {
     }
 }
 
-export function disable() {
+export function disableNotification() {
     notification.set(false);
 
     if (typeof window !== 'undefined') {        

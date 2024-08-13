@@ -1,15 +1,15 @@
 <script lang="ts">
     import { lightMode, convertDark, convertLight } from '$lib/stores/theme';
     import { language, changeLanguage } from '$lib/stores/language';
-    import { notification, enable, disable } from '$lib/stores/notifications';
+    import { notification, enableNotification, disableNotification } from '$lib/stores/notifications';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen overflow-y-hidden">
+<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
     <header class="w-full h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
     </header>
-    <section class="w-full min-h-screen flex items-center flex-col pt-12">
+    <section class="w-full min-h-screen flex items-center flex-col pt-12 pb-4">
         <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary">Configurações Gerais</h1>
         <p class="text-lg md:text-2xl font-semibold pt-12">Preferências do Sistema</p>
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
@@ -46,10 +46,10 @@
             <p class="text-md md:text-xl font-bold">Permitir Notificações</p>
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected>{$notification ? 'Habilitado' : 'Desabilitado'}</option>
-                <option selected={$notification === true} on:click={enable}
+                <option selected={$notification === true} on:click={enableNotification}
                     >Habilitado</option
                 >
-                <option selected={$notification === false} on:click={disable}
+                <option selected={$notification === false} on:click={disableNotification}
                     >Desabilitado</option
                 >
             </select>

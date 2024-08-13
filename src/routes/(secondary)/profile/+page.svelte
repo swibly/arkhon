@@ -22,8 +22,8 @@
                 <a href="settings"><Icon icon="material-symbols:settings" font-size="40px" /></a>
             </div>
 
-            <section class="grid place-items-center">
-                <div class="icon">
+            <section class="flex flex-col justify-center items-center h-full">
+                <div class="icon -mt-28">
                     <Icon icon="healthicons:ui-user-profile" />
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-bold">Nome do Usuário</h1>
