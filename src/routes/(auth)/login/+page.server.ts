@@ -1,5 +1,5 @@
 import { client } from '$lib/server/swibly-api';
-import type { Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import type { LoginBody } from 'swibly-sdk';
 
 export const actions: Actions = {
@@ -23,6 +23,6 @@ export const actions: Actions = {
         }
 
         event.cookies.set('key', response.token!, {path: "/"} );
-        //throw redirect(302, '/home');
+        throw redirect(302, '/home');
     }
 };
