@@ -1,8 +1,18 @@
-<script context="module" lang="ts">
+<script lang="ts">
     import Icon from '@iconify/svelte';
+    import type { ActionData } from './$types';
+    import { enhance } from '$app/forms';
 
     let showPassword: boolean = false;
     let showPasswordConfirm: boolean = false;
+
+    export let form: ActionData;
+    let loading: boolean = false;
+    $: {
+        if (form?.error) loading = false;
+    }
+
+    $: error = form?.error;
 </script>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white m-12">
@@ -14,14 +24,21 @@
 </h2>
 
 <section class="mx-12 mt-8">
-    <form method="POST">
+    <form
+        method="POST"
+        use:enhance={() => {
+            loading = true;
+            error = undefined;
+            return ({ update }) => update({ reset: false });
+        }}
+    >
         <div class="lg:flex justify-center gap-2">
             <label class="input input-bordered flex items-center gap-2 mb-4 lg:flex-1 bg-neutral">
                 <Icon icon="material-symbols:person" />
                 <input
                     type="text"
                     class="firstname w-full"
-                    id="firstname"                    
+                    id="firstname"
                     name="firstname"
                     placeholder="Nome"
                 />
@@ -32,7 +49,7 @@
                 <input
                     type="text"
                     class="lastname w-full"
-                    id="lastname"                    
+                    id="lastname"
                     name="lastname"
                     placeholder="Sobrenome"
                 />
@@ -44,7 +61,7 @@
             <input
                 type="text"
                 class="username w-full"
-                id="username"                
+                id="username"
                 name="username"
                 placeholder="Nome de usuário"
             />
@@ -54,13 +71,7 @@
 
         <label class="input input-bordered flex items-center gap-2 my-8 bg-neutral">
             <Icon icon="ic:baseline-email" />
-            <input
-                type="email"
-                class="email w-full"
-                id="email"           
-                name="email"
-                placeholder="Email"
-            />
+            <input type="text" class="email w-full" id="email" name="email" placeholder="Email" />
         </label>
 
         <label class="input input-bordered flex items-center gap-2 mb-8 bg-neutral">
@@ -72,7 +83,7 @@
                 name="password"
                 placeholder="Senha"
             />
-            <button on:click={() => (showPassword = !showPassword)} class="ml-auto">
+            <button type="button" on:click={() => (showPassword = !showPassword)} class="ml-auto">
                 {#if showPassword}
                     <Icon icon="mdi:eye" />
                 {:else}
@@ -90,7 +101,11 @@
                 name="confirm_pass"
                 placeholder="Confirmar Senha"
             />
-            <button on:click={() => (showPasswordConfirm = !showPasswordConfirm)} class="ml-auto">
+            <button
+                type="button"
+                on:click={() => (showPasswordConfirm = !showPasswordConfirm)}
+                class="ml-auto"
+            >
                 {#if showPasswordConfirm}
                     <Icon icon="mdi:eye" />
                 {:else}
@@ -99,18 +114,25 @@
             </button>
         </label>
 
-        <h1
-            class="text-center font-bold text-md sm:text-xl text-error pt-8"
-        />
-
         <label class="text-white flex mt-8 gap-2 align-items">
-            <input type="checkbox" checked class="checkbox bg-white"/> Concordo
-            com os Termos de Uso
+            <input type="checkbox" checked class="checkbox bg-white" /> Concordo com os Termos de Uso
         </label>
 
+        {#if error}
+            <p class="text-error text-center pt-12 text-xl">
+                {typeof error === 'string' ? error : Object.values(error)[0]}
+            </p>
+        {/if}
+
+        {#if !loading}
             <button class="text-white mt-8 pb-4 mx-auto w-fit block">
                 <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
             </button>
+        {:else}
+            <div class="w-fit mx-auto">
+                <span class="loading loading-ring loading-lg" />
+            </div>
+        {/if}
     </form>
 
     <h2 class="text-center text-white mb-4">

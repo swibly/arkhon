@@ -1,17 +1,33 @@
-import { client } from "$lib/server/swibly-api";
-import { Actions, redirect } from '@sveltejs/kit';
+import { client } from '$lib/server/swibly-api';
+import { fail, redirect } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
-export const actions: Actions = { default: async function (event) {
-    const {firstname, lastname, username, email, password, confirm_pass} = Object.fromEntries(await event.request.formData()) as Record<string, string>;
-    if(password === confirm_pass){
-        const register = await client.auth.register( {firstname: firstname, lastname: lastname, username: username, email: email, password: password} );
-        if(register.error){
-            console.log(register.error);
-        }else{
-            // event.cookies.set('key', register.token!, {path: "/"} );       
-            throw redirect(302, '/home');
+export const actions: Actions = {
+    default: async function (event) {
+        const {
+            firstname,
+            lastname,
+            username,
+            email,
+            password,
+            confirm_pass,
+        } = Object.fromEntries(await event.request.formData()) as Record<string, string>;
+
+        // Check if passwords match
+        if (password !== confirm_pass) {
+            return fail(401, { error: 'Passwords do not match' });
         }
-    }else{
-        console.log("As senhas não são idênticas");
+
+        // Attempt to register the user
+        const response = await client.auth.register({ firstname, lastname, username, email, password });
+
+        const { error } = response;
+
+        if (error) {
+            return fail(401, { error }); // Return the error from the API
+        }
+
+        event.cookies.set('key', response.token!, { path: "/" });
+        throw redirect(302, '/home');
     }
-} };
+};

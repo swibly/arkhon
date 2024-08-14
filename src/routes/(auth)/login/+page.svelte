@@ -1,8 +1,17 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import Icon from '@iconify/svelte';
-    
+    import type { ActionData, PageServerData } from './$types';
+
     let showPassword: boolean = false;
+
+    export let form: ActionData;
+    let loading: boolean = false;
+    $: {
+        if (form?.error) loading = false;
+    }
+
+    $: error = form?.error;
 </script>
 
 <div class="flex justify-center m-12">
@@ -18,12 +27,23 @@
 </h2>
 
 <section class="mx-12 mt-8">
-    <form method="POST" use:enhance={() => {
-        return ({ update }) => update({ reset: false }); 
-    }}>
+    <form
+        method="POST"
+        use:enhance={() => {
+            loading = true;
+            error = undefined;                
+            return ({ update }) => update({ reset: false });
+        }}
+    >
         <label class="input input-bordered flex items-center gap-2 mt-4 mb-8 bg-neutral">
             <Icon icon="ic:baseline-email" />
-            <input type="text" class="w-full" id="login" name="login" placeholder="Email ou Nome de Usuário" />
+            <input
+                type="text"
+                class="w-full"
+                id="login"
+                name="login"
+                placeholder="Email ou Nome de Usuário"
+            />
         </label>
 
         <label class="input input-bordered flex items-center gap-2 mb-8 bg-neutral">
@@ -35,7 +55,7 @@
                 name="password"
                 placeholder="Senha"
             />
-            <button on:click={() => (showPassword = !showPassword)} class="ml-auto">
+            <button type="button" on:click={() => (showPassword = !showPassword)} class="ml-auto">
                 {#if showPassword}
                     <Icon icon="mdi:eye" />
                 {:else}
@@ -43,9 +63,22 @@
                 {/if}
             </button>
         </label>
-        <button class="text-white mt-8 pb-4 mx-auto w-fit block">
-            <a href="/home/"><Icon icon="emojione-monotone:right-arrow" font-size="60px" /></a>
-        </button>
+
+        {#if error}
+            <p class="text-error text-center pt-6 text-xl">
+                {typeof error === 'string' ? error : Object.values(error)[0]}
+            </p>
+        {/if}
+
+        {#if !loading}
+            <button class="text-white mt-8 pb-4 mx-auto w-fit block">
+                <Icon icon="emojione-monotone:right-arrow" font-size="60px" />
+            </button>
+        {:else}
+            <div class="w-fit mx-auto">
+                <span class="loading loading-ring loading-lg" />
+            </div>
+        {/if}
     </form>
 
     <p class="text-center text-white">
