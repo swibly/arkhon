@@ -5,7 +5,7 @@
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
-    <header class="w-full h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
+    <header class="w-full h-24 flex justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <label class="swap swap-rotate float-right pr-8">
             <input type="checkbox" class="theme-controller" on:click={toggle} />
@@ -14,19 +14,19 @@
         </label>
     </header>
     <main class="w-full min-h-screen flex items-center flex-col pt-12 pb-8">
-        <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary">
+        <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary px-12">
             Configurações do Usuário
         </h1>
         <p class="text-lg md:text-2xl font-semibold pt-12">Informações Gerais</p>
-        <section class="flex justify-around items-center w-full h-full pt-12 px-24">
-            <div class="w-1/2 h-full flex flex-col justify-center items-center icon -mt-24">
+        <section class="xl:flex justify-around items-center w-full h-full pt-32 xl:pt-12 md:px-24">
+            <div class="w-full xl:w-1/2 h-full flex flex-col justify-center items-center icon -mt-24 px-12">
                 <Icon icon="healthicons:ui-user-profile" />
                 <input
                     type="file"
-                    class="file-input file-input-bordered file-input-secondary w-full max-w-xs"
+                    class="file-input file-input-bordered file-input-secondary w-full max-w-xs mt-4 sm:mt-0 h-8 sm:h-12"
                 />
             </div>
-            <div class="w-1/2 flex flex-col justify-center items-center">
+            <div class="w-full xl:w-1/2 flex flex-col justify-center items-center pt-12 xl:pt-0">
                 <form method="POST" class="w-full grid place-items-center">
                     <label class="form-control w-full grid place-items-center">
                         <div class="label w-4/5">
