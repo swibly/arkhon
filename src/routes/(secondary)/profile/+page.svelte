@@ -222,7 +222,7 @@
                                 libero, explicabo fugiat corporis quasi nihil quam consequatur
                                 voluptatum sequi asperiores, itaque id, animi incidunt quae ratione
                                 aperiam mollitia reiciendis amet!</Community
-                            >
+                        >
                         {/each}
                     </div>
                 {:else if option === 'components'}

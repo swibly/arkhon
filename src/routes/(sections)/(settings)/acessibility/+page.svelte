@@ -7,7 +7,7 @@
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
-    <header class="w-full h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
+    <header class="w-full h-24 flex justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <label class="swap swap-rotate float-right pr-8">
             <input type="checkbox" class="theme-controller" on:click={toggle} />
@@ -55,7 +55,7 @@
 
         <p class="text-lg md:text-2xl font-semibold pt-4">Atalhos do Teclado</p>
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
-            <p class="text-md md:text-xl font-bold">Ativar atalhos de teclado</p>
+            <p class="text-md md:text-xl font-bold text-center">Ativar atalhos de teclado</p>
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected>{$contrast ? 'Habilitado' : 'Desabilitado'}</option>
                 <option selected={$contrast === true} on:click={enableShortcut}>Habilitado</option>
@@ -66,7 +66,7 @@
         <div class="divider divider-neutral w-3/4 mx-auto" />
 
         <p class="text-lg md:text-2xl font-semibold pt-4">Texto</p>
-        <div class="grid grid-cols-2 place-items-center w-full pt-12">
+        <div class="grid grid-cols-2 place-items-center w-full pt-12 pb-12">
             <p class="text-md md:text-xl font-bold">Redimensionar Texto</p>
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected
