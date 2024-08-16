@@ -43,7 +43,7 @@
         </section>
 
         <section>
-            <h1 class="text-2xl sm:text-4xl text-secondary text-center font-bold mt-12">
+            <h1 class="text-2xl sm:text-4xl text-primary text-center font-bold mt-12">
                 Homepage
             </h1>
             <h2 class="text-lg sm:text-2xl text-secondary text-center font-bold mb-6">

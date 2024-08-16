@@ -21,26 +21,26 @@
         <section class="flex justify-center gap-4 h-16">
             <a
                 href="/home/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-primary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-secondary mt-8"
             >
                 Projeto
             </a>
             <a
                 href="/community/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-primary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 hover:border-b-4 border-secondary mt-8"
             >
                 Comunidade
             </a>
             <a
                 href="/store/"
-                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 border-b-4 border-secondary mt-8"
+                class="text-sm sm:text-base transition duration-150 ease-in-out hover:text-base sm:hover:text-lg hover:scale-110 border-b-4 border-primary mt-8"
             >
                 Loja
             </a>
         </section>
 
         <section>
-            <h1 class="text-2xl sm:text-4xl text-secondary text-center font-bold mt-12">
+            <h1 class="text-2xl sm:text-4xl text-primary text-center font-bold mt-12">
                 Loja
             </h1>
             <h2 class="text-lg sm:text-2xl text-secondary text-center font-bold mb-6">
