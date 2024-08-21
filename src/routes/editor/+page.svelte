@@ -57,7 +57,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-4rem)]">
-        <aside class="w-1/5 bg-base-200 overflow-y-hidden scrollbar-thin">
+        <aside class="w-1/5 h-screen bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${

@@ -60,7 +60,7 @@
         <p class="text-lg md:text-2xl font-semibold pt-4">Mais configurações</p>
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Termos de Serviço</p>
-            <button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button>
+            <a href="tos" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a>
         </div>
         <div class="grid grid-cols-2 place-items-center w-full pt-12 pb-12">
             <p class="text-md md:text-xl font-bold">Obter Ajuda</p>

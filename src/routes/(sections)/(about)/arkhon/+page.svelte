@@ -4,45 +4,43 @@
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
-    <main class="w-full min-h-screen flex justify-end">
-        <aside class="w-1/3 h-screen bg-base-300 fixed top-0 left-0 grid place-items-center">
-            <img
-                src="/gallery/bg-placeholder2.jpg"
-                alt="bg-image"
-                class="w-full h-screen object-cover"
-            />
-        </aside>
-        <section class="w-2/3 min-h-screen px-12">
-            <div class="flex justify-between items-center w-full px-12 pt-8">
-                <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
-                <label class="swap swap-rotate">
-                    <input type="checkbox" class="theme-controller" on:click={toggle} />
+    <section class="w-full min-h-screen px-12">
+        <div class="flex justify-between items-center w-full px-12 pt-8">
+            <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
+            <label class="swap swap-rotate">
+                <input type="checkbox" class="theme-controller" on:click={toggle} />
 
-                    <Icon icon="ph:moon" class="swap-on size-8" />
-                    <Icon icon="ph:sun" class="swap-off size-8" />
-                </label>
-            </div>
-            <div class="w-full h-screen pt-16">
+                <Icon icon="ph:moon" class="swap-on size-8" />
+                <Icon icon="ph:sun" class="swap-off size-8" />
+            </label>
+        </div>
+        <main class="max-w-7xl mx-auto">
+            <div class="w-full h-screen pt-16 flex flex-col items-center">
                 <h1 class="text-7xl text-secondary font-bold pl-8">Sobre nós</h1>
                 <p class="text-4xl font-semibold pl-8">Muito mais do que uma simples plataforma</p>
-                <div class="grid grid-cols-2 gap-8 pt-12">
-                    <p class="text-xl font-medium pl-8">
-                        Bem-vindo ao Arkhon, sua plataforma digital dedicada à criação de plantas de
-                        arquitetura com precisão e facilidade. Aqui, cada projeto ganha vida através
-                        de ferramentas intuitivas e recursos avançados, permitindo que arquitetos e
-                        designers transformem suas ideias em realidade digital.
-                    </p>
-                    <div class="pr-8">
+                <div class="grid grid-cols-2 gap-8 pt-12 mx-12">
+                    <div>
                         <h1 class="text-xl font-bold">Nosso propósito</h1>
-                        <p class="pt-4">
+                        <p class="text-xl font-medium pt-4 text-justify">
+                            Bem-vindo ao Arkhon, sua plataforma digital dedicada à criação de
+                            plantas de arquitetura com precisão e facilidade. Aqui, cada projeto
+                            ganha vida através de ferramentas intuitivas e recursos avançados,
+                            permitindo que arquitetos e designers transformem suas ideias em
+                            realidade digital.
+                        </p>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Nosso propósito</h1>
+                        <p class="text-xl pt-4 text-justify">
                             No Arkhon, acreditamos na democratização do design arquitetônico. Nossa
                             missão é fornecer uma plataforma acessível e poderosa que capacite
                             profissionais e entusiastas a visualizar e desenvolver projetos
                             arquitetônicos com eficiência e criatividade.
                         </p>
-
+                    </div>
+                    <div class="col-span-2">
                         <h1 class="text-xl font-bold pt-8">O que oferecemos?</h1>
-                        <p class="pt-4">
+                        <p class="text-xl pt-4 text-justify">
                             Com o Arkhon, você pode explorar uma vasta gama de funcionalidades
                             projetadas para simplificar o processo de criação de plantas
                             arquitetônicas. Desde a concepção inicial até a apresentação final,
@@ -52,10 +50,10 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-4xl text-secondary font-semibold pl-8 pt-8">
+                    <h1 class="text-4xl text-secondary font-semibold pt-12 text-center">
                         Por que escolher a Arkhon?
                     </h1>
-                    <div class="grid grid-cols-3 place-items-center pt-12">
+                    <div class="w-full grid grid-cols-3 place-items-center pt-12 space-x-12">
                         <div
                             class="w-80 h-80 bg-base-300 border-2 border-secondary rounded-2xl flex flex-col justify-center items-center px-6"
                         >
@@ -94,63 +92,55 @@
                 </div>
             </div>
             <div
-                class="w-11/12 h-40 mx-auto mt-24 bg-center bg-cover"
+                class="w-11/12 h-40 mx-auto mt-40 bg-center bg-cover"
                 style="background-image: url(/gallery/bg-placeholder.jpg);"
-            />            
+            />
             <div class="py-8">
-                <h1 class="text-4xl text-secondary font-bold text-center">Quem somos?</h1>
-                <div class="grid grid-cols-3 place-items-center pt-4 mx-40">
+                <h1 class="text-4xl text-secondary font-semibold text-center">Quem somos?</h1>
+                <div class="grid grid-cols-3 place-items-center pt-4">
                     <div class="grid place-items-center pt-8">
                         <img
                             src="/gallery/ana.jpg"
                             alt="
                             ana"
-                            class="w-40 h-40 object-cover rounded-xl"
+                            class="w-64 h-64 object-cover rounded-xl"
                         />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>na <span class="text-secondary">B</span>uzana</p>
+                        <p class="text-lg text-center pt-4">Ana Buzana</p>
                     </div>
                     <div class="grid place-items-center pt-8">
-                        <img
-                            src="/gallery/luis.jpg"
-                            alt="photo"
-                            class="w-40 h-40 rounded-xl"
-                        />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>ndré <span class="text-secondary">A</span>lbanese</p>
+                        <img src="/gallery/luis.jpg" alt="photo" class="w-64 h-64 rounded-xl" />
+                        <p class="text-lg text-center pt-4">André Albanese</p>
                     </div>
                     <div class="grid place-items-center pt-8">
                         <img
                             src="/gallery/victor.png"
                             alt="photo"
-                            class="w-40 h-40 object-cover rounded-xl"
+                            class="w-64 h-64 object-cover rounded-xl"
                         />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">A</span>ndré <span class="text-secondary">V</span>ictor</p>
+                        <p class="text-lg text-center pt-4">André Victor</p>
                     </div>
                     <div class="grid place-items-center pt-8">
-                        <img
-                            src="/gallery/carlos.png"
-                            alt="photo"
-                            class="w-40 h-40 rounded-xl"
-                        />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">C</span>arlos <span class="text-secondary">D</span>aniel</p>
+                        <img src="/gallery/carlos.png" alt="photo" class="w-64 h-64 rounded-xl" />
+                        <p class="text-lg text-center pt-4">Carlos Daniel</p>
                     </div>
                     <div class="grid place-items-center pt-8">
                         <img
                             src="/gallery/dudu.jpg"
                             alt="photo"
-                            class="w-40 h-40 object-cover rounded-xl"
+                            class="w-64 h-64 object-cover rounded-xl"
                         />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">E</span>duardo <span class="text-secondary">L</span>ima</p>
+                        <p class="text-lg text-center pt-4">Eduardo Lima</p>
                     </div>
                     <div class="grid place-items-center pt-8">
                         <img
                             src="/gallery/gustavo.jpg"
                             alt="photo"
-                            class="w-40 h-40 object-cover rounded-xl"
+                            class="w-64 h-64 object-cover rounded-xl"
                         />
-                        <p class="text-lg text-center font-bold pt-4"><span class="text-secondary">G</span>ustavo <span class="text-secondary">M</span>arques</p>
+                        <p class="text-lg text-center pt-4">Gustavo Marques</p>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </main>
+    </section>
 </body>
