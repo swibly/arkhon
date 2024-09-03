@@ -1,9 +1,11 @@
-<script lang="ts">
+<script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { lightMode, toggle } from '$lib/stores/theme';    
+    import { lightMode, toggle } from '$lib/stores/theme';
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
+    import InfiniteCanvas from 'ef-infinite-canvas';
+    import { onMount } from 'svelte';
 
     let activeButton: String = 'project';
 
@@ -28,6 +30,27 @@
     function end(currentPage: number): number {
         return start(currentPage) + 8;
     }
+
+    onMount(() => {
+        // assuming there is a <canvas> element that has id 'canvas'
+        const infCanvas = new InfiniteCanvas(document.getElementById('canvas'));
+
+        if (!infCanvas) {
+            throw new Error('Elemento não encontrado');
+        }
+
+        // get the CanvasRenderingContext2D
+        const ctx = infCanvas.getContext('2d');
+
+
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, 50, 50);
+        ctx.fill();
+
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(100, 100, 100, 100);
+        ctx.fill();
+    });
 </script>
 
 <body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
@@ -57,7 +80,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-4rem)]">
-        <aside class="w-1/5 h-screen bg-base-200 overflow-y-hidden scrollbar-thin">
+        <aside class="w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -125,18 +148,22 @@
                                 <Component name={i.Name} editor />
                             {/each}
                         </div></Pagination
-                    >                    
+                    >
                 {/if}
             </main>
         </aside>
 
         <div class="w-5/6">
-            <label class="swap swap-rotate float-right pr-4 pt-4">
+            <label class="swap swap-rotate pl-4 pt-4 absolute">
                 <input type="checkbox" class="theme-controller" on:click={toggle} />
 
                 <Icon icon="ph:moon" class="swap-on size-8" />
                 <Icon icon="ph:sun" class="swap-off size-8" />
             </label>
+            <canvas class="w-full h-full" id="canvas">
+                <div class="cell" data-cell-id="cell1">Celula 1</div>
+                <div class="cell" data-cell-id="cell2">Celula 2</div>
+            </canvas>
         </div>
     </main>
 </body>
