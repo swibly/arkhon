@@ -32,24 +32,20 @@
     }
 
     onMount(() => {
-        // assuming there is a <canvas> element that has id 'canvas'
+        var img = new Image();
+        img.src = '/gallery/chair.png';
+
         const infCanvas = new InfiniteCanvas(document.getElementById('canvas'));
 
         if (!infCanvas) {
             throw new Error('Elemento não encontrado');
         }
 
-        // get the CanvasRenderingContext2D
         const ctx = infCanvas.getContext('2d');
 
-
-        ctx.fillStyle = 'red';
-        ctx.fillRect(0, 0, 50, 50);
-        ctx.fill();
-
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(100, 100, 100, 100);
-        ctx.fill();
+        img.onload = function () {
+            ctx.drawImage(img, 120, 50, 50, 50);
+        };
     });
 </script>
 
