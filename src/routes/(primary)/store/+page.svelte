@@ -1,10 +1,14 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Component from '$lib/components/Component.svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body
+    data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}
+    class="w-full min-h-screen"
+>
     <main>
         <header class="w-screen bg-base-300 shadow-lg">
             <div class="flex justify-between align-items py-2">
@@ -15,7 +19,7 @@
 
                     <Icon icon="ph:moon" class="swap-on size-8" />
                     <Icon icon="ph:sun" class="swap-off size-8" />
-                </label>                
+                </label>
             </div>
         </header>
         <section class="flex justify-center gap-4 h-16">
@@ -40,9 +44,7 @@
         </section>
 
         <section>
-            <h1 class="text-2xl sm:text-4xl text-primary text-center font-bold mt-12">
-                Loja
-            </h1>
+            <h1 class="text-2xl sm:text-4xl text-primary text-center font-bold mt-12">Loja</h1>
             <h2 class="text-lg sm:text-2xl text-secondary text-center font-bold mb-6">
                 Adquira componentes personalizados através de Arkhoins
             </h2>
@@ -50,7 +52,11 @@
                 <label
                     class="input input-bordered max-sm:input-sm bg-neutral flex items-center mx-auto max-w-[800px]"
                 >
-                    <input type="text" class="grow text-center" placeholder="Ex: Cadeira" />
+                    <input
+                        type="text"
+                        class={`grow text-center ${$contrast ? 'text-black' : 'text-white'}`}
+                        placeholder="Pesquisar Componentes"
+                    />
                     <Icon icon="material-symbols:search" />
                 </label>
             </div>
@@ -60,7 +66,7 @@
                     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 place-items-center gap-4"
                 >
                     {#each Array(9) as i}
-                        <Component name="Nome do Usuário" store></Component>                        
+                        <Component name="Nome do Usuário" store />
                     {/each}
                 </div>
             </div>

@@ -1,6 +1,7 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
@@ -49,7 +50,7 @@
     });
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
         <div class="flex ml-4">
             <div class="dropdown">

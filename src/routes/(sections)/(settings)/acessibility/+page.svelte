@@ -6,7 +6,7 @@
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <header class="w-full h-24 flex justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <label class="swap swap-rotate float-right pr-8">
@@ -36,10 +36,10 @@
                 <p class="text-md md:text-xl font-bold">Tipo de Contraste</p>
                 <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                     <option disabled selected
-                        >{#if $contrastType === 'Tipo 1'}Tipo 1{:else if $contrastType === 'Tipo 2'}Tipo 2{:else}Tipo 3{/if}</option
+                        >{#if $contrastType === 'night'}Night{:else if $contrastType === 'Tipo 2'}Tipo 2{:else}Tipo 3{/if}</option
                     >
-                    <option selected={$contrastType === 'Tipo 1'} on:click={() => changeContrast('Tipo 1')}
-                        >Tipo 1</option
+                    <option selected={$contrastType === 'Tipo 1'} on:click={() => changeContrast('night')}
+                        >Night</option
                     >
                     <option selected={$contrastType === 'Tipo 2'} on:click={() => changeContrast('Tipo 2')}
                         >Tipo 2</option

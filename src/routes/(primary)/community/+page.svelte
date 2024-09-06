@@ -1,10 +1,14 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Community from '$lib/components/Community.svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body
+    data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}
+    class="w-full min-h-screen"
+>
     <main>
         <header class="w-screen bg-base-300 shadow-lg">
             <div class="flex justify-between align-items py-2">
@@ -15,7 +19,7 @@
 
                     <Icon icon="ph:moon" class="swap-on size-8" />
                     <Icon icon="ph:sun" class="swap-off size-8" />
-                </label>                
+                </label>
             </div>
         </header>
         <section class="flex justify-center gap-4 h-16">
@@ -50,7 +54,11 @@
                 <label
                     class="input input-bordered max-sm:input-sm bg-neutral flex items-center mx-auto max-w-[800px]"
                 >
-                    <input type="text" class="grow text-center" placeholder="Ex: Casa na árvore" />
+                    <input
+                        type="text"
+                        class={`grow text-center ${$contrast ? 'text-black' : 'text-white'}`}
+                        placeholder="Ex: Casa na árvore"
+                    />
                     <Icon icon="material-symbols:search" />
                 </label>
             </div>

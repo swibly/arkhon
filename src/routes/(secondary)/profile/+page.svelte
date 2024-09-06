@@ -1,5 +1,6 @@
 <script lang="ts">
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Icon from '@iconify/svelte';
     import Project from '$lib/components/Project.svelte';
     import Component from '$lib/components/Component.svelte';
@@ -12,7 +13,7 @@
     }
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen overflow-x-hidden">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen overflow-x-hidden">
     <main class="xl:flex w-screen min-h-screen justify-end">
         <aside
             class="w-full xl:w-2/6 h-[40rem] sm:h-[50rem] md:h-[46rem] xl:min-h-screen bg-base-300 xl:fixed top-0 left-0"

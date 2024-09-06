@@ -1,11 +1,12 @@
 <script lang="ts">
     import { lightMode, convertDark, convertLight } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import { language, changeLanguage } from '$lib/stores/language';
     import { notification, enableNotification, disableNotification } from '$lib/stores/notifications';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <header class="w-full h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
     </header>

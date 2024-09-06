@@ -1,9 +1,10 @@
 <script lang="ts">
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <section class="w-full min-h-screen px-12">
         <div class="flex justify-between items-center w-full px-12 pt-8">
             <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>

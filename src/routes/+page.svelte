@@ -1,5 +1,7 @@
 <script lang="ts">
     import Card from '$lib/components/Card.svelte';
+    import { lightMode } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
 
     let modalRef: any;
 
@@ -10,7 +12,7 @@
     }
 </script>
 
-<body data-theme="mytheme">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")}>
     <div class="pt-12 mb-12">
         <div class="flex justify-center">
             <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />

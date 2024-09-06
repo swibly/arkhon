@@ -38,16 +38,18 @@ export default {
                     warning: '#ead45f',
                     error: '#da3030',                    
                 },
-                mytheme: {
-                    "primary": "#000000",      // Preto para contraste máximo com o fundo
-                    "secondary": "#ffffff",    // Branco para contraste com o primário
-                    "accent": "#00ffff",       // Mantém o ciano para destaque
-                    "neutral": "#ffffff",      // Branco para garantir legibilidade
-                    "base-100": "#000000",     // Preto como cor base para fundo
-                    "info": "#00ffff",         // Ciano, para manter consistência com o tema
-                    "success": "#00ff00",      // Verde, já que é uma cor padrão de sucesso
-                    "warning": "#ffff00",      // Amarelo, para maior distinção do sucesso
-                    "error": "#ff0000",        // Vermelho permanece o mesmo para indicar erro
+                night: {
+                    "primary": "#FAE931",   
+                    "secondary": "#5C5CB8",    
+                    "accent": "#FDFEFF",       
+                    "neutral": "#FAE931",      
+                    "base-100": "#000000",     
+                    "base-200": "#070707",
+                    "base-300": "#0E0E0E",
+                    "info": "#00ffff",         
+                    "success": "#00ff00",      
+                    "warning": "#ffff00",      
+                    "error": "#ff0000",
                   },
                   
             }

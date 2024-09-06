@@ -1,5 +1,6 @@
 <script lang="ts">
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Icon from '@iconify/svelte';
 
     let activeButton: string = 'settings';
@@ -9,7 +10,7 @@
     }
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen flex flex-col">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen flex flex-col">
     <header class="flex w-full h-12 bg-base-300 justify-between items-center">
         <a href="profile" class="pl-4"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <h1 class="text-xl font-bold">Configurações</h1>

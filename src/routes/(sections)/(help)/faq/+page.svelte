@@ -1,9 +1,10 @@
 <script lang="ts">
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <main class="w-full min-h-screen py-12">
         <div class="flex justify-between items-center w-full px-12">
             <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
@@ -23,7 +24,7 @@
             <label
                 class="input input-bordered flex items-center gap-2 bg-neutral w-3/4 lg:w-1/2 text-base mt-12 icon"
             >
-                <input type="text" class="grow text-center sm:text-left" placeholder="Pesquisar dúvida"/>
+                <input type="text" class={`grow text-center ${$contrast ? 'text-black' : 'text-white'}`} placeholder="Pesquisar dúvida"/>
                 <Icon icon="material-symbols:search" class="hidden sm:block"/>
             </label>
         </header>

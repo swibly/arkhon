@@ -1,9 +1,10 @@
 <script lang="ts">
     import { lightMode, toggle } from '$lib/stores/theme';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
     <main class="w-full min-h-screen flex justify-end pb-12">
         <aside class="bg-base-300 w-5/12 xl:w-1/2 h-screen hidden md:flex md:fixed top-0 left-0">
             <div
@@ -38,10 +39,10 @@
                     <label
                         class="input input-bordered flex items-center gap-2 bg-neutral w-full text-base"
                     >
-                        <input type="text" class="grow" placeholder="Email *" />
+                        <input type="text" class={`grow ${$contrast ? 'text-black' : 'text-white'}`} placeholder="Email *" />
                     </label>
                     <textarea
-                        class="textarea textarea-bordered bg-neutral w-full text-base mt-4 h-40"
+                        class="textarea textarea-bordered bg-neutral w-full text-base mt-4 h-40 {`${$contrast ? 'text-black' : 'text-white'}`}"
                         placeholder="Com o que podemos ajudar ?"
                     />
                     <btn class="btn btn-secondary w-full mt-4">Enviar</btn>
