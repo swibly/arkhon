@@ -16,10 +16,10 @@ export const handle: Handle = async function ({ event, resolve }) {
         if (token && (await client.auth.isValid(token))) {
             throw redirect(302, '/home');
         }
-    }
-    
-    if (!token || (token && !(await client.auth.isValid(token)))) {
-        throw redirect(302, '/');
+    } else {
+        if (!token || (token && !(await client.auth.isValid(token)))) {
+            throw redirect(302, '/');
+        }
     }
 
     return await resolve(event);

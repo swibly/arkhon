@@ -154,7 +154,7 @@
         </form>
 
         <h2 class="text-center text-white mb-4">
-            Já possui uma conta? <a href="/login/" class="text-secondary">Clique aqui!</a>
+            Já possui uma conta? <a href="/login" class="text-secondary">Clique aqui!</a>
         </h2>
     </section>
 </body>

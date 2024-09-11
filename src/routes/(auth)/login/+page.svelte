@@ -86,6 +86,6 @@
     </p>
 
     <p class="text-center text-white">
-        Não possui uma conta? <a href="/register/" class="text-secondary">Clique aqui!</a>
+        Não possui uma conta? <a href="/register" class="text-secondary">Clique aqui!</a>
     </p>
 </section>
