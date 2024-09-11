@@ -7,7 +7,7 @@ export const actions: Actions = {
     default: async function (event) {
         const { login, password } = Object.fromEntries(await event.request.formData()) as Record<
             string,
-            string
+            string  
         >;
         const loginObject: LoginBody = { password };
 

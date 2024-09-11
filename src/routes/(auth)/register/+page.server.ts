@@ -26,8 +26,7 @@ export const actions: Actions = {
         if (error) {
             return fail(401, { error }); // Return the error from the API
         }
-
-        event.cookies.set('key', response.token!, { path: "/" });
-        throw redirect(302, '/home');
+                
+        throw redirect(302, '/login');
     }
 };
