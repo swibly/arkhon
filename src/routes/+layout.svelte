@@ -1,14 +1,15 @@
 <script lang="ts">
     import '../app.css';
-    import { lightMode, toggle } from '$lib/stores/theme';
+    import { lightMode } from '$lib/stores/theme';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { contrastType, contrast } from '$lib/stores/contrast';
 
     onMount(() => ($lightMode = localStorage.getItem("theme") === "true"));
 </script>
 
 {#if $page.url.pathname !== '/'}
-    <div data-theme={$lightMode ? 'light' : 'dark'}>
+    <div data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}>
         <slot />
     </div>
 {:else}

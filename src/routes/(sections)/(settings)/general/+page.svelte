@@ -1,13 +1,12 @@
 <script lang="ts">
     import { lightMode, convertDark, convertLight } from '$lib/stores/theme';
-    import { contrastType, contrast } from '$lib/stores/contrast';
     import { language, changeLanguage } from '$lib/stores/language';
     import { notification, enableNotification, disableNotification } from '$lib/stores/notifications';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
-    <header class="w-full h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
+<main class="w-full min-h-screen">
+    <header class="w-fu ll h-24 flex justify-start sm:justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
     </header>
     <section class="w-full min-h-screen flex items-center flex-col pt-12 pb-4">
@@ -68,4 +67,4 @@
             <a href="faq" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a>
         </div>
     </section>
-</body>
+</main>

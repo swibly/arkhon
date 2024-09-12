@@ -31,26 +31,9 @@
     function end(currentPage: number): number {
         return start(currentPage) + 8;
     }
-
-    onMount(() => {
-        var img = new Image();
-        img.src = '/gallery/chair.png';
-
-        const infCanvas = new InfiniteCanvas(document.getElementById('canvas'));
-
-        if (!infCanvas) {
-            throw new Error('Elemento não encontrado');
-        }
-
-        const ctx = infCanvas.getContext('2d');
-
-        img.onload = function () {
-            ctx.drawImage(img, 120, 50, 50, 50);
-        };
-    });
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
+<main class="w-full min-h-screen">
     <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
         <div class="flex ml-4">
             <div class="dropdown">
@@ -150,17 +133,13 @@
             </main>
         </aside>
 
-        <div class="w-5/6">
+        <main class="w-5/6">
             <label class="swap swap-rotate pl-4 pt-4 absolute">
                 <input type="checkbox" class="theme-controller" on:click={toggle} />
 
                 <Icon icon="ph:moon" class="swap-on size-8" />
                 <Icon icon="ph:sun" class="swap-off size-8" />
             </label>
-            <canvas class="w-full h-full" id="canvas">
-                <div class="cell" data-cell-id="cell1">Celula 1</div>
-                <div class="cell" data-cell-id="cell2">Celula 2</div>
-            </canvas>
-        </div>
+        </main>
     </main>
-</body>
+</main>

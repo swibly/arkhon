@@ -4,7 +4,7 @@
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
+<main class="w-full min-h-screen">
     <header class="w-full h-24 flex justify-between items-center pl-8 sm:px-20">
         <a href="general"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <label class="swap swap-rotate float-right pr-8">
@@ -171,4 +171,4 @@
                 THE SOFTWARE IS PROVIDED “AS IS” AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         </p>
     </main>
-</body>
+</main>

@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { lightMode, toggle } from '$lib/stores/theme';
-    import { contrastType, contrast } from '$lib/stores/contrast';
+    import { toggle } from '$lib/stores/theme';    
     import { privacy, enablePrivacy, disablePrivacy } from '$lib/stores/privacy';
     import Icon from '@iconify/svelte';
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")} class="w-full min-h-screen">
+<main class="w-full min-h-screen">
     <header class="w-full h-24 flex justify-between items-center pl-8 sm:px-20">
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
         <label class="swap swap-rotate float-right pr-8">
@@ -113,7 +112,7 @@
             <a href="" class="w-full flex justify-center"><button class="btn btn-error w-1/2 lg:w-1/6 text-white">Deletar</button></a>
         </div>
     </main>
-</body>
+</main>
 
 <style>
     @media (max-width: 1280px) {

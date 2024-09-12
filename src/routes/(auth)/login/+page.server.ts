@@ -25,7 +25,7 @@ export const actions: Actions = {
             return fail(401, { error });
         }        
 
-        event.cookies.set('key', response.token!, {path: "/"} );
+        event.cookies.set('key', response.token!, {path: "/", maxAge: 60 * 60 * 24 * 7});
         throw redirect(302, '/home');
     }
 };
