@@ -1,7 +1,5 @@
 <script lang="ts">
     import Card from '$lib/components/Card.svelte';
-    import { lightMode } from '$lib/stores/theme';
-    import { contrastType, contrast } from '$lib/stores/contrast';
 
     let modalRef: any;
 
@@ -12,142 +10,128 @@
     }
 </script>
 
-<body data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}>
-    <div class="pt-12 mb-12">
-        <div class="flex justify-center">
-            <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />
-        </div>
-        <p class="flex justify-center text-3xl font-semibold">Sua plataforma de arquitetura</p>
-    </div>
-    <div class="flex justify-center gap-4">
+<section class="flex flex-col items-center p-8">
+    <img src="/gallery/logo.png" class="size-48" alt="Logo" />
+    <p class="text-3xl font-semibold">Sua plataforma de arquitetura</p>
+
+    <div class="mt-8">
         <a href="/login" class="btn btn-primary w-36">Iniciar Sessão</a>
         <a href="/register" class="btn btn-secondary w-36">Criar Conta</a>
     </div>
-    <div class="flex justify-center">
-        <img src="/gallery/plano.png" alt="Planta" />
-    </div>
-    <div
-        class="relative w-full overflow-hidden flex justify-center flex-col items-center py-20"
-        style="background-image: url(/gallery/background01.png); background-position: center; background-size: cover;"
+
+    <img src="/gallery/plano.png" alt="Planta" />
+</section>
+
+<section
+    class="relative flex flex-col items-center justify-center w-full py-20"
+    style="background-image: url(/gallery/background01.png); background-position: center; background-size: cover;"
+>
+    <h2 class="pt-12 text-3xl text-white max-md:text-xl">
+        Papel e caneta tornaram-se obsoletos na prototipação
+    </h2>
+
+    <button class="m-4 btn btn-neutral w-36 text-black-500 max-sm:btn-sm" on:click={showModal}>
+        Saiba mais
+    </button>
+
+    <dialog id="my_modal_1" bind:this={modalRef} class="modal">
+        <div class="w-11/12 max-w-5xl p-12 modal-box">
+            <article class="space-y-8">
+                <h1 class="text-3xl text-center sm:text-4xl">Um pouco da Arkhon</h1>
+
+                <p>
+                    A Arkhon é uma plataforma online inovadora para criação de plantas
+                    arquitetônicas, acessível tanto a profissionais quanto a iniciantes. Oferece
+                    ferramentas intuitivas para o desenvolvimento de layouts precisos, além de uma
+                    rica biblioteca de modelos e projetos compartilhados por outros usuários.
+                </p>
+
+                <p>
+                    A plataforma promove a colaboração entre os usuários, que podem compartilhar
+                    suas criações, receber feedback e trabalhar juntos. Com isso, a Arkhon facilita
+                    o design arquitetônico, seja para otimizar o fluxo de trabalho de arquitetos ou
+                    para permitir que entusiastas concretizem suas ideias.
+                </p>
+            </article>
+
+            <form method="dialog">
+                <button class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2">✕</button>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+</section>
+
+<h1 class="mt-10 text-2xl font-bold text-center text-secondary">Descubra novos horizontes</h1>
+<div class="flex flex-wrap justify-center mt-10">
+    <Card
+        hidden
+        data={Date.now()}
+        likes={1209}
+        banner="/gallery/placeholder01.png"
+        alt="Placeholder"
+        author="Gustavinxx7Ousadozz"
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
-        <h1 class="pt-12 text-white text-3xl max-md:text-xl text-center">
-            Papel e caneta tornaram-se obsoletos na prototipação
-        </h1>
-        <div class="flex justify-center align-items">
-            <button
-                class="btn btn-neutral w-36 text-black-500 m-4 max-sm:btn-sm"
-                on:click={showModal}>Saiba mais</button
-            >
-        </div>
-        <dialog id="my_modal_1" bind:this={modalRef} class="modal">
-            <div class="modal-box max-w-full">
-                <form method="dialog">
-                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button
-                    >
-                </form>
-                <h1 class="text-4xl sm:text-5xl font-bold text-center mt-8">Um pouco da Arkhon</h1>
-                <p class="text-xs sm:text-lg text-justify mt-4 sm:mt-12 py-2 mx-4 lg:mx-40">
-                    A Arkhon é uma plataforma inovadora projetada para facilitar o planejamento e o
-                    desenvolvimento de plantas arquitetônicas de forma online. Este projeto visa
-                    democratizar o acesso a ferramentas de design arquitetônico, permitindo que
-                    tanto profissionais experientes quanto usuários sem experiência prévia possam
-                    criar, modificar e visualizar desenhos detalhados de suas construções.
-                </p>
-                <p class="text-xs sm:text-lg text-justify py-2 mx-4 lg:mx-40">
-                    A interface da Arkhon é intuitiva e amigável, oferecendo uma variedade de
-                    funcionalidades que tornam o processo de design acessível e eficiente. Usuários
-                    podem começar a desenhar suas plantas do zero, utilizando uma ampla gama de
-                    ferramentas que permitem a criação de layouts precisos e personalizados. Além
-                    disso, a plataforma fornece uma biblioteca rica de modelos e exemplos de
-                    projetos, disponibilizados por outros clientes, que podem servir como inspiração
-                    ou base para novos designs.
-                </p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
+    </Card>
 
-                <p class="text-xs sm:text-lg text-justify py-2 mx-4 lg:mx-40">
-                    Com a Arkhon, os usuários também têm a oportunidade de compartilhar suas
-                    criações com a comunidade, receber feedback e colaborar em projetos. Essa
-                    abordagem colaborativa não só incentiva a criatividade, mas também ajuda a
-                    construir uma rede de suporte e troca de ideias entre os usuários.
-                </p>
+    <Card
+        special
+        data={Date.now()}
+        likes={1209}
+        banner="/gallery/placeholder01.png"
+        alt="Placeholder"
+        author="Gustavinxx7Ousadozz"
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
+    >
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
+    </Card>
 
-                <p class="text-xs sm:text-lg text-justify mb-12 py-2 mx-4 lg:mx-40">
-                    Seja para arquitetos profissionais que buscam uma ferramenta eficiente para
-                    otimizar seu fluxo de trabalho, ou para entusiastas que desejam dar vida às suas
-                    ideias de design, a Arkhon oferece um ambiente completo e versátil para todos os
-                    níveis de habilidade.
-                </p>
-            </div>
-        </dialog>
+    <Card
+        data={Date.now()}
+        likes={1209}
+        banner="/gallery/placeholder01.png"
+        alt="Placeholder"
+        author="Gustavinxx7Ousadozz"
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
+    >
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
+    </Card>
+
+    <Card
+        show
+        data={Date.now()}
+        likes={1209}
+        banner="/gallery/placeholder01.png"
+        alt="Placeholder"
+        author="Gustavinxx7Ousadozz"
+        tags={['Acessibilidade', 'Edifício', 'Moderno']}
+    >
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
+        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
+        ratione animi ullam inventore quis.
+    </Card>
+</div>
+
+<div class="flex justify-between mt-4 sm:mt-20">
+    <img src="/gallery/background02.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
+    <div class="flex flex-col items-center justify-center flex-1 px-10 py-20">
+        <h1 class="text-5xl font-bold text-center max-md:text-3xl">Seja novo. Seja Arkhon!</h1>
+        <a href="/register/"
+            ><button class="mt-4 btn btn-primary sm:mt-12 btn-lg max-sm:btn-md"
+                >Comece a projetar</button
+            ></a
+        >
     </div>
-
-    <h1 class="mt-10 text-center text-2xl text-secondary font-bold">Descubra novos horizontes</h1>
-    <div class="flex flex-wrap mt-10 justify-center">
-        <Card
-            hidden
-            data={Date.now()}
-            likes={1209}
-            banner="/gallery/placeholder01.png"
-            alt="Placeholder"
-            author="Gustavinxx7Ousadozz"
-            tags={['Acessibilidade', 'Edifício', 'Moderno']}
-        >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
-            laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
-            Voluptatem ratione animi ullam inventore quis.
-        </Card>
-
-        <Card
-            special
-            data={Date.now()}
-            likes={1209}
-            banner="/gallery/placeholder01.png"
-            alt="Placeholder"
-            author="Gustavinxx7Ousadozz"
-            tags={['Acessibilidade', 'Edifício', 'Moderno']}
-        >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
-            laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
-            Voluptatem ratione animi ullam inventore quis.
-        </Card>
-
-        <Card
-            data={Date.now()}
-            likes={1209}
-            banner="/gallery/placeholder01.png"
-            alt="Placeholder"
-            author="Gustavinxx7Ousadozz"
-            tags={['Acessibilidade', 'Edifício', 'Moderno']}
-        >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
-            laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
-            Voluptatem ratione animi ullam inventore quis.
-        </Card>
-
-        <Card
-            show
-            data={Date.now()}
-            likes={1209}
-            banner="/gallery/placeholder01.png"
-            alt="Placeholder"
-            author="Gustavinxx7Ousadozz"
-            tags={['Acessibilidade', 'Edifício', 'Moderno']}
-        >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
-            laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
-            Voluptatem ratione animi ullam inventore quis.
-        </Card>
-    </div>
-
-    <div class="flex justify-between mt-4 sm:mt-20">
-        <img src="/gallery/background02.png" alt="bg-2" class="max-sm:hidden max-w-48 w-full" />
-        <div class="flex flex-1 flex-col items-center justify-center py-20 px-10">
-            <h1 class="text-5xl max-md:text-3xl text-center font-bold">Seja novo. Seja Arkhon!</h1>
-            <a href="/register/"
-                ><button class="btn btn-primary mt-4 sm:mt-12 btn-lg max-sm:btn-md"
-                    >Comece a projetar</button
-                ></a
-            >
-        </div>
-        <img src="/gallery/background03.png" alt="bg-2" class="max-sm:hidden max-w-48 w-full" />
-    </div>
-</body>
+    <img src="/gallery/background03.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
+</div>
