@@ -8,3 +8,17 @@ export function toggle() {
         return !e;
     });
 }
+
+export function convertLight() {
+    lightMode.update(() => {
+        localStorage.setItem("theme", `${true}`)
+        return true;
+    });
+}
+
+export function convertDark() {
+    lightMode.update(() => {
+        localStorage.setItem("theme", `${false}`)
+        return false;
+    });
+}

@@ -1,10 +1,12 @@
-<script lang="ts">
+<script lang="ts" type="module">
     import Icon from '@iconify/svelte';
     import { lightMode, toggle } from '$lib/stores/theme';
-    import Category from '$lib/components/Category.svelte';
+    import { contrastType, contrast } from '$lib/stores/contrast';
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
+    import InfiniteCanvas from 'ef-infinite-canvas';
+    import { onMount } from 'svelte';
 
     let activeButton: String = 'project';
 
@@ -31,7 +33,7 @@
     }
 </script>
 
-<body data-theme={$lightMode ? 'light' : 'dark'} class="w-full min-h-screen">
+<main class="w-full min-h-screen">
     <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
         <div class="flex ml-4">
             <div class="dropdown">
@@ -58,7 +60,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-4rem)]">
-        <aside class="w-1/5 bg-base-200 overflow-y-hidden scrollbar-thin">
+        <aside class="w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -98,11 +100,11 @@
                 {#if activeButton == 'project'}
                     <details class="dropdown w-full mt-4">
                         <summary
-                            class="text-white btn w-full bg-primary hover:bg-base-300 hover:border hover:border-primary rounded-none"
+                            class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
                             >Andar 1</summary
                         >
                         <div
-                            class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-primary"
+                            class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
                         >
                             <button class="flex items-center gap-4 btn bg-base-300 border-0"
                                 ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button
@@ -126,18 +128,18 @@
                                 <Component name={i.Name} editor />
                             {/each}
                         </div></Pagination
-                    >                    
+                    >
                 {/if}
             </main>
         </aside>
 
-        <div class="w-5/6">
-            <label class="swap swap-rotate float-right pr-4 pt-4">
+        <main class="w-5/6">
+            <label class="swap swap-rotate pl-4 pt-4 absolute">
                 <input type="checkbox" class="theme-controller" on:click={toggle} />
 
                 <Icon icon="ph:moon" class="swap-on size-8" />
                 <Icon icon="ph:sun" class="swap-off size-8" />
             </label>
-        </div>
+        </main>
     </main>
-</body>
+</main>

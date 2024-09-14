@@ -37,7 +37,21 @@ export default {
                     success: '#4fd35c',
                     warning: '#ead45f',
                     error: '#da3030',                    
-                }
+                },
+                night: {
+                    "primary": "#FAE931",   
+                    "secondary": "#5C5CB8",    
+                    "accent": "#FDFEFF",       
+                    "neutral": "#FAE931",      
+                    "base-100": "#000000",     
+                    "base-200": "#070707",
+                    "base-300": "#0E0E0E",
+                    "info": "#00ffff",         
+                    "success": "#00ff00",      
+                    "warning": "#ffff00",      
+                    "error": "#ff0000",
+                  },
+                  
             }
         ]
     },    
