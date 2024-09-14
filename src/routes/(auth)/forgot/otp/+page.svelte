@@ -9,13 +9,14 @@
         for (const input of arrayInputs) {
             input!.addEventListener('input', function (e: Event) {
                 const event = e as KeyboardEvent;
-                const target = event.target as HTMLInputElement;                
+                const target = event.target as HTMLInputElement;
 
                 if (/^[0-9]*$/g.test(target.value) === false) {
                     target.value = '';
                 }
 
-                if(target.value === '') (input!.previousElementSibling as HTMLInputElement).focus();
+                if (target.value === '')
+                    (input!.previousElementSibling as HTMLInputElement).focus();
                 if (target.value !== '') (input!.nextElementSibling as HTMLInputElement).focus();
             });
         }

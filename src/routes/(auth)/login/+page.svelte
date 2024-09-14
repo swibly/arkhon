@@ -31,7 +31,7 @@
         method="POST"
         use:enhance={() => {
             loading = true;
-            error = undefined;                
+            error = undefined;
             return ({ update }) => update({ reset: false });
         }}
     >

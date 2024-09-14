@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { toggle } from '$lib/stores/theme';    
+    import { toggle } from '$lib/stores/theme';
     import { privacy, enablePrivacy, disablePrivacy } from '$lib/stores/privacy';
     import Icon from '@iconify/svelte';
 </script>
@@ -19,7 +19,9 @@
         </h1>
         <p class="text-lg md:text-2xl font-semibold pt-12">Informações Gerais</p>
         <section class="xl:flex justify-around items-center w-full h-full pt-32 xl:pt-12 md:px-24">
-            <div class="w-full xl:w-1/2 h-full flex flex-col justify-center items-center icon -mt-24 px-12">
+            <div
+                class="w-full xl:w-1/2 h-full flex flex-col justify-center items-center icon -mt-24 px-12"
+            >
                 <Icon icon="healthicons:ui-user-profile" />
                 <input
                     type="file"
@@ -80,11 +82,8 @@
             <p class="text-md md:text-xl font-bold">Perfil Público</p>
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected>{$privacy ? 'Habilitado' : 'Desabilitado'}</option>
-                <option selected={$privacy === true} on:click={enablePrivacy}
-                    >Habilitado</option
-                >
-                <option selected={$privacy === false} on:click={disablePrivacy}
-                    >Desabilitado</option
+                <option selected={$privacy === true} on:click={enablePrivacy}>Habilitado</option>
+                <option selected={$privacy === false} on:click={disablePrivacy}>Desabilitado</option
                 >
             </select>
         </div>
@@ -95,12 +94,16 @@
 
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Email</p>
-            <a href="" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Mudar email</button></a>
+            <a href="" class="w-full flex justify-center"
+                ><button class="btn btn-secondary w-1/2 lg:w-1/6">Mudar email</button></a
+            >
         </div>
 
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Senha</p>
-            <a href="" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Mudar senha</button></a>
+            <a href="" class="w-full flex justify-center"
+                ><button class="btn btn-secondary w-1/2 lg:w-1/6">Mudar senha</button></a
+            >
         </div>
 
         <div class="divider divider-neutral w-3/4 mx-auto" />
@@ -109,7 +112,9 @@
 
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Deletar Conta</p>
-            <a href="" class="w-full flex justify-center"><button class="btn btn-error w-1/2 lg:w-1/6 text-white">Deletar</button></a>
+            <a href="" class="w-full flex justify-center"
+                ><button class="btn btn-error w-1/2 lg:w-1/6 text-white">Deletar</button></a
+            >
         </div>
     </main>
 </main>

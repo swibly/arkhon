@@ -15,7 +15,9 @@
 <div class="grid grid-cols-1 place-items-center mb-8">
     <div class="join gap-1">
         {#if $currentPageStore !== 1}
-            <button class="join-item btn btn-secondary" on:click={() => handlePageClick(1)}>1</button>
+            <button class="join-item btn btn-secondary" on:click={() => handlePageClick(1)}
+                >1</button
+            >
         {/if}
 
         {#if $currentPageStore > 3 && page > 4}

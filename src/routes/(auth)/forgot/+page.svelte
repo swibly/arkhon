@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte'; 
+    import Icon from '@iconify/svelte';
 </script>
 
 <div class="flex justify-center m-12">
@@ -18,7 +18,7 @@
             <Icon icon="ic:baseline-email" />
             <input type="email" class="email w-full" id="email" name="email" placeholder="Email" />
         </label>
-        
+
         <button class="text-white mt-4 pb-4 mx-auto w-fit block">
             <a href="/forgot/otp">
                 <Icon icon="emojione-monotone:right-arrow" font-size="60px" />

@@ -4,13 +4,16 @@
 </script>
 
 <label class="swap swap-rotate text-white float-right pr-4">
-    <input type="checkbox" class="theme-controller" on:click={toggle}/>
+    <input type="checkbox" class="theme-controller" on:click={toggle} />
 
     <Icon icon="ph:sun" class="swap-off size-8" />
     <Icon icon="ph:moon" class="swap-on size-8" />
 </label>
 
-<main class="bg-accent w-full min-h-screen max-w-[800px] mx-auto bleed" data-theme={$lightMode ? 'light' : 'dark'}>
+<main
+    class="bg-accent w-full min-h-screen max-w-[800px] mx-auto bleed"
+    data-theme={$lightMode ? 'light' : 'dark'}
+>
     <slot />
 </main>
 

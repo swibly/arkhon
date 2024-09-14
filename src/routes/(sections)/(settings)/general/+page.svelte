@@ -1,7 +1,11 @@
 <script lang="ts">
     import { lightMode, convertDark, convertLight } from '$lib/stores/theme';
     import { language, changeLanguage } from '$lib/stores/language';
-    import { notification, enableNotification, disableNotification } from '$lib/stores/notifications';
+    import {
+        notification,
+        enableNotification,
+        disableNotification
+    } from '$lib/stores/notifications';
     import Icon from '@iconify/svelte';
 </script>
 
@@ -10,7 +14,9 @@
         <a href="settings"><Icon icon="fe:arrow-left" font-size="40px" /></a>
     </header>
     <section class="w-full min-h-screen flex items-center flex-col pt-12 pb-4">
-        <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary">Configurações Gerais</h1>
+        <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary">
+            Configurações Gerais
+        </h1>
         <p class="text-lg md:text-2xl font-semibold pt-12">Preferências do Sistema</p>
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Tema</p>
@@ -60,11 +66,15 @@
         <p class="text-lg md:text-2xl font-semibold pt-4">Mais configurações</p>
         <div class="grid grid-cols-2 place-items-center w-full pt-12">
             <p class="text-md md:text-xl font-bold">Termos de Serviço</p>
-            <a href="tos" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a>
+            <a href="tos" class="w-full flex justify-center"
+                ><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a
+            >
         </div>
         <div class="grid grid-cols-2 place-items-center w-full pt-12 pb-12">
             <p class="text-md md:text-xl font-bold">Obter Ajuda</p>
-            <a href="faq" class="w-full flex justify-center"><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a>
+            <a href="faq" class="w-full flex justify-center"
+                ><button class="btn btn-secondary w-1/2 lg:w-1/6">Acessar</button></a
+            >
         </div>
     </section>
 </main>

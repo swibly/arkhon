@@ -1,6 +1,12 @@
 <script lang="ts">
     import { toggle } from '$lib/stores/theme';
-    import { contrastType, changeContrast, contrast, enableContrast, disableContrast } from '$lib/stores/contrast';
+    import {
+        contrastType,
+        changeContrast,
+        contrast,
+        enableContrast,
+        disableContrast
+    } from '$lib/stores/contrast';
     import { shortcut, enableShortcut, disableShortcut } from '$lib/stores/shortcuts';
     import { resizeText, changeSize } from '$lib/stores/resizeText';
     import Icon from '@iconify/svelte';
@@ -14,7 +20,7 @@
 
             <Icon icon="ph:moon" class="swap-on size-8" />
             <Icon icon="ph:sun" class="swap-off size-8" />
-        </label>  
+        </label>
     </header>
     <section class="w-full min-h-screen flex items-center flex-col pt-12 pb-4">
         <h1 class="text-3xl md:text-5xl text-center font-bold text-secondary">
@@ -27,7 +33,9 @@
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected>{$contrast ? 'Habilitado' : 'Desabilitado'}</option>
                 <option selected={$contrast === true} on:click={enableContrast}>Habilitado</option>
-                <option selected={$contrast === false} on:click={disableContrast}>Desabilitado</option>
+                <option selected={$contrast === false} on:click={disableContrast}
+                    >Desabilitado</option
+                >
             </select>
         </div>
 
@@ -36,16 +44,20 @@
                 <p class="text-md md:text-xl font-bold">Tipo de Contraste</p>
                 <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                     <option disabled selected
-                        >{#if $contrastType === 'night'}Night{:else if $contrastType === 'Tipo 2'}Tipo 2{:else}Tipo 3{/if}</option
+                        >{#if $contrastType === 'night'}Night{:else if $contrastType === 'Tipo 2'}Tipo
+                            2{:else}Tipo 3{/if}</option
                     >
-                    <option selected={$contrastType === 'Tipo 1'} on:click={() => changeContrast('night')}
-                        >Night</option
+                    <option
+                        selected={$contrastType === 'Tipo 1'}
+                        on:click={() => changeContrast('night')}>Night</option
                     >
-                    <option selected={$contrastType === 'Tipo 2'} on:click={() => changeContrast('Tipo 2')}
-                        >Tipo 2</option
+                    <option
+                        selected={$contrastType === 'Tipo 2'}
+                        on:click={() => changeContrast('Tipo 2')}>Tipo 2</option
                     >
-                    <option selected={$contrastType === 'Tipo 3'} on:click={() => changeContrast('Tipo 3')}
-                        >Tipo 3</option
+                    <option
+                        selected={$contrastType === 'Tipo 3'}
+                        on:click={() => changeContrast('Tipo 3')}>Tipo 3</option
                     >
                 </select>
             </div>
@@ -59,7 +71,9 @@
             <select class="select select-bordered w-32 md:w-40 lg:w-full max-w-xs">
                 <option disabled selected>{$contrast ? 'Habilitado' : 'Desabilitado'}</option>
                 <option selected={$contrast === true} on:click={enableShortcut}>Habilitado</option>
-                <option selected={$contrast === false} on:click={disableShortcut}>Desabilitado</option>
+                <option selected={$contrast === false} on:click={disableShortcut}
+                    >Desabilitado</option
+                >
             </select>
         </div>
 

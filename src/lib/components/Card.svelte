@@ -16,8 +16,8 @@
     <div
         class="card w-72 bg-base-100 shadow-xl text-white mx-12 p-5"
         class:card-special={special}
-        class:card-default={!special}        
-        class:card-hidden={hidden}        
+        class:card-default={!special}
+        class:card-hidden={hidden}
         class:card-show={show}
     >
         <div class="flex justify-between pb-4">
@@ -40,7 +40,9 @@
                 <Icon icon="mingcute:user-4-line" />
                 <h2 class="card-title text-sm">{author}</h2>
             </div>
-            <div class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline">
+            <div
+                class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline"
+            >
                 <slot />
             </div>
             <div class="card-actions pt-4 flex justify-center">

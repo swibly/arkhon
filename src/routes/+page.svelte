@@ -12,7 +12,7 @@
     }
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")}>
+<body data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}>
     <div class="pt-12 mb-12">
         <div class="flex justify-center">
             <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />

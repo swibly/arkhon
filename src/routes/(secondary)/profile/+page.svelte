@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { toggle } from '$lib/stores/theme';    
+    import { toggle } from '$lib/stores/theme';
     import Icon from '@iconify/svelte';
     import Project from '$lib/components/Project.svelte';
     import Component from '$lib/components/Component.svelte';
