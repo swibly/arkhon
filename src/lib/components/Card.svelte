@@ -1,89 +1,59 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
 
-    export let data: number;
+    export let title: string;
+    export let date: Date;
     export let likes: number;
     export let banner: string;
     export let alt: string;
-    export let author: string;
+    export let authors: string[];
     export let tags: string[];
-    export let special: boolean = false;
-    export let hidden: boolean = false;
-    export let show: boolean = false;
 </script>
 
-<div class="group">
-    <div
-        class="card w-72 bg-base-100 shadow-xl text-white mx-12 p-5"
-        class:card-special={special}
-        class:card-default={!special}
-        class:card-hidden={hidden}
-        class:card-show={show}
-    >
-        <div class="flex justify-between pb-4">
-            <h2>{Intl.DateTimeFormat('pt-br').format(data)}</h2>
-            <div class="flex gap-4 items-center">
-                <h2>
-                    {Intl.NumberFormat('en-us', {
-                        notation: 'compact',
-                        compactDisplay: 'short'
-                    }).format(likes)}
-                </h2>
-                <Icon icon="mdi:heart-outline" />
+<article class="flex flex-col gap-4 p-5 mx-12 rounded-md shadow-md max-w-96">
+    <h2 class="text-2xl font-bold">{title}</h2>
+
+    <figure>
+        <img src={banner} {alt} class="rounded-md" />
+    </figure>
+
+    <section class="flex justify-between">
+        <h2>
+            <Icon icon="mdi:calendar" class="inline" />
+            {date.toLocaleString('pt-br', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </h2>
+
+        <h2>
+            <Icon icon="mdi:heart" class="inline" />
+
+            <span>
+                {likes.toLocaleString('pt-br', { notation: 'compact' })}
+            </span>
+        </h2>
+    </section>
+
+    <section class="items-center -space-x-4 avatar-group rtl:space-x-reverse">
+        {#each authors as author}
+            <div class="avatar">
+                <div class="size-8">
+                    <img
+                        src={`https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURI(author)}`}
+                        alt={author}
+                    />
+                </div>
             </div>
-        </div>
-        <figure>
-            <img src={banner} {alt} class="rounded-xl" />
-        </figure>
-        <div class="card-body">
-            <div class="grid place-items-center">
-                <Icon icon="mingcute:user-4-line" />
-                <h2 class="card-title text-sm">{author}</h2>
-            </div>
-            <div
-                class="text-justify text-sm text-ellipsis overflow-hidden whitespace-nowrap hidden md:inline"
-            >
-                <slot />
-            </div>
-            <div class="card-actions pt-4 flex justify-center">
-                {#each tags as tag}
-                    <div class="badge badge-outline">{tag}</div>
-                {/each}
-            </div>
-        </div>
-    </div>
-    {#if special}
-        <div class="flex justify-center gap-2 items-center mt-4 mb-12">
-            <Icon icon="material-symbols:trophy" font-size="50" />
-            <h1 class="text-2xl font-bold">Mais avaliado!</h1>
-        </div>
-    {/if}
-</div>
+        {/each}
 
-<style>
-    .card-special {
-        background-color: rgb(202 138 4);
-    }
+        {authors.join(', ')}
+    </section>
 
-    .card-default {
-        background-color: rgb(3 105 161);
-    }
+    <p class="line-clamp-3">
+        <slot />
+    </p>
 
-    @media only screen and (max-width: 1152px) {
-        .card-hidden {
-            display: none;
-        }
-    }
-
-    @media only screen and (min-width: 1152px) {
-        .card-show {
-            display: none;
-        }
-    }
-
-    @media only screen and (max-width: 960px) {
-        .card-default {
-            margin-bottom: 50px;
-        }
-    }
-</style>
+    <section class="flex gap-1 flex-end">
+        {#each tags as tag}
+            <p class="badge badge-outline">{tag}</p>
+        {/each}
+    </section>
+</article>
