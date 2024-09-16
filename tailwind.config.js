@@ -2,20 +2,8 @@
 export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     plugins: [require('daisyui')],
-
-    theme: {
-        screens: {
-            sm: '640px',
-            md: '768px',
-            lg: '1024px',
-            mlg: '1120px',
-            xl: '1280px',
-            '2xl': '1536px',
-            '3xl': '1800px'
-        }
-    },
-
     daisyui: {
+        logs: false,
         themes: [
             {
                 light: {
