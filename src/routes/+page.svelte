@@ -1,30 +1,30 @@
 <script lang="ts">
     import Card from '$lib/components/Card.svelte';
+    import Icon from '@iconify/svelte';
 
-    let modalRef: any;
+    let aboutArkhonModal: HTMLDialogElement;
 
     function showModal() {
-        if (modalRef) {
-            modalRef.showModal();
-        }
+        aboutArkhonModal.showModal();
     }
 </script>
 
 <section class="flex flex-col items-center p-8">
     <img src="/gallery/logo.png" class="size-48" alt="Logo" />
-    <p class="text-3xl font-semibold">Sua plataforma de arquitetura</p>
+
+    <p class="text-3xl">Sua plataforma de arquitetura.</p>
 
     <div class="mt-8">
         <a href="/login" class="btn btn-primary w-36">Iniciar Sessão</a>
         <a href="/register" class="btn btn-secondary w-36">Criar Conta</a>
     </div>
 
-    <img src="/gallery/plano.png" alt="Planta" />
+    <img src="/home/planta.png" alt="Planta" />
 </section>
 
 <section
     class="relative flex flex-col items-center justify-center w-full py-20"
-    style="background-image: url(/gallery/background01.png); background-position: center; background-size: cover;"
+    style="background-image: url(/home/banner.png); background-position: center; background-size: cover;"
 >
     <h2 class="pt-12 text-3xl text-white max-md:text-xl">
         Papel e caneta tornaram-se obsoletos na prototipação
@@ -34,10 +34,18 @@
         Saiba mais
     </button>
 
-    <dialog id="my_modal_1" bind:this={modalRef} class="modal">
-        <div class="w-11/12 max-w-5xl p-12 modal-box">
+    <dialog id="my_modal_1" bind:this={aboutArkhonModal} class="modal">
+        <div class="w-11/12 max-w-5xl p-12 rounded-md modal-box">
             <article class="space-y-8">
-                <h1 class="text-3xl text-center sm:text-4xl">Um pouco da Arkhon</h1>
+                <h2 class="text-3xl font-semibold sm:text-4xl text-primary">
+                    <Icon
+                        icon="ic:sharp-architecture"
+                        class="inline -rotate-[30deg]"
+                        font-size={48}
+                    />
+
+                    O que é a Arkhon?
+                </h2>
 
                 <p>
                     A Arkhon é uma plataforma online inovadora para criação de plantas
@@ -60,20 +68,19 @@
         </div>
 
         <form method="dialog" class="modal-backdrop">
-            <button>close</button>
+            <button class="cursor-default">close</button>
         </form>
     </dialog>
 </section>
 
-<h1 class="mt-10 text-2xl font-bold text-center text-secondary">Descubra novos horizontes</h1>
-<div class="flex flex-wrap justify-center mt-10">
+<section class="flex flex-wrap justify-center my-10 space-y-10">
     <Card
-        hidden
-        data={Date.now()}
+        title="Projeto 1"
+        date={new Date(Date.now())}
         likes={1209}
-        banner="/gallery/placeholder01.png"
+        banner="/gallery/placeholder.png"
         alt="Placeholder"
-        author="Gustavinxx7Ousadozz"
+        authors={['Gustavo', 'Eduardo']}
         tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
@@ -82,12 +89,12 @@
     </Card>
 
     <Card
-        special
-        data={Date.now()}
+        title="Projeto 2"
+        date={new Date(Date.now())}
         likes={1209}
-        banner="/gallery/placeholder01.png"
+        banner="/gallery/placeholder.png"
         alt="Placeholder"
-        author="Gustavinxx7Ousadozz"
+        authors={['Gustavo', 'Eduardo']}
         tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
@@ -96,42 +103,30 @@
     </Card>
 
     <Card
-        data={Date.now()}
+        title="Projeto 3"
+        date={new Date(Date.now())}
         likes={1209}
-        banner="/gallery/placeholder01.png"
+        banner="/gallery/placeholder.png"
         alt="Placeholder"
-        author="Gustavinxx7Ousadozz"
+        authors={['Gustavo', 'Eduardo']}
         tags={['Acessibilidade', 'Edifício', 'Moderno']}
     >
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
         ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
         ratione animi ullam inventore quis.
     </Card>
+</section>
 
-    <Card
-        show
-        data={Date.now()}
-        likes={1209}
-        banner="/gallery/placeholder01.png"
-        alt="Placeholder"
-        author="Gustavinxx7Ousadozz"
-        tags={['Acessibilidade', 'Edifício', 'Moderno']}
-    >
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non laborum
-        ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor. Voluptatem
-        ratione animi ullam inventore quis.
-    </Card>
-</div>
+<section class="flex justify-between mt-4 sm:mt-20">
+    <img src="/home/left-vector.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
 
-<div class="flex justify-between mt-4 sm:mt-20">
-    <img src="/gallery/background02.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
     <div class="flex flex-col items-center justify-center flex-1 px-10 py-20">
-        <h1 class="text-5xl font-bold text-center max-md:text-3xl">Seja novo. Seja Arkhon!</h1>
-        <a href="/register/"
-            ><button class="mt-4 btn btn-primary sm:mt-12 btn-lg max-sm:btn-md"
-                >Comece a projetar</button
-            ></a
-        >
+        <h2 class="text-5xl font-bold text-center max-md:text-3xl">Seja novo. Seja Arkhon.</h2>
+
+        <a href="/register" class="mt-4 btn btn-primary sm:mt-12 btn-lg max-sm:btn-md">
+            Comece a projetar
+        </a>
     </div>
-    <img src="/gallery/background03.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
-</div>
+
+    <img src="/home/right-vector.png" alt="bg-2" class="w-full max-sm:hidden max-w-48" />
+</section>
