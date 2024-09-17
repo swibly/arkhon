@@ -4,7 +4,7 @@
     import Icon from '@iconify/svelte';
 </script>
 
-<main class="grid w-full min-h-screen bg-accent bleed place-items-center">
+<main class="grid w-full min-h-screen p-4 place-items-center">
     <div class="w-full max-w-2xl">
         <Logo class="mx-auto mix-blend-difference fill-white" />
 
@@ -25,12 +25,12 @@
                     Esqueci a senha
                 </a>
 
-                <p class="text-white">
+                <p>
                     Ainda não possui uma conta?
                     <a href="/register" class="text-secondary">Registre-se</a>!
                 </p>
             {:else if $page.url.pathname.startsWith('/register')}
-                <p class="text-white">
+                <p>
                     Já possui uma conta?
                     <a href="/login" class="text-secondary">Faça login</a>!
                 </p>
@@ -38,3 +38,9 @@
         </section>
     </div>
 </main>
+
+<style lang="postcss">
+    :global(input:is([type='text'], [type='password'])) {
+        @apply grow;
+    }
+</style>
