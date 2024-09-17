@@ -64,13 +64,13 @@
         </button>
     </label>
 
-    <button type="submit" class="mt-4 btn btn-sm btn-secondary">
+    <button type="submit" class="mt-4 btn btn-sm btn-primary">
         <Icon icon="ph:arrow-right" />
         Registrar*
     </button>
 
     <p class="text-sm italic text-center">
         *Ao registrar, concorda com os
-        <a href="/tos" class="link link-secondary">Termos de Serviço</a>
+        <a href="/tos" class="link link-primary">Termos de Serviço</a>
     </p>
 </form>

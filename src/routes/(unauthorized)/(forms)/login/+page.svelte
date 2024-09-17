@@ -24,7 +24,7 @@
         </button>
     </label>
 
-    <button type="submit" class="mt-4 btn btn-sm btn-secondary">
+    <button type="submit" class="mt-4 btn btn-sm btn-primary">
         <Icon icon="ph:arrow-right" />
         Entrar
     </button>

@@ -8,11 +8,11 @@
     <div class="w-full max-w-2xl">
         <Logo class="mx-auto mix-blend-difference fill-white" />
 
-        <p class="w-full my-8 text-2xl text-center">
+        <p class="w-full my-8 text-3xl font-light text-center text-primary">
             {#if $page.url.pathname.startsWith('/login')}
-                Bem vindo de volta! Faça login e continue de onde parou.
+                Bem-vindo de volta!
             {:else if $page.url.pathname.startsWith('/register')}
-                Crie sua conta!
+                Comece sua jornada conosco!
             {/if}
         </p>
 
@@ -20,19 +20,19 @@
 
         <section class="mt-8 text-center">
             {#if $page.url.pathname.startsWith('/login')}
-                <a href="/forgot" class="text-secondary">
+                <a href="/forgot" class="text-primary">
                     <Icon icon="mdi:lock-reset" class="inline" />
                     Esqueci a senha
                 </a>
 
                 <p>
                     Ainda não possui uma conta?
-                    <a href="/register" class="text-secondary">Registre-se</a>!
+                    <a href="/register" class="text-primary">Registre-se</a>!
                 </p>
             {:else if $page.url.pathname.startsWith('/register')}
                 <p>
                     Já possui uma conta?
-                    <a href="/login" class="text-secondary">Faça login</a>!
+                    <a href="/login" class="text-primary">Faça login</a>!
                 </p>
             {/if}
         </section>
