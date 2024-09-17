@@ -13,6 +13,10 @@
     $: if (error) loading = false;
 </script>
 
+<svelte:head>
+    <title>Register - Swibly Arkhon</title>
+</svelte:head>
+
 <form
     method="POST"
     class="flex flex-col gap-2"

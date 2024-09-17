@@ -10,6 +10,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Home - Swibly Arkhon</title>
+</svelte:head>
+
 <section class="flex flex-col items-center p-8">
     <Logo class="mix-blend-difference fill-white" />
 

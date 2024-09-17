@@ -12,6 +12,10 @@
     $: if (error) loading = false;
 </script>
 
+<svelte:head>
+    <title>Login - Swibly Arkhon</title>
+</svelte:head>
+
 <form
     method="POST"
     class="flex flex-col gap-2"
