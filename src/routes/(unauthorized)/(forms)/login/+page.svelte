@@ -1,19 +1,40 @@
 <script lang="ts">
+    import type { ActionData } from './$types';
+    import { enhance } from '$app/forms';
     import Icon from '@iconify/svelte';
 
     let showPassword: boolean = false;
+    let loading: boolean = false;
+
+    export let form: ActionData;
+
+    $: error = form?.error;
+    $: if (error) loading = false;
 </script>
 
-<form class="flex flex-col gap-2">
+<form
+    method="POST"
+    class="flex flex-col gap-2"
+    use:enhance={async () => {
+        loading = true;
+        error = '';
+        return ({ update }) => update({ reset: false });
+    }}
+>
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:user-fill" />
-        <input type="text" name="login" placeholder="Email ou nome de usuário" />
+        <input type="text" name="login" placeholder="Email ou nome de usuário" required />
     </label>
 
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:lock-fill" />
 
-        <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Senha" />
+        <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Senha"
+            required
+        />
 
         <button type="button" on:click={() => (showPassword = !showPassword)}>
             {#if showPassword}
@@ -24,8 +45,19 @@
         </button>
     </label>
 
-    <button type="submit" class="mt-4 btn btn-sm btn-primary">
-        <Icon icon="ph:arrow-right" />
-        Entrar
-    </button>
+    {#if error}
+        <p class="text-center text-error">{error}</p>
+    {/if}
+
+    {#if loading}
+        <button type="button" class="mt-4 btn btn-sm btn-disabled">
+            <span class="loading loading-spinner loading-md" />
+            Carregando...
+        </button>
+    {:else}
+        <button type="submit" class="mt-4 btn btn-sm btn-primary">
+            <Icon icon="ph:arrow-right" />
+            Entrar
+        </button>
+    {/if}
 </form>
