@@ -4,6 +4,7 @@ export default {
     plugins: [require('daisyui')],
     daisyui: {
         logs: false,
+        darkTheme: 'dark',
         themes: [
             {
                 light: {
@@ -41,5 +42,6 @@ export default {
                 }
             }
         ]
-    }
+    },
+    darkMode: ['class', '[data-theme="dark"]']
 };
