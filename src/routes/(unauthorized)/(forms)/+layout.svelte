@@ -1,0 +1,40 @@
+<script>
+    import { page } from '$app/stores';
+    import Logo from '$lib/components/Logo.svelte';
+    import Icon from '@iconify/svelte';
+</script>
+
+<main class="grid w-full min-h-screen bg-accent bleed place-items-center">
+    <div class="w-full max-w-2xl">
+        <Logo class="mx-auto mix-blend-difference fill-white" />
+
+        <p class="w-full my-8 text-2xl text-center">
+            {#if $page.url.pathname.startsWith('/login')}
+                Bem vindo de volta! Faça login e continue de onde parou.
+            {:else if $page.url.pathname.startsWith('/register')}
+                Crie sua conta!
+            {/if}
+        </p>
+
+        <slot />
+
+        <section class="mt-8 text-center">
+            {#if $page.url.pathname.startsWith('/login')}
+                <a href="/forgot" class="text-secondary">
+                    <Icon icon="mdi:lock-reset" class="inline" />
+                    Esqueci a senha
+                </a>
+
+                <p class="text-white">
+                    Ainda não possui uma conta?
+                    <a href="/register" class="text-secondary">Registre-se</a>!
+                </p>
+            {:else if $page.url.pathname.startsWith('/register')}
+                <p class="text-white">
+                    Já possui uma conta?
+                    <a href="/login" class="text-secondary">Faça login</a>!
+                </p>
+            {/if}
+        </section>
+    </div>
+</main>

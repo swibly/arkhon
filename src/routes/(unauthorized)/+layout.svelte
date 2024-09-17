@@ -1,0 +1,33 @@
+<script lang="ts">
+    import { theme, toggle } from '$lib/stores/theme';
+    import Icon from '@iconify/svelte';
+
+    function updateHTMLDataTheme() {
+        toggle();
+
+        document
+            .querySelector('html')
+            ?.setAttribute('data-theme', $theme === 'dark' ? 'dark' : 'light');
+    }
+</script>
+
+<header class="absolute top-0 flex justify-between w-full p-4">
+    <a href="/">
+        <Icon icon="ic:baseline-home" class="inline size-8" />
+        <span>Home</span>
+    </a>
+
+    <label class="swap swap-rotate">
+        <input
+            type="checkbox"
+            class="theme-controller"
+            value="dark"
+            on:click={updateHTMLDataTheme}
+        />
+
+        <Icon icon="ph:sun" class="swap-off size-8" />
+        <Icon icon="ph:moon" class="swap-on size-8" />
+    </label>
+</header>
+
+<slot />
