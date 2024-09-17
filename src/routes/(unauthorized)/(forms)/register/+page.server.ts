@@ -2,6 +2,7 @@ import axios from '$lib/server/axios';
 import { fail, redirect } from '@sveltejs/kit';
 
 import type { Actions } from './$types';
+import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 
 export const actions: Actions = {
     default: async ({ request, cookies }) => {
@@ -27,7 +28,7 @@ export const actions: Actions = {
                 password
             });
 
-            cookies.set('token', res.data.token, {
+            cookies.set(JWT_TOKEN_COOKIE_NAME, res.data.token, {
                 path: '/',
                 httpOnly: true,
                 maxAge: 604800
