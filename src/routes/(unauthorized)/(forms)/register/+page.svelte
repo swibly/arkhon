@@ -9,12 +9,12 @@
     <section class="flex gap-2 max-md:flex-col">
         <label class="flex items-center gap-2 input input-bordered grow">
             <Icon icon="ph:user-fill" />
-            <input type="text" name="firstname" class="grow" placeholder="Nome" />
+            <input type="text" name="firstname" placeholder="Nome" />
         </label>
 
         <label class="flex items-center gap-2 input input-bordered grow">
             <Icon icon="ph:user-fill" />
-            <input type="text" name="lastname" class="grow" placeholder="Sobrenome" />
+            <input type="text" name="lastname" placeholder="Sobrenome" />
         </label>
     </section>
 
@@ -22,12 +22,12 @@
 
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="material-symbols:mail" />
-        <input type="text" name="email" class="grow" placeholder="Email" />
+        <input type="text" name="email" placeholder="Email" />
     </label>
 
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="lets-icons:e-mail" />
-        <input type="text" name="username" class="grow" placeholder="Nome de usuário" />
+        <input type="text" name="username" placeholder="Nome de usuário" />
     </label>
 
     <div class="divider" />
@@ -35,12 +35,7 @@
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:lock-fill" />
 
-        <input
-            type={showPassword ? 'text' : 'password'}
-            name="password"
-            class="grow"
-            placeholder="Senha"
-        />
+        <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Senha" />
 
         <button type="button" on:click={() => (showPassword = !showPassword)}>
             {#if showPassword}
@@ -57,7 +52,6 @@
         <input
             type={showConfirmPassword ? 'text' : 'password'}
             name="password-confirm"
-            class="grow"
             placeholder="Confirme sua senha"
         />
 
@@ -70,13 +64,13 @@
         </button>
     </label>
 
-    <button type="submit" class="mt-4 btn btn-sm btn-primary">
+    <button type="submit" class="mt-4 btn btn-sm btn-secondary">
         <Icon icon="ph:arrow-right" />
         Registrar*
     </button>
 
     <p class="text-sm italic text-center">
         *Ao registrar, concorda com os
-        <a href="/tos" class="link link-primary">Termos de Serviço</a>
+        <a href="/tos" class="link link-secondary">Termos de Serviço</a>
     </p>
 </form>

@@ -7,13 +7,13 @@
 <form class="flex flex-col gap-2">
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:user-fill" />
-        <input type="text" class="grow" placeholder="Email ou nome de usuário" />
+        <input type="text" name="login" placeholder="Email ou nome de usuário" />
     </label>
 
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:lock-fill" />
 
-        <input type={showPassword ? 'text' : 'password'} class="grow" placeholder="Senha" />
+        <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Senha" />
 
         <button type="button" on:click={() => (showPassword = !showPassword)}>
             {#if showPassword}
@@ -24,7 +24,7 @@
         </button>
     </label>
 
-    <button type="submit" class="mt-4 btn btn-sm btn-primary">
+    <button type="submit" class="mt-4 btn btn-sm btn-secondary">
         <Icon icon="ph:arrow-right" />
         Entrar
     </button>
