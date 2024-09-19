@@ -13,9 +13,9 @@ export default {
                     neutral: '#D9D9D9',
                     accent: '#0175AF',
                     'base-100': '#F8F8F8',
-                    success: '#4fd35c',
-                    warning: '#ead45f',
-                    error: '#da3030'
+                    success: '#4FD35C',
+                    warning: '#EAD45F',
+                    error: '#DA3030'
                 },
                 dark: {
                     primary: '#FFA333',
@@ -23,9 +23,9 @@ export default {
                     neutral: '#38414A',
                     accent: '#252627',
                     'base-100': '#252627',
-                    success: '#4fd35c',
-                    warning: '#ead45f',
-                    error: '#da3030'
+                    success: '#4FD35C',
+                    warning: '#EAD45F',
+                    error: '#DA3030'
                 },
                 night: {
                     primary: '#FAE931',
@@ -35,10 +35,10 @@ export default {
                     'base-100': '#000000',
                     'base-200': '#070707',
                     'base-300': '#0E0E0E',
-                    info: '#00ffff',
-                    success: '#00ff00',
-                    warning: '#ffff00',
-                    error: '#ff0000'
+                    info: '#00FFFF',
+                    success: '#00FF00',
+                    warning: '#FFFF00',
+                    error: '#FF0000'
                 }
             }
         ]
