@@ -2,6 +2,7 @@
     import type { ActionData } from './$types';
     import { enhance } from '$app/forms';
     import Icon from '@iconify/svelte';
+    import { spawn } from '$lib/toast';
 
     let showPassword: boolean = false;
     let loading: boolean = false;
@@ -9,7 +10,14 @@
     export let form: ActionData;
 
     $: error = form?.error;
-    $: if (error) loading = false;
+    $: if (error) {
+        loading = false;
+        spawn({
+            message: typeof error === 'object' ? Object.values(error)[0] : error,
+            status: 'error',
+            duration: 7000
+        });
+    }
 </script>
 
 <svelte:head>
@@ -21,7 +29,7 @@
     class="flex flex-col gap-2"
     use:enhance={async () => {
         loading = true;
-        error = '';
+        error = undefined;
         return ({ update }) => update({ reset: false });
     }}
 >
@@ -48,12 +56,6 @@
             {/if}
         </button>
     </label>
-
-    {#if error}
-        <p class="text-center text-error">
-            {typeof error === 'object' ? Object.values(error)[0] : error}
-        </p>
-    {/if}
 
     {#if loading}
         <button type="button" class="mt-4 btn btn-sm btn-disabled">
