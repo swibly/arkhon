@@ -6,7 +6,10 @@ export const handle: Handle = async function ({ event, resolve }) {
 
     const token = event.cookies.get(JWT_TOKEN_COOKIE_NAME);
 
-    if (event.url.pathname === '/' || UNAUTHORIZED_ROUTES.some((path: string) => event.url.pathname.startsWith(path))) {
+    if (
+        event.url.pathname === '/' ||
+        UNAUTHORIZED_ROUTES.some((path: string) => event.url.pathname.startsWith(path))
+    ) {
         if (token) {
             throw redirect(302, '/home');
         }
