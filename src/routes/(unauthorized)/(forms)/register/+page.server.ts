@@ -35,7 +35,10 @@ export const actions: Actions = {
             });
         } catch (e: any) {
             if (e.response.data.error) {
-                return fail(e.status, e.response.data as { error: string });
+                return fail(
+                    e.status,
+                    e.response.data as { error: string | Record<string, string> }
+                );
             }
         }
 

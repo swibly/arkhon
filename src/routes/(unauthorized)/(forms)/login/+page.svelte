@@ -50,7 +50,9 @@
     </label>
 
     {#if error}
-        <p class="text-center text-error">{error}</p>
+        <p class="text-center text-error">
+            {typeof error === 'object' ? Object.values(error)[0] : error}
+        </p>
     {/if}
 
     {#if loading}
