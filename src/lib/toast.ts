@@ -5,10 +5,17 @@ type Options = {
     duration?: number;
     destination?: string;
     onClick?: () => void;
+    status?: 'normal' | 'warning' | 'error';
 };
 
-const createToast = (options: Options) =>
-    Toastify({
+const colorMapping = {
+    normal: '#FFA333',
+    warning: '#EAD45F',
+    error: '#DA3030'
+};
+
+const createToast = (options: Options) => {
+    return Toastify({
         text: options.message,
         duration: options.duration ?? 3000,
         destination: options.destination,
@@ -17,8 +24,10 @@ const createToast = (options: Options) =>
         gravity: 'bottom',
         position: 'center',
         stopOnFocus: true,
-        onClick: options.onClick
+        onClick: options.onClick,
+        backgroundColor: options.status ? colorMapping[options.status] : undefined
     });
+};
 
 export function spawn(options: Options): void {
     createToast(options).showToast();
