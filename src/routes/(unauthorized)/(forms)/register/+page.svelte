@@ -107,7 +107,7 @@
     {/if}
 
     <p class="text-sm italic text-center">
-        *Ao registrar, concorda com os
+        *Ao registrar, você concorda com os
         <a href="/tos" class="link link-primary">Termos de Serviço</a>
     </p>
 </form>

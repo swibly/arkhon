@@ -2,7 +2,7 @@
     import Icon from '@iconify/svelte';
 </script>
 
-<header class="absolute top-0 flex justify-between w-full p-4">
+<header class="fixed top-0 flex justify-between w-full p-4">
     <a href="/">
         <Icon icon="ic:baseline-home" class="inline size-8" />
     </a>
