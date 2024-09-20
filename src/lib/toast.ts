@@ -9,12 +9,12 @@ type Options = {
 };
 
 const colorMapping = {
-    normal: '#FFA333',
-    warning: '#EAD45F',
+    normal: '#0175AF',
+    warning: '#FFA333',
     error: '#DA3030'
 };
 
-const createToast = (options: Options) => {
+function createToast(options: Options) {
     return Toastify({
         text: options.message,
         duration: options.duration ?? 3000,
@@ -25,9 +25,11 @@ const createToast = (options: Options) => {
         position: 'center',
         stopOnFocus: true,
         onClick: options.onClick,
-        backgroundColor: options.status ? colorMapping[options.status] : undefined
+        style: {
+            background: colorMapping[options.status ?? 'normal']
+        }
     });
-};
+}
 
 export function spawn(options: Options): void {
     createToast(options).showToast();
