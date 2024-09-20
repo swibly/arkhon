@@ -365,7 +365,7 @@
             >
         </div>
     </nav>
-    <main class="flex h-[calc(100vh-4rem)]">
+    <main class="flex h-[calc(100vh-3rem)]">
         <aside class="w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
@@ -439,7 +439,7 @@
             </main>
         </aside>
 
-        <main class="w-5/6">
+        <main class="w-5/6 overflow-hidden">
             <label class="swap swap-rotate pl-4 pt-4 absolute z-10">
                 <input type="checkbox" class="theme-controller" on:click={toggle} />
 
