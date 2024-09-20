@@ -1,9 +1,9 @@
 import { writable, type Writable } from 'svelte/store';
 
-let initialContrast = 'true';
+let initialContrast = 'false';
 
 if (typeof window !== 'undefined') {    
-    initialContrast = localStorage.getItem('contrast') || 'true';
+    initialContrast = localStorage.getItem('contrast') || 'false';
 }
 
 export const contrast: Writable<boolean> = writable(initialContrast === 'true' ? true : false);
@@ -24,10 +24,10 @@ export function disableContrast() {
     }    
 }
 
-let initialType = 'Tipo 1';
+let initialType = 'night';
 
 if (typeof window !== 'undefined') {    
-    initialType = localStorage.getItem('contrastType') || 'Tipo 1';
+    initialType = localStorage.getItem('contrastType') || 'night';
 }
 
 export const contrastType: Writable<string> = writable(initialType);
