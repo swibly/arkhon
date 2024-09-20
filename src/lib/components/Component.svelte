@@ -33,8 +33,9 @@
     </div>
 {:else if editor}
     <div
-        class="card card-compact w-32 h-32 border border-secondary border-2 my-4"
+        class="card card-compact w-28 h-28 border border-secondary border-2 my-4"
         on:click={showModal}
+        draggable="true"
     >
         <div class="card-body">
             <div class="grid place-items-center h-full">

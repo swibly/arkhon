@@ -15,16 +15,16 @@
 <div class="grid grid-cols-1 place-items-center mb-8">
     <div class="join gap-1">
         {#if $currentPageStore !== 1}
-            <button class="join-item btn btn-secondary" on:click={() => handlePageClick(1)}>1</button>
+            <button class="join-item btn btn-secondary w-4" on:click={() => handlePageClick(1)}>1</button>
         {/if}
 
         {#if $currentPageStore > 3 && page > 4}
-            <button class="join-item btn btn-secondary">...</button>
+            <button class="join-item btn btn-secondary w-4">...</button>
         {/if}
 
         {#if $currentPageStore > 3 && page < 5}
             <button
-                class="join-item btn btn-secondary"
+                class="join-item btn btn-secondary  w-4"
                 on:click={() => handlePageClick($currentPageStore - 2)}
                 >{$currentPageStore - 2}</button
             >
@@ -32,20 +32,20 @@
 
         {#if $currentPageStore > 2}
             <button
-                class="join-item btn btn-secondary"
+                class="join-item btn btn-secondary w-4"
                 on:click={() => handlePageClick($currentPageStore - 1)}
                 >{$currentPageStore - 1}</button
             >
         {/if}
 
         <button
-            class="join-item btn btn-primary"
+            class="join-item btn btn-primary w-4"
             on:click={() => handlePageClick($currentPageStore)}>{$currentPageStore}</button
         >
 
         {#if $currentPageStore < page - 1}
             <button
-                class="join-item btn btn-secondary"
+                class="join-item btn btn-secondary w-4"
                 on:click={() => handlePageClick($currentPageStore + 1)}
                 >{$currentPageStore + 1}</button
             >
@@ -53,18 +53,18 @@
 
         {#if $currentPageStore < page - 2 && page < 5}
             <button
-                class="join-item btn btn-secondary"
+                class="join-item btn btn-secondary w-4"
                 on:click={() => handlePageClick($currentPageStore + 2)}
                 >{$currentPageStore + 2}</button
             >
         {/if}
 
         {#if $currentPageStore < page - 2 && page > 4}
-            <button class="join-item btn btn-secondary">...</button>
+            <button class="join-item btn btn-secondary w-4">...</button>
         {/if}
 
         {#if $currentPageStore !== page}
-            <button class="join-item btn btn-secondary" on:click={() => handlePageClick(page)}
+            <button class="join-item btn btn-secondary w-4" on:click={() => handlePageClick(page)}
                 >{page}</button
             >
         {/if}

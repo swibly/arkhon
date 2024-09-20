@@ -3,9 +3,9 @@
     import { toggle } from '$lib/stores/theme';
     import { contrast } from '$lib/stores/contrast';
     import Project from '$lib/components/Project.svelte';
-    import Add from '$lib/components/Add.svelte';
+    import Add from '$lib/components/Add.svelte';    
 
-    var change: boolean = true;
+    var change: boolean = true;    
 </script>
 
 <main class="w-full min-h-screen">
