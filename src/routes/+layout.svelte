@@ -5,7 +5,7 @@
     import { page } from '$app/stores';
     import { contrastType, contrast } from '$lib/stores/contrast';
 
-    onMount(() => ($lightMode = localStorage.getItem("theme") === "true"));
+    onMount(() => ($lightMode = localStorage.getItem("theme") === "true"));    
 </script>
 
 {#if $page.url.pathname !== '/'}
