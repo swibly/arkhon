@@ -43,7 +43,8 @@
     let mode: string = 'select';
     let objectMenu: HTMLElement;
     let type: string;
-    let borderColor: string = 'none';
+    let borderColor: string = 'white';
+    let fillColor: string = 'none';
 
     const quadSize = {
         w: 10000,
@@ -400,6 +401,8 @@
         fabric.absolutePan(
             new Point(-fabric.width / 2 + quadSize.w / 2 + 200, -fabric.height / 2 + quadSize.h / 2)
         );
+
+        console.log(fabric.getActiveObject());
     }
 
     function sendBackward() {
@@ -496,6 +499,12 @@
         fabric.getActiveObject()?.set('stroke', color);
         fabric.renderAll();
     }
+
+    function changeFill(color: string) {
+        fillColor = color;
+        fabric.getActiveObject()?.set('fill', color);
+        fabric.renderAll();
+    }
 </script>
 
 <main class="w-full min-h-screen">
@@ -545,6 +554,7 @@
                     /></button
                 >
                 <button
+                    on:click={stopDraw}
                     on:click={addText}
                     on:click={() => {
                         mode = 'text';
@@ -552,13 +562,7 @@
                     ><Icon
                         icon="solar:text-bold"
                         font-size="35px"
-                        class={`${
-                            mode === 'text'
-                                ? 'text-secondary'
-                                : $lightMode
-                                ? 'text-black'
-                                : 'text-white'
-                        }`}
+                        class={`${$lightMode ? 'text-black' : 'text-white'}`}
                     /></button
                 >
             </div>
@@ -659,7 +663,7 @@
             >
                 {#if type === 'rect'}
                     <p class="text-center text-xl pt-4 font-bold">Borda</p>
-                    <section class="w-full h-12 flex justify-center items-center gap-2 pt-2">
+                    <section class="flex gap-2 pt-2">
                         <button
                             class="w-4 h-4 font-bold -mt-1"
                             on:click={() => changeBorder('none')}>X</button
@@ -706,13 +710,49 @@
                     </section>
                     <div class="divider" />
                     <p class="text-center text-xl font-bold">Fundo</p>
-                    <section class="flex gap-4 pt-2">
-                        <button class="w-4 h-4 bg-white rounded border border-2" />
-                        <button class="w-4 h-4 bg-black rounded" />
-                        <button class="w-4 h-4 bg-red-500 rounded" />
-                        <button class="w-4 h-4 bg-green-500 rounded" />
-                        <button class="w-4 h-4 bg-blue-500 rounded" />
-                        <button class="w-4 h-4 bg-pink-500 rounded" />
+                    <section class="flex gap-2 pt-2">
+                        <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
+                            >X</button
+                        >
+                        <button
+                            class="w-4 h-4 bg-white rounded border border-2"
+                            on:click={() => changeFill('white')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-black rounded"
+                            on:click={() => changeFill('black')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-red-500 rounded"
+                            on:click={() => changeFill('red')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-green-500 rounded"
+                            on:click={() => changeFill('green')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-blue-500 rounded"
+                            on:click={() => changeFill('blue')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-pink-500 rounded"
+                            on:click={() => changeFill('pink')}
+                        />
+                        <div class="divider divider-horizontal h-4" />
+                        {#if fillColor === 'null'}
+                            <button
+                                class="w-4 h-4 font-bold -mt-1"
+                                on:click={() => changeFill('null')}>X</button
+                            >
+                        {:else}
+                            <button
+                                class={`w-4 h-4 ${
+                                    fillColor === 'white' || fillColor === 'black'
+                                        ? `bg-${fillColor}`
+                                        : `bg-${fillColor}-500`
+                                } rounded`}
+                            />
+                        {/if}
                     </section>
                 {/if}
             </article>
