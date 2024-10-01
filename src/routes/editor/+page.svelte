@@ -5,7 +5,8 @@
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
-    import { Canvas, Rect, Point, Line, Group, PencilBrush } from 'fabric';
+    import { lightMode } from '$lib/stores/theme';
+    import { Canvas, Rect, Point, Group, PencilBrush, ActiveSelection, IText, Path } from 'fabric';
 
     let activeButton: String = 'project';
 
@@ -35,12 +36,14 @@
     let fabric: Canvas;
     let pointerX: number;
     let pointerY: number;
-    let lastPointerX: number;
-    let lastPointerY: number;
     let selectedObjects: any = [];
     let rightMenu: HTMLElement;
     let buttonInside: boolean;
-    let keysPressed: Record<string, boolean> = {};
+    let _clipboard: any;
+    let mode: string = 'select';
+    let objectMenu: HTMLElement;
+    let type: string;
+    let borderColor: string = 'none';
 
     const quadSize = {
         w: 10000,
@@ -48,7 +51,10 @@
     };
 
     onMount(function () {
-        fabric = new Canvas(canvas, { selection: true });
+        fabric = new Canvas(canvas, {
+            selection: true,
+            preserveObjectStacking: true
+        });
 
         fabric.freeDrawingBrush = new PencilBrush(fabric);
 
@@ -80,9 +86,16 @@
         );
 
         fabric.on('mouse:down', function (this: any, { e }) {
-            if (e.altKey) {
-                lastPointerX = fabric.getViewportPoint(e).x;
-                lastPointerY = fabric.getViewportPoint(e).y;
+            if (e.type === 'mousedown' && e.altKey === true) {
+                this.lastPosX = fabric.getViewportPoint(e).x;
+                this.lastPosY = fabric.getViewportPoint(e).y;
+
+                this.isDragging = true;
+                this.selection = false;
+            }
+            if (e.type === 'touchstart' && e.touches && e.touches.length === 1) {
+                this.lastPosX = e.touches[0].clientX;
+                this.lastPosY = e.touches[0].clientY;
 
                 this.isDragging = true;
                 this.selection = false;
@@ -92,14 +105,20 @@
         fabric.on('mouse:move', function (this: any, { e }) {
             if (this.isDragging) {
                 let vpt = this.viewportTransform;
-
-                vpt[4] += fabric.getViewportPoint(e).x - lastPointerX;
-                vpt[5] += fabric.getViewportPoint(e).y - lastPointerY;
-
-                this.requestRenderAll();
-
-                lastPointerX = fabric.getViewportPoint(e).x;
-                lastPointerY = fabric.getViewportPoint(e).y;
+                if (e.type === 'mousemove') {
+                    vpt[4] += fabric.getViewportPoint(e).x - this.lastPosX;
+                    vpt[5] += fabric.getViewportPoint(e).y - this.lastPosY;
+                    this.requestRenderAll();
+                    this.lastPosX = fabric.getViewportPoint(e).x;
+                    this.lastPosY = fabric.getViewportPoint(e).y;
+                }
+                if (e.type === 'touchmove' && e.touches && e.touches.length) {
+                    vpt[4] += e.touches[0].clientX - this.lastPosX;
+                    vpt[5] += e.touches[0].clientY - this.lastPosY;
+                    this.requestRenderAll();
+                    this.lastPosX = e.touches[0].clientX;
+                    this.lastPosY = e.touches[0].clientY;
+                }
             }
         });
 
@@ -144,29 +163,21 @@
             }
         });
 
-        fabric.on('object:scaling', function ({ e, target }) {
-            e.preventDefault();
-
-            if (e.ctrlKey) {
-                target.scaleX = Math.round(target.scaleX / 0.5) * 0.5;
-                target.scaleY = Math.round(target.scaleY / 0.5) * 0.5;
-            }
-        });
-
         fabric.on('dragover', function ({ e }) {
             pointerX = fabric.getScenePoint(e).x;
             pointerY = fabric.getScenePoint(e).y;
         });
 
         fabric.on('dragleave', function ({ e }) {
+            const colors = ['yellow', 'blue', 'green', 'black', 'pink'];
+
             fabric.add(
                 new Rect({
                     width: 100,
                     height: 100,
                     top: pointerY - 50,
                     left: pointerX - 50,
-                    fill: null,
-                    stroke: 'yellow',
+                    fill: colors[Math.floor(Math.random() * colors.length)],
                     strokeWidth: 3,
                     strokeUniform: true,
                     lockSkewingX: true,
@@ -177,17 +188,25 @@
 
         fabric.on('selection:created', function (options) {
             selectedObjects = options.selected;
+
+            if (selectedObjects.length === 1) {
+                objectMenu.style.display = 'flex';
+                type = selectedObjects[0].get('type');
+            }
         });
 
         fabric.on('selection:cleared', function () {
             selectedObjects = [];
+
+            objectMenu.style.display = 'none';
         });
 
         addEventListener('contextmenu', (e) => {
             e.preventDefault();
+
             rightMenu.style.display = 'block';
-            rightMenu.style.left = e.pageX + 'px';
-            rightMenu.style.top = e.pageY + 'px';
+            rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
+            rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
         });
 
         addEventListener('mousedown', (e) => {
@@ -204,16 +223,62 @@
             }
         });
 
-        addEventListener('keydown', (e) => {
-            keysPressed[e.key] = true;
-
-            if (keysPressed['Control'] && e.key == 'x') {
-                deleteObject();
-            }
-        });
-
         rightMenu.addEventListener('mousedown', () => {
             buttonInside = true;
+        });
+
+        addEventListener('keydown', async (e) => {
+            if (e.ctrlKey && e.key == 'x') {
+                deleteObject();
+            }
+
+            if (e.ctrlKey && e.key == 'a') {
+                e.preventDefault();
+
+                fabric.discardActiveObject();
+                var sel = new ActiveSelection(fabric.getObjects().slice(2), {
+                    canvas: fabric
+                });
+                fabric.setActiveObject(sel);
+                fabric.renderAll();
+            }
+
+            if (e.ctrlKey && e.key == 'c') {
+                fabric
+                    .getActiveObject()!
+                    .clone()
+                    .then((cloned) => {
+                        _clipboard = cloned;
+                    });
+            }
+
+            if (e.ctrlKey && e.key == 'v') {
+                const clonedObj = await _clipboard.clone();
+                fabric.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true
+                });
+                if (clonedObj instanceof ActiveSelection) {
+                    clonedObj.canvas = fabric;
+                    clonedObj.forEachObject((obj) => {
+                        fabric.add(obj);
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    fabric.add(clonedObj);
+                }
+                _clipboard.top += 10;
+                _clipboard.left += 10;
+                fabric.setActiveObject(clonedObj);
+                fabric.requestRenderAll();
+            }
+
+            if (e.ctrlKey && e.key == 'p') {
+                e.preventDefault();
+                fabric.isDrawingMode = !fabric.isDrawingMode;
+            }
         });
     });
 
@@ -225,7 +290,7 @@
                 top: quadSize.h / 2 - 50,
                 left: quadSize.w / 2 - 50,
                 fill: null,
-                stroke: 'yellow',
+                stroke: 'blue',
                 strokeWidth: 3,
                 strokeUniform: true,
                 lockSkewingX: true,
@@ -235,20 +300,10 @@
     }
 
     function deleteObject() {
-        let activeObject = fabric.getActiveObject();
-        let activeGroup = fabric.getActiveObjects();
-
-        if (activeObject) {
-            fabric.remove(activeObject);
-        }
-
-        if (activeGroup) {
+        selectedObjects.forEach((obj: any) => {
+            fabric.remove(obj);
             fabric.discardActiveObject();
-            fabric.renderAll();
-            activeGroup.forEach((obj: any) => {
-                fabric.remove(obj);
-            });
-        }
+        });
     }
 
     function group() {
@@ -256,6 +311,51 @@
         fabric.add(group);
         fabric.discardActiveObject();
         selectedObjects = [];
+    }
+
+    // function group() {
+    //   var activegroup = fabric.canvas.getActiveObject();
+    //   var objectsInGroup = activegroup.getObjects();
+
+    //   activegroup.clone(function (newgroup: any) {
+    //     fabric.discardActiveGroup();
+    //     objectsInGroup.forEach(function (object: any) {
+    //       fabric.remove(object);
+    //     });
+    //     fabric.add(newgroup);
+    //   });
+    // }
+
+    function ungroup() {
+        // selectedObjects.forEach(async (obj: any) => {
+        //   let cloneObj = await obj.clone();
+        //   obj._objects.forEach((soloObj: any) => {
+        //     fabric.remove(soloObj);
+        //     fabric.renderAll();
+        //   });
+        //   fabric.remove(obj);
+        //   cloneObj._objects.forEach((newObj: any) => {
+        //     fabric.add(newObj);
+        //     fabric.renderAll();
+        //   });
+        // });
+        // selectedObjects.forEach(async (obj: any) => {
+        //   let cloneObj = await obj.clone();
+        //   obj._objects.forEach((soloObj: any) => {
+        //     fabric.remove(soloObj);
+        //     fabric.renderAll();
+        //   });
+        //   fabric.remove(obj);
+        //   fabric.renderAll();
+        //   cloneObj._objects.forEach((soloObj: any) => {
+        //     fabric.add(soloObj);
+        //     fabric.setActiveObject(soloObj);
+        //     fabric.renderAll();
+        //   });
+        //   // console.log(cloneObj);
+        // });
+        // selectedObjects = [];
+        // // console.log(selectedObjects);
     }
 
     function lock() {
@@ -298,40 +398,103 @@
         fabric.setZoom(1);
 
         fabric.absolutePan(
-            new Point(-fabric.width / 2 + quadSize.w / 2, -fabric.height / 2 + quadSize.h / 2)
+            new Point(-fabric.width / 2 + quadSize.w / 2 + 200, -fabric.height / 2 + quadSize.h / 2)
         );
+    }
+
+    function sendBackward() {
+        selectedObjects.forEach((obj: any) => {
+            if (fabric.getObjects().indexOf(obj) > 2) {
+                fabric.sendObjectBackwards(obj);
+            } else {
+                fabric.moveObjectTo(obj, 2);
+            }
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendToBack() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.moveObjectTo(obj, 2);
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendForward() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.bringObjectForward(obj);
+            obj.set();
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendToFront() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.bringObjectToFront(obj);
+        });
+
+        fabric.renderAll();
     }
 
     function drawGrid() {
         const grid = 100;
-        const canvasWidth = quadSize.w;
-        const canvasHeight = quadSize.h;
+        const canvasWidth = Math.round(quadSize.w);
+        const canvasHeight = Math.round(quadSize.h);
 
-        for (var i = 0; i < canvasWidth / grid; i++) {
-            fabric.add(
-                new Line([i * grid, 0, i * grid, canvasHeight], {
-                    type: 'line',
-                    stroke: '#A3A3A3',
-                    strokeWidth: 2,
-                    selectable: false
-                })
-            );
+        const gridPath = [];
+
+        for (let i = 0; i <= canvasWidth / grid; i++) {
+            const x = Math.round(i * grid);
+            gridPath.push(`M ${x} 0 L ${x} ${canvasHeight}`);
         }
 
-        for (var i = 0; i < canvasHeight / grid; i++) {
-            fabric.add(
-                new Line([0, i * grid, canvasWidth, i * grid], {
-                    type: 'line',
-                    stroke: '#A3A3A3',
-                    strokeWidth: 2,
-                    selectable: false
-                })
-            );
+        for (let i = 0; i <= canvasHeight / grid; i++) {
+            const y = Math.round(i * grid);
+            gridPath.push(`M 0 ${y} L ${canvasWidth} ${y}`);
         }
+
+        const path = new Path(gridPath.join(' '), {
+            fill: '',
+            stroke: '#A3A3A3',
+            strokeWidth: 2,
+            strokeUniform: true,
+            selectable: false,
+            evented: false,
+            objectCaching: false
+        });
+
+        fabric.add(path);
+        path.setCoords();
     }
 
     function resize() {
-        fabric.setDimensions({ width: innerWidth, height: innerHeight });
+        fabric.setDimensions({
+            width: innerWidth - innerWidth / 6,
+            height: innerHeight - (innerHeight / 100) * 5.5
+        });
+    }
+
+    function addText() {
+        let text = new IText('Toque para digitar', {
+            width: 300,
+            top: quadSize.h / 2 - 25,
+            left: quadSize.w / 2 - 165,
+            fill: '',
+            stroke: '#A3A3A3',
+            strokeWidth: 2,
+            strokeUniform: true,
+            fontFamily: 'sans-serif'
+        });
+        fabric.add(text);
+    }
+
+    function changeBorder(color: string) {
+        borderColor = color;
+        fabric.getActiveObject()?.set('stroke', color);
+        fabric.renderAll();
     }
 </script>
 
@@ -347,14 +510,57 @@
                 </ul>
             </div>
             <div class="flex gap-4">
-                <button on:click={stopDraw}
-                    ><Icon icon="fluent:cursor-16-filled" font-size="35px" /></button
+                <button
+                    on:click={stopDraw}
+                    on:click={() => {
+                        mode = 'select';
+                    }}
+                    ><Icon
+                        icon="fluent:cursor-16-filled"
+                        font-size="35px"
+                        class={`${
+                            mode === 'select'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
                 >
-                <button on:click={stopDraw}
-                    ><Icon icon="fluent:square-hint-16-filled" font-size="35px" /></button
+                <button
+                    on:click={startDraw}
+                    on:click={() => {
+                        mode = 'paint';
+                    }}
+                    ><Icon
+                        icon="ri:brush-fill"
+                        font-size="35px"
+                        class={`${
+                            mode === 'paint'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
                 >
-                <button on:click={startDraw}><Icon icon="ri:brush-fill" font-size="35px" /></button>
-                <button><Icon icon="solar:text-bold" font-size="35px" /></button>
+                <button
+                    on:click={addText}
+                    on:click={() => {
+                        mode = 'text';
+                    }}
+                    ><Icon
+                        icon="solar:text-bold"
+                        font-size="35px"
+                        class={`${
+                            mode === 'text'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
             </div>
         </div>
         <h1 class="text-2xl font-bold">Título</h1>
@@ -363,10 +569,17 @@
             <button on:click={centerView}
                 ><Icon icon="mingcute:align-center-fill" font-size="25px" /></button
             >
+
+            <label class="swap swap-rotate">
+                <input type="checkbox" class="theme-controller" on:click={toggle} />
+
+                <Icon icon="ph:moon" class="swap-on" font-size="25px" />
+                <Icon icon="ph:sun" class="swap-off" font-size="25px" />
+            </label>
         </div>
     </nav>
-    <main class="flex h-[calc(100vh-3rem)]">
-        <aside class="w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
+    <main class="flex h-[calc(100vh-5.5vh)]">
+        <aside class="w-1/6 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -439,17 +652,74 @@
             </main>
         </aside>
 
-        <main class="w-5/6 overflow-hidden">
-            <label class="swap swap-rotate pl-4 pt-4 absolute z-10">
-                <input type="checkbox" class="theme-controller" on:click={toggle} />
+        <main class="w-5/6">
+            <article
+                class="absolute hidden mt-12 ml-12 w-72 h-72 bg-base-300 z-50 flex-col items-center rounded-xl"
+                bind:this={objectMenu}
+            >
+                {#if type === 'rect'}
+                    <p class="text-center text-xl pt-4 font-bold">Borda</p>
+                    <section class="w-full h-12 flex justify-center items-center gap-2 pt-2">
+                        <button
+                            class="w-4 h-4 font-bold -mt-1"
+                            on:click={() => changeBorder('none')}>X</button
+                        >
+                        <button
+                            class="w-4 h-4 bg-white rounded"
+                            on:click={() => changeBorder('white')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-black rounded"
+                            on:click={() => changeBorder('black')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-red-500 rounded"
+                            on:click={() => changeBorder('red')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-green-500 rounded"
+                            on:click={() => changeBorder('green')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-blue-500 rounded"
+                            on:click={() => changeBorder('blue')}
+                        />
+                        <button
+                            class="w-4 h-4 bg-pink-500 rounded"
+                            on:click={() => changeBorder('pink')}
+                        />
+                        <div class="divider divider-horizontal h-4" />
+                        {#if borderColor === 'none'}
+                            <button
+                                class="w-4 h-4 font-bold -mt-1"
+                                on:click={() => changeBorder('none')}>X</button
+                            >
+                        {:else}
+                            <button
+                                class={`w-4 h-4 ${
+                                    borderColor === 'white' || borderColor === 'black'
+                                        ? `bg-${borderColor}`
+                                        : `bg-${borderColor}-500`
+                                } rounded`}
+                            />
+                        {/if}
+                    </section>
+                    <div class="divider" />
+                    <p class="text-center text-xl font-bold">Fundo</p>
+                    <section class="flex gap-4 pt-2">
+                        <button class="w-4 h-4 bg-white rounded border border-2" />
+                        <button class="w-4 h-4 bg-black rounded" />
+                        <button class="w-4 h-4 bg-red-500 rounded" />
+                        <button class="w-4 h-4 bg-green-500 rounded" />
+                        <button class="w-4 h-4 bg-blue-500 rounded" />
+                        <button class="w-4 h-4 bg-pink-500 rounded" />
+                    </section>
+                {/if}
+            </article>
 
-                <Icon icon="ph:moon" class="swap-on size-8" />
-                <Icon icon="ph:sun" class="swap-off size-8" />
-            </label>
-
-            <div
+            <article
                 bind:this={rightMenu}
-                class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-10"
+                class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
             >
                 <ul role="menu" aria-labelledby="menu-button" class="menu vertical div space-y-2">
                     <li on:click={addRect}>
@@ -469,16 +739,28 @@
                     <li on:click={unlock}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Destravar</a>
                     </li>
-                    <li on:click={startDraw}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Desenhar</a>
-                    </li>
-                    <li on:click={stopDraw}>
+                    <li on:click={sendBackward}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Parar de Desenhar</a
+                            >Mandar para trás</a
+                        >
+                    </li>
+                    <li on:click={sendToBack}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Mandar para o fundo</a
+                        >
+                    </li>
+                    <li on:click={sendForward}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Mandar para frente</a
+                        >
+                    </li>
+                    <li on:click={sendToFront}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Mandar para a frente de todos</a
                         >
                     </li>
                 </ul>
-            </div>
+            </article>
 
             <canvas bind:this={canvas} />
         </main>
