@@ -12,12 +12,16 @@
     }
 </script>
 
-<body data-theme={$contrast ? $contrastType : ($lightMode ? "light" : "dark")}>
+<body data-theme={$contrast ? $contrastType : $lightMode ? 'light' : 'dark'}>
     <div class="pt-12 mb-12">
         <div class="flex justify-center">
-            <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />
+            {#if $lightMode}
+                <img src="/gallery/logo.png" class="h-48 w-48" alt="Logo" />
+            {:else}
+                <img src="/gallery/logo.svg" class="h-48 w-48" alt="Logo" />
+            {/if}
         </div>
-        <p class="flex justify-center text-3xl font-semibold">Sua plataforma de arquitetura</p>
+        <p class="flex justify-center text-3xl text-center font-semibold">Sua plataforma de arquitetura</p>
     </div>
     <div class="flex justify-center gap-4">
         <a href="/login" class="btn btn-primary w-36">Iniciar Sessão</a>

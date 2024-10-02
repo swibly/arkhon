@@ -72,7 +72,7 @@
                     >
                     <button
                         class={`w-full py-2 font-semibold flex items-center gap-2 pl-4 ${
-                            activeButton === 'help'
+                            activeButton === 'exit'
                                 ? 'bg-secondary border-l-8 border-primary'
                                 : 'bg-base-200'
                         }`}

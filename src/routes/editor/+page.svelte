@@ -5,7 +5,20 @@
     import Pagination from '$lib/components/Pagination.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
-    import { Canvas, Rect, Point, Line, Group, PencilBrush } from 'fabric';
+    import { lightMode } from '$lib/stores/theme';
+    import {
+        Canvas,
+        Rect,
+        Circle,
+        Line,
+        Polygon,
+        Point,
+        Group,
+        PencilBrush,
+        ActiveSelection,
+        IText,
+        Path
+    } from 'fabric';
 
     let activeButton: String = 'project';
 
@@ -35,12 +48,18 @@
     let fabric: Canvas;
     let pointerX: number;
     let pointerY: number;
-    let lastPointerX: number;
-    let lastPointerY: number;
     let selectedObjects: any = [];
     let rightMenu: HTMLElement;
     let buttonInside: boolean;
-    let keysPressed: Record<string, boolean> = {};
+    let _clipboard: any;
+    let mode: string = 'select';
+    let objectMenu: HTMLElement;
+    let type: string;
+    let borderColor: string = 'white';
+    let fillColor: string = 'none';
+    let capturedPoints: any = [];
+    let visiblePoints: any = [];
+    let count: number = 0;
 
     const quadSize = {
         w: 10000,
@@ -48,7 +67,10 @@
     };
 
     onMount(function () {
-        fabric = new Canvas(canvas, { selection: true });
+        fabric = new Canvas(canvas, {
+            selection: true,
+            preserveObjectStacking: true
+        });
 
         fabric.freeDrawingBrush = new PencilBrush(fabric);
 
@@ -80,26 +102,122 @@
         );
 
         fabric.on('mouse:down', function (this: any, { e }) {
-            if (e.altKey) {
-                lastPointerX = fabric.getViewportPoint(e).x;
-                lastPointerY = fabric.getViewportPoint(e).y;
+            if (e.type === 'mousedown' && e.altKey === true) {
+                this.lastPosX = fabric.getViewportPoint(e).x;
+                this.lastPosY = fabric.getViewportPoint(e).y;
 
                 this.isDragging = true;
                 this.selection = false;
+                this.isDrawingMode = false;
+            }
+
+            if (mode === 'select') {
+                fabric.isDrawingMode = false;
+            }
+
+            if (mode === 'text') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new IText('Toque para digitar', {
+                        width: 300,
+                        top: fabric.getScenePoint(e).y - 25,
+                        left: fabric.getScenePoint(e).x - 165,
+                        fill: null,
+                        stroke: 'white',
+                        strokeWidth: 2,
+                        strokeUniform: true,
+                        fontFamily: 'sans-serif'
+                    })
+                );
+            }
+
+            if (mode === 'rect') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new Rect({
+                        width: 100,
+                        height: 100,
+                        top: fabric.getScenePoint(e).y - 50,
+                        left: fabric.getScenePoint(e).x - 50,
+                        fill: null,
+                        stroke: 'green',
+                        strokeWidth: 3,
+                        strokeUniform: true,
+                        lockSkewingX: true,
+                        lockSkewingY: true
+                    })
+                );
+            }
+
+            if (mode === 'circle') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new Circle({
+                        radius: 60,
+                        top: fabric.getScenePoint(e).y - 50,
+                        left: fabric.getScenePoint(e).x - 50,
+                        fill: null,
+                        stroke: 'green',
+                        strokeWidth: 3,
+                        strokeUniform: true,
+                        lockSkewingX: true,
+                        lockSkewingY: true
+                    })
+                );
+            }
+
+            if (mode === 'line') {
+                count += 1;
+
+                const points = { x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y };
+
+                capturedPoints.push(points);
+
+                let circle = new IText(`${count}`, {
+                    fontSize: 25,
+                    top: fabric.getScenePoint(e).y - 5,
+                    left: fabric.getScenePoint(e).x - 5,
+                    fill: 'green',
+                    stroke: 'green',
+                    strokeWidth: 3,
+                    strokeUniform: true,
+                    fontFamily: 'sans-serif',
+                    selectable: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockRotation: true,
+                    lockScalingFlip: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockSkewingX: true,
+                    lockSkewingY: true
+                });
+
+                fabric.add(circle);
+
+                visiblePoints.push(circle);
             }
         });
 
         fabric.on('mouse:move', function (this: any, { e }) {
             if (this.isDragging) {
                 let vpt = this.viewportTransform;
-
-                vpt[4] += fabric.getViewportPoint(e).x - lastPointerX;
-                vpt[5] += fabric.getViewportPoint(e).y - lastPointerY;
-
-                this.requestRenderAll();
-
-                lastPointerX = fabric.getViewportPoint(e).x;
-                lastPointerY = fabric.getViewportPoint(e).y;
+                if (e.type === 'mousemove') {
+                    vpt[4] += fabric.getViewportPoint(e).x - this.lastPosX;
+                    vpt[5] += fabric.getViewportPoint(e).y - this.lastPosY;
+                    this.requestRenderAll();
+                    this.lastPosX = fabric.getViewportPoint(e).x;
+                    this.lastPosY = fabric.getViewportPoint(e).y;
+                }
             }
         });
 
@@ -144,21 +262,12 @@
             }
         });
 
-        fabric.on('object:scaling', function ({ e, target }) {
-            e.preventDefault();
-
-            if (e.ctrlKey) {
-                target.scaleX = Math.round(target.scaleX / 0.5) * 0.5;
-                target.scaleY = Math.round(target.scaleY / 0.5) * 0.5;
-            }
-        });
-
         fabric.on('dragover', function ({ e }) {
             pointerX = fabric.getScenePoint(e).x;
             pointerY = fabric.getScenePoint(e).y;
         });
 
-        fabric.on('dragleave', function ({ e }) {
+        fabric.on('dragleave', function () {
             fabric.add(
                 new Rect({
                     width: 100,
@@ -166,7 +275,7 @@
                     top: pointerY - 50,
                     left: pointerX - 50,
                     fill: null,
-                    stroke: 'yellow',
+                    stroke: 'green',
                     strokeWidth: 3,
                     strokeUniform: true,
                     lockSkewingX: true,
@@ -181,13 +290,16 @@
 
         fabric.on('selection:cleared', function () {
             selectedObjects = [];
+
+            objectMenu.style.display = 'none';
         });
 
         addEventListener('contextmenu', (e) => {
             e.preventDefault();
+
             rightMenu.style.display = 'block';
-            rightMenu.style.left = e.pageX + 'px';
-            rightMenu.style.top = e.pageY + 'px';
+            rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
+            rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
         });
 
         addEventListener('mousedown', (e) => {
@@ -202,18 +314,169 @@
                     buttonInside = false;
                 }
             }
-        });
 
-        addEventListener('keydown', (e) => {
-            keysPressed[e.key] = true;
-
-            if (keysPressed['Control'] && e.key == 'x') {
-                deleteObject();
+            if (selectedObjects.length === 1) {
+                objectMenu.style.display = 'flex';
+                type = fabric.getActiveObject()?.get('type');
+                borderColor = fabric.getActiveObject()?.get('stroke');
+                fillColor = fabric.getActiveObject()?.get('fill');
             }
         });
 
         rightMenu.addEventListener('mousedown', () => {
             buttonInside = true;
+        });
+
+        addEventListener('keydown', async (e) => {
+            if (e.ctrlKey && e.key == 'x') {
+                deleteObject();
+                count = 0;
+                capturedPoints = [];
+            }
+
+            if (e.ctrlKey && e.key == 'a') {
+                e.preventDefault();
+
+                fabric.discardActiveObject();
+                var sel = new ActiveSelection(fabric.getObjects().slice(2), {
+                    canvas: fabric
+                });
+                fabric.setActiveObject(sel);
+                fabric.renderAll();
+            }
+
+            if (e.ctrlKey && e.key == 'c') {
+                if (fabric.getActiveObject()) {
+                    fabric
+                        .getActiveObject()!
+                        .clone()
+                        .then((cloned) => {
+                            _clipboard = cloned;
+                        });
+                }
+            }
+
+            if (e.ctrlKey && e.key == 'v') {
+                const clonedObj = await _clipboard.clone();
+                fabric.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true
+                });
+                if (clonedObj instanceof ActiveSelection) {
+                    clonedObj.canvas = fabric;
+                    clonedObj.forEachObject((obj) => {
+                        fabric.add(obj);
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    fabric.add(clonedObj);
+                }
+                _clipboard.top += 10;
+                _clipboard.left += 10;
+                fabric.setActiveObject(clonedObj);
+                fabric.requestRenderAll();
+            }
+
+            if (e.altKey) {
+                e.preventDefault();
+                
+                stopLine();
+                stopDraw();
+
+                fabric.discardActiveObject();
+                mode = 'select';
+
+                fabric.renderAll();
+            }
+
+            if (e.altKey && e.key == 'p') {
+                e.preventDefault();
+
+                stopLine();
+                startDraw();
+
+                if (mode !== 'paint') {
+                    mode = 'paint';
+                } else {
+                    stopDraw();
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'q') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'rect') {
+                    mode = 'rect';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'c') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'circle') {
+                    mode = 'circle';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 't') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'text') {
+                    mode = 'text';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'l') {
+                e.preventDefault();
+
+                stopDraw();
+                if (mode !== 'line') {
+                    mode = 'line';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (mode === 'line') {
+                if (e.ctrlKey && e.key == 'f') {
+                    e.preventDefault();
+
+                    visiblePoints.forEach((obj: any) => {
+                        fabric.remove(obj);
+                    });
+
+                    fabric.add(
+                        new Polygon(capturedPoints, {
+                            fill: 'green',
+                            stroke: 'green',
+                            strokeWidth: 2,
+                            originX: 'center',
+                            originY: 'center'
+                        })
+                    );
+
+                    mode = 'select';
+                    capturedPoints = [];
+                    count = 0;
+                }
+
+                fabric.renderAll();
+            }
         });
     });
 
@@ -225,7 +488,7 @@
                 top: quadSize.h / 2 - 50,
                 left: quadSize.w / 2 - 50,
                 fill: null,
-                stroke: 'yellow',
+                stroke: 'blue',
                 strokeWidth: 3,
                 strokeUniform: true,
                 lockSkewingX: true,
@@ -235,20 +498,10 @@
     }
 
     function deleteObject() {
-        let activeObject = fabric.getActiveObject();
-        let activeGroup = fabric.getActiveObjects();
-
-        if (activeObject) {
-            fabric.remove(activeObject);
-        }
-
-        if (activeGroup) {
+        fabric.getActiveObjects().forEach((obj: any) => {
+            fabric.remove(obj);
             fabric.discardActiveObject();
-            fabric.renderAll();
-            activeGroup.forEach((obj: any) => {
-                fabric.remove(obj);
-            });
-        }
+        });
     }
 
     function group() {
@@ -294,48 +547,136 @@
         fabric.renderAll();
     }
 
+    function stopLine() {
+        visiblePoints.forEach((obj: any) => {
+            fabric.remove(obj);
+            fabric.discardActiveObject();
+        });
+
+        fabric.renderAll();
+
+        visiblePoints = [];
+        capturedPoints = [];
+        count = 0;
+    }
+
     function centerView() {
         fabric.setZoom(1);
 
         fabric.absolutePan(
-            new Point(-fabric.width / 2 + quadSize.w / 2, -fabric.height / 2 + quadSize.h / 2)
+            new Point(-fabric.width / 2 + quadSize.w / 2 + 200, -fabric.height / 2 + quadSize.h / 2)
         );
+    }
+
+    function sendBackward() {
+        selectedObjects.forEach((obj: any) => {
+            if (fabric.getObjects().indexOf(obj) > 2) {
+                fabric.sendObjectBackwards(obj);
+            } else {
+                fabric.moveObjectTo(obj, 2);
+            }
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendToBack() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.moveObjectTo(obj, 2);
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendForward() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.bringObjectForward(obj);
+            obj.set();
+        });
+
+        fabric.renderAll();
+    }
+
+    function sendToFront() {
+        selectedObjects.forEach((obj: any) => {
+            fabric.bringObjectToFront(obj);
+        });
+
+        fabric.renderAll();
     }
 
     function drawGrid() {
         const grid = 100;
-        const canvasWidth = quadSize.w;
-        const canvasHeight = quadSize.h;
+        const canvasWidth = Math.round(quadSize.w);
+        const canvasHeight = Math.round(quadSize.h);
 
-        for (var i = 0; i < canvasWidth / grid; i++) {
-            fabric.add(
-                new Line([i * grid, 0, i * grid, canvasHeight], {
-                    type: 'line',
-                    stroke: '#A3A3A3',
-                    strokeWidth: 2,
-                    selectable: false
-                })
-            );
+        const gridPath = [];
+
+        for (let i = 0; i <= canvasWidth / grid; i++) {
+            const x = Math.round(i * grid);
+            gridPath.push(`M ${x} 0 L ${x} ${canvasHeight}`);
         }
 
-        for (var i = 0; i < canvasHeight / grid; i++) {
-            fabric.add(
-                new Line([0, i * grid, canvasWidth, i * grid], {
-                    type: 'line',
-                    stroke: '#A3A3A3',
-                    strokeWidth: 2,
-                    selectable: false
-                })
-            );
+        for (let i = 0; i <= canvasHeight / grid; i++) {
+            const y = Math.round(i * grid);
+            gridPath.push(`M 0 ${y} L ${canvasWidth} ${y}`);
         }
+
+        const path = new Path(gridPath.join(' '), {
+            fill: '',
+            stroke: '#A3A3A3',
+            strokeWidth: 2,
+            strokeUniform: true,
+            selectable: false,
+            evented: false,
+            objectCaching: false
+        });
+
+        fabric.add(path);
+        path.setCoords();
     }
 
     function resize() {
-        fabric.setDimensions({ width: innerWidth, height: innerHeight });
+        if (innerWidth >= 1536) {
+            fabric.setDimensions({
+                width: innerWidth - innerWidth / 5,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        } else if (innerWidth >= 1280) {
+            fabric.setDimensions({
+                width: innerWidth - innerWidth / 4,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        } else {
+            fabric.setDimensions({
+                width: innerWidth,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        }
+    }
+
+    function changeBorder(color: string) {
+        borderColor = color;
+        if (color === 'null') {
+            fabric.getActiveObject()?.set('stroke', null);
+        } else {
+            fabric.getActiveObject()?.set('stroke', color);
+        }
+        fabric.renderAll();
+    }
+
+    function changeFill(color: string) {
+        fillColor = color;
+        if (color === 'null') {
+            fabric.getActiveObject()?.set('fill', null);
+        } else {
+            fabric.getActiveObject()?.set('fill', color);
+        }
+        fabric.renderAll();
     }
 </script>
 
-<main class="w-full min-h-screen">
+<main class="w-full min-h-screen overflow-hidden">
     <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
         <div class="flex ml-4">
             <div class="dropdown">
@@ -347,14 +688,120 @@
                 </ul>
             </div>
             <div class="flex gap-4">
-                <button on:click={stopDraw}
-                    ><Icon icon="fluent:cursor-16-filled" font-size="35px" /></button
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'select';
+                    }}
+                    ><Icon
+                        icon="fluent:cursor-16-filled"
+                        font-size="35px"
+                        class={`${
+                            mode === 'select'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
                 >
-                <button on:click={stopDraw}
-                    ><Icon icon="fluent:square-hint-16-filled" font-size="35px" /></button
+                <button
+                    class="hidden xl:block"
+                    on:click={startDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'paint';
+                    }}
+                    ><Icon
+                        icon="ri:brush-fill"
+                        font-size="35px"
+                        class={`${
+                            mode === 'paint'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
                 >
-                <button on:click={startDraw}><Icon icon="ri:brush-fill" font-size="35px" /></button>
-                <button><Icon icon="solar:text-bold" font-size="35px" /></button>
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'text';
+                    }}
+                    ><Icon
+                        icon="solar:text-bold"
+                        font-size="35px"
+                        class={`${
+                            mode === 'text'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'rect';
+                    }}
+                    ><Icon
+                        icon="bi:square-fill"
+                        font-size="35px"
+                        class={`${
+                            mode === 'rect'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'circle';
+                    }}
+                    ><Icon
+                        icon="material-symbols:circle"
+                        font-size="35px"
+                        class={`${
+                            mode === 'circle'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'line';
+                    }}
+                    ><Icon
+                        icon="vaadin:line-h"
+                        font-size="35px"
+                        class={`${
+                            mode === 'line'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
             </div>
         </div>
         <h1 class="text-2xl font-bold">Título</h1>
@@ -363,10 +810,17 @@
             <button on:click={centerView}
                 ><Icon icon="mingcute:align-center-fill" font-size="25px" /></button
             >
+
+            <label class="swap swap-rotate">
+                <input type="checkbox" class="theme-controller" on:click={toggle} />
+
+                <Icon icon="ph:moon" class="swap-on" font-size="25px" />
+                <Icon icon="ph:sun" class="swap-off" font-size="25px" />
+            </label>
         </div>
     </nav>
-    <main class="flex h-[calc(100vh-3rem)]">
-        <aside class="w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
+    <main class="flex h-[calc(100vh-5.5vh)]">
+        <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -439,24 +893,110 @@
             </main>
         </aside>
 
-        <main class="w-5/6 overflow-hidden">
-            <label class="swap swap-rotate pl-4 pt-4 absolute z-10">
-                <input type="checkbox" class="theme-controller" on:click={toggle} />
+        <main class="w-full xl:w-3/4 2xl:w-4/5">
+            <article
+                class="absolute hidden mt-12 ml-12 w-72 h-48 bg-base-300 z-50 flex-col items-center rounded-xl"
+                bind:this={objectMenu}
+            >
+                <p class="text-center text-xl pt-4 font-bold">Borda</p>
+                <section class="flex gap-2 pt-2">
+                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeBorder('null')}
+                        >X</button
+                    >
+                    <button
+                        class="w-4 h-4 bg-white rounded"
+                        on:click={() => changeBorder('white')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-black rounded"
+                        on:click={() => changeBorder('black')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-red-400 rounded"
+                        on:click={() => changeBorder('red')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-green-400 rounded"
+                        on:click={() => changeBorder('green')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-blue-400 rounded"
+                        on:click={() => changeBorder('blue')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-pink-400 rounded"
+                        on:click={() => changeBorder('pink')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-yellow-400 rounded"
+                        on:click={() => changeBorder('yellow')}
+                    />
+                    <div class="divider divider-horizontal h-4" />
+                    {#if borderColor === 'null' || borderColor === null}
+                        <button
+                            class="w-4 h-4 font-bold -mt-1"
+                            on:click={() => changeBorder('null')}>X</button
+                        >
+                    {:else}
+                        <button
+                            class={`w-4 h-4 ${
+                                borderColor === 'white' || borderColor === 'black'
+                                    ? `bg-${borderColor}`
+                                    : `bg-${borderColor}-400`
+                            } rounded`}
+                        />
+                    {/if}
+                </section>
+                <div class="divider" />
+                <p class="text-center text-xl font-bold">Fundo</p>
+                <section class="flex gap-2 pt-2">
+                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
+                        >X</button
+                    >
+                    <button
+                        class="w-4 h-4 bg-white rounded border border-2"
+                        on:click={() => changeFill('white')}
+                    />
+                    <button class="w-4 h-4 bg-black rounded" on:click={() => changeFill('black')} />
+                    <button class="w-4 h-4 bg-red-400 rounded" on:click={() => changeFill('red')} />
+                    <button
+                        class="w-4 h-4 bg-green-400 rounded"
+                        on:click={() => changeFill('green')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-blue-400 rounded"
+                        on:click={() => changeFill('blue')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-pink-400 rounded"
+                        on:click={() => changeFill('pink')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-yellow-400 rounded"
+                        on:click={() => changeFill('yellow')}
+                    />
+                    <div class="divider divider-horizontal h-4" />
+                    {#if fillColor === 'null' || fillColor === null}
+                        <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
+                            >X</button
+                        >
+                    {:else}
+                        <button
+                            class={`w-4 h-4 ${
+                                fillColor === 'white' || fillColor === 'black'
+                                    ? `bg-${fillColor}`
+                                    : `bg-${fillColor}-400`
+                            } rounded`}
+                        />
+                    {/if}
+                </section>
+            </article>
 
-                <Icon icon="ph:moon" class="swap-on size-8" />
-                <Icon icon="ph:sun" class="swap-off size-8" />
-            </label>
-
-            <div
+            <article
                 bind:this={rightMenu}
-                class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-10"
+                class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
             >
                 <ul role="menu" aria-labelledby="menu-button" class="menu vertical div space-y-2">
-                    <li on:click={addRect}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Adicionar Quadrado</a
-                        >
-                    </li>
                     <li on:click={deleteObject}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Deletar</a>
                     </li>
@@ -469,16 +1009,28 @@
                     <li on:click={unlock}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Destravar</a>
                     </li>
-                    <li on:click={startDraw}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Desenhar</a>
-                    </li>
-                    <li on:click={stopDraw}>
+                    <li on:click={sendBackward}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Parar de Desenhar</a
+                            >Mandar para trás</a
+                        >
+                    </li>
+                    <li on:click={sendToBack}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Mandar para o fundo</a
+                        >
+                    </li>
+                    <li on:click={sendForward}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Trazer para frente</a
+                        >
+                    </li>
+                    <li on:click={sendToFront}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Trazer para o topo</a
                         >
                     </li>
                 </ul>
-            </div>
+            </article>
 
             <canvas bind:this={canvas} />
         </main>

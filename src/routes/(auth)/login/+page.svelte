@@ -15,7 +15,7 @@
 </script>
 
 <div class="flex justify-center m-12">
-    <img src="/gallery/logo2.png" class="h-40 w-40" alt="Logo" />
+    <img src="/gallery/logo.svg" class="h-40 w-40" alt="Logo" />
 </div>
 
 <h1 class="text-center text-4xl sm:text-5xl px-4 font-bold text-white">

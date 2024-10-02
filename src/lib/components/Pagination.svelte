@@ -24,7 +24,7 @@
 
         {#if $currentPageStore > 3 && page < 5}
             <button
-                class="join-item btn btn-secondary  w-4"
+                class="join-item btn btn-secondary w-4"
                 on:click={() => handlePageClick($currentPageStore - 2)}
                 >{$currentPageStore - 2}</button
             >
