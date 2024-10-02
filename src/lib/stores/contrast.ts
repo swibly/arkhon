@@ -6,7 +6,7 @@ if (typeof window !== 'undefined') {
     initialContrast = localStorage.getItem('contrast') || 'false';
 }
 
-export const contrast: Writable<boolean> = writable(initialContrast === 'true' ? true : false);
+export const contrast: Writable<boolean> = writable(initialContrast === 'false' ? false : true);
 
 export function enableContrast() {
     contrast.set(true);

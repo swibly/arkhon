@@ -6,7 +6,19 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
-    import { Canvas, Rect, Point, Group, PencilBrush, ActiveSelection, IText, Path } from 'fabric';
+    import {
+        Canvas,
+        Rect,
+        Circle,
+        Line,
+        Polygon,
+        Point,
+        Group,
+        PencilBrush,
+        ActiveSelection,
+        IText,
+        Path
+    } from 'fabric';
 
     let activeButton: String = 'project';
 
@@ -45,6 +57,9 @@
     let type: string;
     let borderColor: string = 'white';
     let fillColor: string = 'none';
+    let capturedPoints: any = [];
+    let visiblePoints: any = [];
+    let count: number = 0;
 
     const quadSize = {
         w: 10000,
@@ -93,13 +108,103 @@
 
                 this.isDragging = true;
                 this.selection = false;
+                this.isDrawingMode = false;
             }
-            if (e.type === 'touchstart' && e.touches && e.touches.length === 1) {
-                this.lastPosX = e.touches[0].clientX;
-                this.lastPosY = e.touches[0].clientY;
 
-                this.isDragging = true;
-                this.selection = false;
+            if (mode === 'select') {
+                fabric.isDrawingMode = false;
+            }
+
+            if (mode === 'text') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new IText('Toque para digitar', {
+                        width: 300,
+                        top: fabric.getScenePoint(e).y - 25,
+                        left: fabric.getScenePoint(e).x - 165,
+                        fill: null,
+                        stroke: 'white',
+                        strokeWidth: 2,
+                        strokeUniform: true,
+                        fontFamily: 'sans-serif'
+                    })
+                );
+            }
+
+            if (mode === 'rect') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new Rect({
+                        width: 100,
+                        height: 100,
+                        top: fabric.getScenePoint(e).y - 50,
+                        left: fabric.getScenePoint(e).x - 50,
+                        fill: null,
+                        stroke: 'green',
+                        strokeWidth: 3,
+                        strokeUniform: true,
+                        lockSkewingX: true,
+                        lockSkewingY: true
+                    })
+                );
+            }
+
+            if (mode === 'circle') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
+                fabric.add(
+                    new Circle({
+                        radius: 60,
+                        top: fabric.getScenePoint(e).y - 50,
+                        left: fabric.getScenePoint(e).x - 50,
+                        fill: null,
+                        stroke: 'green',
+                        strokeWidth: 3,
+                        strokeUniform: true,
+                        lockSkewingX: true,
+                        lockSkewingY: true
+                    })
+                );
+            }
+
+            if (mode === 'line') {
+                count += 1;
+
+                const points = { x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y };
+
+                capturedPoints.push(points);
+
+                let circle = new IText(`${count}`, {
+                    fontSize: 25,
+                    top: fabric.getScenePoint(e).y - 5,
+                    left: fabric.getScenePoint(e).x - 5,
+                    fill: 'green',
+                    stroke: 'green',
+                    strokeWidth: 3,
+                    strokeUniform: true,
+                    fontFamily: 'sans-serif',
+                    selectable: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockRotation: true,
+                    lockScalingFlip: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockSkewingX: true,
+                    lockSkewingY: true
+                });
+
+                fabric.add(circle);
+
+                visiblePoints.push(circle);
             }
         });
 
@@ -112,13 +217,6 @@
                     this.requestRenderAll();
                     this.lastPosX = fabric.getViewportPoint(e).x;
                     this.lastPosY = fabric.getViewportPoint(e).y;
-                }
-                if (e.type === 'touchmove' && e.touches && e.touches.length) {
-                    vpt[4] += e.touches[0].clientX - this.lastPosX;
-                    vpt[5] += e.touches[0].clientY - this.lastPosY;
-                    this.requestRenderAll();
-                    this.lastPosX = e.touches[0].clientX;
-                    this.lastPosY = e.touches[0].clientY;
                 }
             }
         });
@@ -169,16 +267,15 @@
             pointerY = fabric.getScenePoint(e).y;
         });
 
-        fabric.on('dragleave', function ({ e }) {
-            const colors = ['yellow', 'blue', 'green', 'black', 'pink'];
-
+        fabric.on('dragleave', function () {
             fabric.add(
                 new Rect({
                     width: 100,
                     height: 100,
                     top: pointerY - 50,
                     left: pointerX - 50,
-                    fill: colors[Math.floor(Math.random() * colors.length)],
+                    fill: null,
+                    stroke: 'green',
                     strokeWidth: 3,
                     strokeUniform: true,
                     lockSkewingX: true,
@@ -189,11 +286,6 @@
 
         fabric.on('selection:created', function (options) {
             selectedObjects = options.selected;
-
-            if (selectedObjects.length === 1) {
-                objectMenu.style.display = 'flex';
-                type = selectedObjects[0].get('type');
-            }
         });
 
         fabric.on('selection:cleared', function () {
@@ -222,6 +314,13 @@
                     buttonInside = false;
                 }
             }
+
+            if (selectedObjects.length === 1) {
+                objectMenu.style.display = 'flex';
+                type = fabric.getActiveObject()?.get('type');
+                borderColor = fabric.getActiveObject()?.get('stroke');
+                fillColor = fabric.getActiveObject()?.get('fill');
+            }
         });
 
         rightMenu.addEventListener('mousedown', () => {
@@ -231,6 +330,8 @@
         addEventListener('keydown', async (e) => {
             if (e.ctrlKey && e.key == 'x') {
                 deleteObject();
+                count = 0;
+                capturedPoints = [];
             }
 
             if (e.ctrlKey && e.key == 'a') {
@@ -245,12 +346,14 @@
             }
 
             if (e.ctrlKey && e.key == 'c') {
-                fabric
-                    .getActiveObject()!
-                    .clone()
-                    .then((cloned) => {
-                        _clipboard = cloned;
-                    });
+                if (fabric.getActiveObject()) {
+                    fabric
+                        .getActiveObject()!
+                        .clone()
+                        .then((cloned) => {
+                            _clipboard = cloned;
+                        });
+                }
             }
 
             if (e.ctrlKey && e.key == 'v') {
@@ -276,9 +379,103 @@
                 fabric.requestRenderAll();
             }
 
-            if (e.ctrlKey && e.key == 'p') {
+            if (e.altKey) {
                 e.preventDefault();
-                fabric.isDrawingMode = !fabric.isDrawingMode;
+                
+                stopLine();
+                stopDraw();
+
+                fabric.discardActiveObject();
+                mode = 'select';
+
+                fabric.renderAll();
+            }
+
+            if (e.altKey && e.key == 'p') {
+                e.preventDefault();
+
+                stopLine();
+                startDraw();
+
+                if (mode !== 'paint') {
+                    mode = 'paint';
+                } else {
+                    stopDraw();
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'q') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'rect') {
+                    mode = 'rect';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'c') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'circle') {
+                    mode = 'circle';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 't') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'text') {
+                    mode = 'text';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.altKey && e.key == 'l') {
+                e.preventDefault();
+
+                stopDraw();
+                if (mode !== 'line') {
+                    mode = 'line';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (mode === 'line') {
+                if (e.ctrlKey && e.key == 'f') {
+                    e.preventDefault();
+
+                    visiblePoints.forEach((obj: any) => {
+                        fabric.remove(obj);
+                    });
+
+                    fabric.add(
+                        new Polygon(capturedPoints, {
+                            fill: 'green',
+                            stroke: 'green',
+                            strokeWidth: 2,
+                            originX: 'center',
+                            originY: 'center'
+                        })
+                    );
+
+                    mode = 'select';
+                    capturedPoints = [];
+                    count = 0;
+                }
+
+                fabric.renderAll();
             }
         });
     });
@@ -301,7 +498,7 @@
     }
 
     function deleteObject() {
-        selectedObjects.forEach((obj: any) => {
+        fabric.getActiveObjects().forEach((obj: any) => {
             fabric.remove(obj);
             fabric.discardActiveObject();
         });
@@ -312,51 +509,6 @@
         fabric.add(group);
         fabric.discardActiveObject();
         selectedObjects = [];
-    }
-
-    // function group() {
-    //   var activegroup = fabric.canvas.getActiveObject();
-    //   var objectsInGroup = activegroup.getObjects();
-
-    //   activegroup.clone(function (newgroup: any) {
-    //     fabric.discardActiveGroup();
-    //     objectsInGroup.forEach(function (object: any) {
-    //       fabric.remove(object);
-    //     });
-    //     fabric.add(newgroup);
-    //   });
-    // }
-
-    function ungroup() {
-        // selectedObjects.forEach(async (obj: any) => {
-        //   let cloneObj = await obj.clone();
-        //   obj._objects.forEach((soloObj: any) => {
-        //     fabric.remove(soloObj);
-        //     fabric.renderAll();
-        //   });
-        //   fabric.remove(obj);
-        //   cloneObj._objects.forEach((newObj: any) => {
-        //     fabric.add(newObj);
-        //     fabric.renderAll();
-        //   });
-        // });
-        // selectedObjects.forEach(async (obj: any) => {
-        //   let cloneObj = await obj.clone();
-        //   obj._objects.forEach((soloObj: any) => {
-        //     fabric.remove(soloObj);
-        //     fabric.renderAll();
-        //   });
-        //   fabric.remove(obj);
-        //   fabric.renderAll();
-        //   cloneObj._objects.forEach((soloObj: any) => {
-        //     fabric.add(soloObj);
-        //     fabric.setActiveObject(soloObj);
-        //     fabric.renderAll();
-        //   });
-        //   // console.log(cloneObj);
-        // });
-        // selectedObjects = [];
-        // // console.log(selectedObjects);
     }
 
     function lock() {
@@ -395,14 +547,25 @@
         fabric.renderAll();
     }
 
+    function stopLine() {
+        visiblePoints.forEach((obj: any) => {
+            fabric.remove(obj);
+            fabric.discardActiveObject();
+        });
+
+        fabric.renderAll();
+
+        visiblePoints = [];
+        capturedPoints = [];
+        count = 0;
+    }
+
     function centerView() {
         fabric.setZoom(1);
 
         fabric.absolutePan(
             new Point(-fabric.width / 2 + quadSize.w / 2 + 200, -fabric.height / 2 + quadSize.h / 2)
         );
-
-        console.log(fabric.getActiveObject());
     }
 
     function sendBackward() {
@@ -474,40 +637,46 @@
     }
 
     function resize() {
-        fabric.setDimensions({
-            width: innerWidth - innerWidth / 6,
-            height: innerHeight - (innerHeight / 100) * 5.5
-        });
-    }
-
-    function addText() {
-        let text = new IText('Toque para digitar', {
-            width: 300,
-            top: quadSize.h / 2 - 25,
-            left: quadSize.w / 2 - 165,
-            fill: '',
-            stroke: '#A3A3A3',
-            strokeWidth: 2,
-            strokeUniform: true,
-            fontFamily: 'sans-serif'
-        });
-        fabric.add(text);
+        if (innerWidth >= 1536) {
+            fabric.setDimensions({
+                width: innerWidth - innerWidth / 5,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        } else if (innerWidth >= 1280) {
+            fabric.setDimensions({
+                width: innerWidth - innerWidth / 4,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        } else {
+            fabric.setDimensions({
+                width: innerWidth,
+                height: innerHeight - (innerHeight / 100) * 5.5
+            });
+        }
     }
 
     function changeBorder(color: string) {
         borderColor = color;
-        fabric.getActiveObject()?.set('stroke', color);
+        if (color === 'null') {
+            fabric.getActiveObject()?.set('stroke', null);
+        } else {
+            fabric.getActiveObject()?.set('stroke', color);
+        }
         fabric.renderAll();
     }
 
     function changeFill(color: string) {
         fillColor = color;
-        fabric.getActiveObject()?.set('fill', color);
+        if (color === 'null') {
+            fabric.getActiveObject()?.set('fill', null);
+        } else {
+            fabric.getActiveObject()?.set('fill', color);
+        }
         fabric.renderAll();
     }
 </script>
 
-<main class="w-full min-h-screen">
+<main class="w-full min-h-screen overflow-hidden">
     <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
         <div class="flex ml-4">
             <div class="dropdown">
@@ -520,7 +689,9 @@
             </div>
             <div class="flex gap-4">
                 <button
+                    class="hidden xl:block"
                     on:click={stopDraw}
+                    on:click={stopLine}
                     on:click={() => {
                         mode = 'select';
                     }}
@@ -537,7 +708,9 @@
                     /></button
                 >
                 <button
+                    class="hidden xl:block"
                     on:click={startDraw}
+                    on:click={stopLine}
                     on:click={() => {
                         mode = 'paint';
                     }}
@@ -554,15 +727,79 @@
                     /></button
                 >
                 <button
+                    class="hidden xl:block"
                     on:click={stopDraw}
-                    on:click={addText}
+                    on:click={stopLine}
                     on:click={() => {
                         mode = 'text';
                     }}
                     ><Icon
                         icon="solar:text-bold"
                         font-size="35px"
-                        class={`${$lightMode ? 'text-black' : 'text-white'}`}
+                        class={`${
+                            mode === 'text'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'rect';
+                    }}
+                    ><Icon
+                        icon="bi:square-fill"
+                        font-size="35px"
+                        class={`${
+                            mode === 'rect'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'circle';
+                    }}
+                    ><Icon
+                        icon="material-symbols:circle"
+                        font-size="35px"
+                        class={`${
+                            mode === 'circle'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
+                    /></button
+                >
+                <button
+                    class="hidden xl:block"
+                    on:click={stopDraw}
+                    on:click={stopLine}
+                    on:click={() => {
+                        mode = 'line';
+                    }}
+                    ><Icon
+                        icon="vaadin:line-h"
+                        font-size="35px"
+                        class={`${
+                            mode === 'line'
+                                ? 'text-secondary'
+                                : $lightMode
+                                ? 'text-black'
+                                : 'text-white'
+                        }`}
                     /></button
                 >
             </div>
@@ -583,7 +820,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-5.5vh)]">
-        <aside class="w-1/6 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
+        <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -656,105 +893,103 @@
             </main>
         </aside>
 
-        <main class="w-5/6">
+        <main class="w-full xl:w-3/4 2xl:w-4/5">
             <article
-                class="absolute hidden mt-12 ml-12 w-72 h-72 bg-base-300 z-50 flex-col items-center rounded-xl"
+                class="absolute hidden mt-12 ml-12 w-72 h-48 bg-base-300 z-50 flex-col items-center rounded-xl"
                 bind:this={objectMenu}
             >
-                {#if type === 'rect'}
-                    <p class="text-center text-xl pt-4 font-bold">Borda</p>
-                    <section class="flex gap-2 pt-2">
+                <p class="text-center text-xl pt-4 font-bold">Borda</p>
+                <section class="flex gap-2 pt-2">
+                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeBorder('null')}
+                        >X</button
+                    >
+                    <button
+                        class="w-4 h-4 bg-white rounded"
+                        on:click={() => changeBorder('white')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-black rounded"
+                        on:click={() => changeBorder('black')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-red-400 rounded"
+                        on:click={() => changeBorder('red')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-green-400 rounded"
+                        on:click={() => changeBorder('green')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-blue-400 rounded"
+                        on:click={() => changeBorder('blue')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-pink-400 rounded"
+                        on:click={() => changeBorder('pink')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-yellow-400 rounded"
+                        on:click={() => changeBorder('yellow')}
+                    />
+                    <div class="divider divider-horizontal h-4" />
+                    {#if borderColor === 'null' || borderColor === null}
                         <button
                             class="w-4 h-4 font-bold -mt-1"
-                            on:click={() => changeBorder('none')}>X</button
+                            on:click={() => changeBorder('null')}>X</button
                         >
+                    {:else}
                         <button
-                            class="w-4 h-4 bg-white rounded"
-                            on:click={() => changeBorder('white')}
+                            class={`w-4 h-4 ${
+                                borderColor === 'white' || borderColor === 'black'
+                                    ? `bg-${borderColor}`
+                                    : `bg-${borderColor}-400`
+                            } rounded`}
                         />
-                        <button
-                            class="w-4 h-4 bg-black rounded"
-                            on:click={() => changeBorder('black')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-red-500 rounded"
-                            on:click={() => changeBorder('red')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-green-500 rounded"
-                            on:click={() => changeBorder('green')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-blue-500 rounded"
-                            on:click={() => changeBorder('blue')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-pink-500 rounded"
-                            on:click={() => changeBorder('pink')}
-                        />
-                        <div class="divider divider-horizontal h-4" />
-                        {#if borderColor === 'none'}
-                            <button
-                                class="w-4 h-4 font-bold -mt-1"
-                                on:click={() => changeBorder('none')}>X</button
-                            >
-                        {:else}
-                            <button
-                                class={`w-4 h-4 ${
-                                    borderColor === 'white' || borderColor === 'black'
-                                        ? `bg-${borderColor}`
-                                        : `bg-${borderColor}-500`
-                                } rounded`}
-                            />
-                        {/if}
-                    </section>
-                    <div class="divider" />
-                    <p class="text-center text-xl font-bold">Fundo</p>
-                    <section class="flex gap-2 pt-2">
+                    {/if}
+                </section>
+                <div class="divider" />
+                <p class="text-center text-xl font-bold">Fundo</p>
+                <section class="flex gap-2 pt-2">
+                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
+                        >X</button
+                    >
+                    <button
+                        class="w-4 h-4 bg-white rounded border border-2"
+                        on:click={() => changeFill('white')}
+                    />
+                    <button class="w-4 h-4 bg-black rounded" on:click={() => changeFill('black')} />
+                    <button class="w-4 h-4 bg-red-400 rounded" on:click={() => changeFill('red')} />
+                    <button
+                        class="w-4 h-4 bg-green-400 rounded"
+                        on:click={() => changeFill('green')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-blue-400 rounded"
+                        on:click={() => changeFill('blue')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-pink-400 rounded"
+                        on:click={() => changeFill('pink')}
+                    />
+                    <button
+                        class="w-4 h-4 bg-yellow-400 rounded"
+                        on:click={() => changeFill('yellow')}
+                    />
+                    <div class="divider divider-horizontal h-4" />
+                    {#if fillColor === 'null' || fillColor === null}
                         <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
                             >X</button
                         >
+                    {:else}
                         <button
-                            class="w-4 h-4 bg-white rounded border border-2"
-                            on:click={() => changeFill('white')}
+                            class={`w-4 h-4 ${
+                                fillColor === 'white' || fillColor === 'black'
+                                    ? `bg-${fillColor}`
+                                    : `bg-${fillColor}-400`
+                            } rounded`}
                         />
-                        <button
-                            class="w-4 h-4 bg-black rounded"
-                            on:click={() => changeFill('black')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-red-500 rounded"
-                            on:click={() => changeFill('red')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-green-500 rounded"
-                            on:click={() => changeFill('green')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-blue-500 rounded"
-                            on:click={() => changeFill('blue')}
-                        />
-                        <button
-                            class="w-4 h-4 bg-pink-500 rounded"
-                            on:click={() => changeFill('pink')}
-                        />
-                        <div class="divider divider-horizontal h-4" />
-                        {#if fillColor === 'null'}
-                            <button
-                                class="w-4 h-4 font-bold -mt-1"
-                                on:click={() => changeFill('null')}>X</button
-                            >
-                        {:else}
-                            <button
-                                class={`w-4 h-4 ${
-                                    fillColor === 'white' || fillColor === 'black'
-                                        ? `bg-${fillColor}`
-                                        : `bg-${fillColor}-500`
-                                } rounded`}
-                            />
-                        {/if}
-                    </section>
-                {/if}
+                    {/if}
+                </section>
             </article>
 
             <article
@@ -762,11 +997,6 @@
                 class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
             >
                 <ul role="menu" aria-labelledby="menu-button" class="menu vertical div space-y-2">
-                    <li on:click={addRect}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Adicionar Quadrado</a
-                        >
-                    </li>
                     <li on:click={deleteObject}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Deletar</a>
                     </li>
@@ -791,12 +1021,12 @@
                     </li>
                     <li on:click={sendForward}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Mandar para frente</a
+                            >Trazer para frente</a
                         >
                     </li>
                     <li on:click={sendToFront}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Mandar para a frente de todos</a
+                            >Trazer para o topo</a
                         >
                     </li>
                 </ul>
