@@ -10,7 +10,6 @@
         Canvas,
         Rect,
         Circle,
-        Line,
         Polygon,
         Point,
         Group,
@@ -80,26 +79,6 @@
         drawGrid();
         resize();
         centerView();
-
-        fabric.add(
-            new Rect({
-                width: quadSize.w,
-                height: quadSize.h,
-                fill: null,
-                stroke: '#A3A3A3',
-                strokeWidth: 2,
-                strokeUniform: true,
-                hasControls: false,
-                selectable: false,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockRotation: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockSkewingX: true,
-                lockSkewingY: true
-            })
-        );
 
         fabric.on('mouse:down', function (this: any, { e }) {
             if (e.type === 'mousedown' && e.altKey === true) {
@@ -381,7 +360,7 @@
 
             if (e.altKey) {
                 e.preventDefault();
-                
+
                 stopLine();
                 stopDraw();
 
@@ -498,17 +477,27 @@
     }
 
     function deleteObject() {
-        fabric.getActiveObjects().forEach((obj: any) => {
-            fabric.remove(obj);
-            fabric.discardActiveObject();
-        });
+        fabric.remove(...fabric.getActiveObjects());
+        fabric.discardActiveObject();
     }
 
     function group() {
-        let group = new Group(selectedObjects);
+        let group = new Group(fabric.getActiveObjects());
         fabric.add(group);
         fabric.discardActiveObject();
         selectedObjects = [];
+    }
+
+    async function ungroup() {
+        const groups = fabric.getActiveObjects().filter((x) => x.type === 'group') as Group[];
+
+        for (const active of groups) {
+            fabric.remove(active);
+
+            for (const item of active.removeAll()) {
+                fabric.add(await fabric.remove(item)[0].clone());
+            }
+        }
     }
 
     function lock() {
@@ -1002,6 +991,10 @@
                     </li>
                     <li on:click={group}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Agrupar</a>
+                    </li>
+                    <li on:click={ungroup}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Desagrupar</a
+                        >
                     </li>
                     <li on:click={lock}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Travar</a>
