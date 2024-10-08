@@ -53,12 +53,10 @@
     let _clipboard: any;
     let mode: string = 'select';
     let objectMenu: HTMLElement;
-    let type: string;
-    let borderColor: string = 'white';
-    let fillColor: string = 'none';
     let capturedPoints: any = [];
     let visiblePoints: any = [];
     let count: number = 0;
+    let valueSlider: number = 10;
 
     const quadSize = {
         w: 10000,
@@ -81,7 +79,14 @@
         centerView();
 
         fabric.on('mouse:down', function (this: any, { e }) {
-            if (e.type === 'mousedown' && e.altKey === true) {
+            if (fabric.getActiveObject()) {
+                mode = 'select';
+            }
+
+            if (e.altKey === true) {
+                fabric.isDrawingMode = false;
+                mode = 'select';
+
                 this.lastPosX = fabric.getViewportPoint(e).x;
                 this.lastPosY = fabric.getViewportPoint(e).y;
 
@@ -91,6 +96,10 @@
             }
 
             if (mode === 'select') {
+                visiblePoints.forEach((obj: any) => {
+                    fabric.remove(obj);
+                });
+
                 fabric.isDrawingMode = false;
             }
 
@@ -98,6 +107,8 @@
                 visiblePoints.forEach((obj: any) => {
                     fabric.remove(obj);
                 });
+
+                fabric.set({ selection: false });
 
                 fabric.add(
                     new IText('Toque para digitar', {
@@ -117,6 +128,8 @@
                 visiblePoints.forEach((obj: any) => {
                     fabric.remove(obj);
                 });
+
+                fabric.set({ selection: false });
 
                 fabric.add(
                     new Rect({
@@ -139,6 +152,8 @@
                     fabric.remove(obj);
                 });
 
+                fabric.set({ selection: false });
+
                 fabric.add(
                     new Circle({
                         radius: 60,
@@ -156,6 +171,8 @@
 
             if (mode === 'line') {
                 count += 1;
+
+                fabric.set({ selection: false });
 
                 const points = { x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y };
 
@@ -265,6 +282,20 @@
 
         fabric.on('selection:created', function (options) {
             selectedObjects = options.selected;
+
+            if (objectMenu) {
+                objectMenu.style.display = 'flex';
+            }
+
+            if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
+                valueSlider = fabric.getActiveObject()?.opacity * 10;
+            }            
+        });
+
+        fabric.on('selection:updated', function () {                       
+            if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
+                valueSlider = fabric.getActiveObject()?.opacity * 10;
+            }            
         });
 
         fabric.on('selection:cleared', function () {
@@ -276,9 +307,11 @@
         addEventListener('contextmenu', (e) => {
             e.preventDefault();
 
-            rightMenu.style.display = 'block';
-            rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
-            rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
+            if (rightMenu) {
+                rightMenu.style.display = 'block';
+                rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
+                rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
+            }
         });
 
         addEventListener('mousedown', (e) => {
@@ -289,16 +322,11 @@
                     rightMenu.style.display = 'block';
                     buttonInside = false;
                 } else {
-                    rightMenu.style.display = 'none';
-                    buttonInside = false;
+                    if (rightMenu) {
+                        rightMenu.style.display = 'none';
+                        buttonInside = false;
+                    }
                 }
-            }
-
-            if (selectedObjects.length === 1) {
-                objectMenu.style.display = 'flex';
-                type = fabric.getActiveObject()?.get('type');
-                borderColor = fabric.getActiveObject()?.get('stroke');
-                fillColor = fabric.getActiveObject()?.get('fill');
             }
         });
 
@@ -307,6 +335,11 @@
         });
 
         addEventListener('keydown', async (e) => {
+            if (e.altKey) {
+                fabric.isDrawingMode = false;
+                mode = 'select';
+            }
+
             if (e.ctrlKey && e.key == 'x') {
                 deleteObject();
                 count = 0;
@@ -317,7 +350,7 @@
                 e.preventDefault();
 
                 fabric.discardActiveObject();
-                var sel = new ActiveSelection(fabric.getObjects().slice(2), {
+                var sel = new ActiveSelection(fabric.getObjects().slice(1), {
                     canvas: fabric
                 });
                 fabric.setActiveObject(sel);
@@ -358,7 +391,7 @@
                 fabric.requestRenderAll();
             }
 
-            if (e.altKey) {
+            if (e.ctrlKey && e.key == 's') {
                 e.preventDefault();
 
                 stopLine();
@@ -370,7 +403,7 @@
                 fabric.renderAll();
             }
 
-            if (e.altKey && e.key == 'p') {
+            if (e.ctrlKey && e.key == 'p') {
                 e.preventDefault();
 
                 stopLine();
@@ -384,31 +417,7 @@
                 }
             }
 
-            if (e.altKey && e.key == 'q') {
-                e.preventDefault();
-
-                stopLine();
-                stopDraw();
-                if (mode !== 'rect') {
-                    mode = 'rect';
-                } else {
-                    mode = 'select';
-                }
-            }
-
-            if (e.altKey && e.key == 'c') {
-                e.preventDefault();
-
-                stopLine();
-                stopDraw();
-                if (mode !== 'circle') {
-                    mode = 'circle';
-                } else {
-                    mode = 'select';
-                }
-            }
-
-            if (e.altKey && e.key == 't') {
+            if (e.ctrlKey && e.key == 'd') {
                 e.preventDefault();
 
                 stopLine();
@@ -420,7 +429,31 @@
                 }
             }
 
-            if (e.altKey && e.key == 'l') {
+            if (e.ctrlKey && e.key == 'q') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'rect') {
+                    mode = 'rect';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.ctrlKey && e.key == 'e') {
+                e.preventDefault();
+
+                stopLine();
+                stopDraw();
+                if (mode !== 'circle') {
+                    mode = 'circle';
+                } else {
+                    mode = 'select';
+                }
+            }
+
+            if (e.ctrlKey && e.key == 'r') {
                 e.preventDefault();
 
                 stopDraw();
@@ -459,26 +492,15 @@
         });
     });
 
-    function addRect() {
-        fabric.add(
-            new Rect({
-                width: 100,
-                height: 100,
-                top: quadSize.h / 2 - 50,
-                left: quadSize.w / 2 - 50,
-                fill: null,
-                stroke: 'blue',
-                strokeWidth: 3,
-                strokeUniform: true,
-                lockSkewingX: true,
-                lockSkewingY: true
-            })
-        );
-    }
-
     function deleteObject() {
-        fabric.remove(...fabric.getActiveObjects());
+        const groups = fabric.getActiveObjects().filter((x) => x.type === 'group') as Group[];
+        const objects = fabric.getActiveObjects().filter((x) => x.type !== 'group') as Group[];
+
+        fabric.remove(...groups);
+        fabric.remove(...objects);
+
         fabric.discardActiveObject();
+        fabric.requestRenderAll();
     }
 
     function group() {
@@ -491,11 +513,25 @@
     async function ungroup() {
         const groups = fabric.getActiveObjects().filter((x) => x.type === 'group') as Group[];
 
-        for (const active of groups) {
-            fabric.remove(active);
+        for (const objs of groups) {
+            fabric.remove(objs);
 
-            for (const item of active.removeAll()) {
-                fabric.add(await fabric.remove(item)[0].clone());
+            for (const item of objs.removeAll()) {
+                if (item.lockMovementX) {
+                    let obj = await fabric.remove(item)[0].clone();
+
+                    fabric.add(obj);
+
+                    obj.set({
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        lockScalingX: true,
+                        lockScalingY: true,
+                        lockRotation: true
+                    });
+                } else {
+                    fabric.add(await fabric.remove(item)[0].clone());
+                }
             }
         }
     }
@@ -645,22 +681,57 @@
     }
 
     function changeBorder(color: string) {
-        borderColor = color;
-        if (color === 'null') {
-            fabric.getActiveObject()?.set('stroke', null);
+        if (selectedObjects.length > 1) {
+            for (const objs of selectedObjects) {
+                if (color === 'null') {
+                    objs.set('stroke', null);
+                } else {
+                    objs.set('stroke', color);
+                }
+            }
         } else {
-            fabric.getActiveObject()?.set('stroke', color);
+            if (color === 'null') {
+                fabric.getActiveObject()?.set('stroke', null);
+            } else {
+                fabric.getActiveObject()?.set('stroke', color);
+            }
         }
+
         fabric.renderAll();
     }
 
     function changeFill(color: string) {
-        fillColor = color;
-        if (color === 'null') {
-            fabric.getActiveObject()?.set('fill', null);
+        if (selectedObjects.length > 1) {
+            for (const objs of selectedObjects) {
+                if (color === 'null') {
+                    objs.set('fill', null);
+                } else {
+                    objs.set('fill', color);
+                }
+            }
         } else {
-            fabric.getActiveObject()?.set('fill', color);
+            if (color === 'null') {
+                fabric.getActiveObject()?.set('fill', null);
+            } else {
+                fabric.getActiveObject()?.set('fill', color);
+            }
         }
+
+        fabric.renderAll();
+    }
+
+    function changeOpacity() {
+        if (selectedObjects.length > 1) {
+            valueSlider = this.value;
+            fabric.getActiveObject()?.set('opacity', valueSlider / 10);
+            for (const objs of selectedObjects) {
+                objs.set('opacity', this.value / 10);
+            }
+        } else {
+            valueSlider = this.value;
+            fabric.getActiveObject()?.set('opacity', this.value / 10);
+        }
+
         fabric.renderAll();
     }
 </script>
@@ -884,7 +955,7 @@
 
         <main class="w-full xl:w-3/4 2xl:w-4/5">
             <article
-                class="absolute hidden mt-12 ml-12 w-72 h-48 bg-base-300 z-50 flex-col items-center rounded-xl"
+                class="absolute hidden mt-12 ml-12 w-72 h-72 bg-base-300 z-50 flex-col items-center rounded-xl"
                 bind:this={objectMenu}
             >
                 <p class="text-center text-xl pt-4 font-bold">Borda</p>
@@ -920,21 +991,6 @@
                         class="w-4 h-4 bg-yellow-400 rounded"
                         on:click={() => changeBorder('yellow')}
                     />
-                    <div class="divider divider-horizontal h-4" />
-                    {#if borderColor === 'null' || borderColor === null}
-                        <button
-                            class="w-4 h-4 font-bold -mt-1"
-                            on:click={() => changeBorder('null')}>X</button
-                        >
-                    {:else}
-                        <button
-                            class={`w-4 h-4 ${
-                                borderColor === 'white' || borderColor === 'black'
-                                    ? `bg-${borderColor}`
-                                    : `bg-${borderColor}-400`
-                            } rounded`}
-                        />
-                    {/if}
                 </section>
                 <div class="divider" />
                 <p class="text-center text-xl font-bold">Fundo</p>
@@ -964,20 +1020,19 @@
                         class="w-4 h-4 bg-yellow-400 rounded"
                         on:click={() => changeFill('yellow')}
                     />
-                    <div class="divider divider-horizontal h-4" />
-                    {#if fillColor === 'null' || fillColor === null}
-                        <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
-                            >X</button
-                        >
-                    {:else}
-                        <button
-                            class={`w-4 h-4 ${
-                                fillColor === 'white' || fillColor === 'black'
-                                    ? `bg-${fillColor}`
-                                    : `bg-${fillColor}-400`
-                            } rounded`}
-                        />
-                    {/if}
+                </section>
+                <div class="divider" />
+                <p class="text-center text-xl font-bold">Opacidade</p>
+                <section class="flex gap-2 pt-2">
+                    <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value={valueSlider}
+                        on:input={changeOpacity}
+                        class="range range-secondary"
+                    />
+                    <div class="divider" />
                 </section>
             </article>
 
