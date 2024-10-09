@@ -503,75 +503,6 @@
         fabric.requestRenderAll();
     }
 
-    function group() {
-        let group = new Group(fabric.getActiveObjects());
-        fabric.add(group);
-        fabric.discardActiveObject();
-        selectedObjects = [];
-    }
-
-    async function ungroup() {
-        const groups = fabric.getActiveObjects().filter((x) => x.type === 'group') as Group[];
-
-        for (const objs of groups) {
-            fabric.remove(objs);
-
-            for (const item of objs.removeAll()) {
-                if (item.lockMovementX) {
-                    let obj = await fabric.remove(item)[0].clone();
-
-                    fabric.add(obj);
-
-                    obj.set({
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        lockScalingX: true,
-                        lockScalingY: true,
-                        lockRotation: true
-                    });
-                } else {
-                    fabric.add(await fabric.remove(item)[0].clone());
-                }
-            }
-        }
-    }
-
-    function lock() {
-        selectedObjects.forEach((obj: any) => {
-            obj.lockMovementX = true;
-            obj.lockMovementY = true;
-            obj.lockScalingX = true;
-            obj.lockScalingY = true;
-            obj.lockRotation = true;
-        });
-
-        fabric.renderAll();
-    }
-
-    function unlock() {
-        selectedObjects.forEach((obj: any) => {
-            obj.lockMovementX = false;
-            obj.lockMovementY = false;
-            obj.lockScalingX = false;
-            obj.lockScalingY = false;
-            obj.lockRotation = false;
-        });
-
-        fabric.renderAll();
-    }
-
-    function startDraw() {
-        fabric.isDrawingMode = true;
-
-        fabric.renderAll();
-    }
-
-    function stopDraw() {
-        fabric.isDrawingMode = false;
-
-        fabric.renderAll();
-    }
-
     function stopLine() {
         visiblePoints.forEach((obj: any) => {
             fabric.remove(obj);
@@ -583,14 +514,6 @@
         visiblePoints = [];
         capturedPoints = [];
         count = 0;
-    }
-
-    function centerView() {
-        fabric.setZoom(1);
-
-        fabric.absolutePan(
-            new Point(-fabric.width / 2 + quadSize.w / 2 + 200, -fabric.height / 2 + quadSize.h / 2)
-        );
     }
 
     function sendBackward() {
@@ -605,26 +528,10 @@
         fabric.renderAll();
     }
 
-    function sendToBack() {
-        selectedObjects.forEach((obj: any) => {
-            fabric.moveObjectTo(obj, 2);
-        });
-
-        fabric.renderAll();
-    }
-
     function sendForward() {
         selectedObjects.forEach((obj: any) => {
             fabric.bringObjectForward(obj);
             obj.set();
-        });
-
-        fabric.renderAll();
-    }
-
-    function sendToFront() {
-        selectedObjects.forEach((obj: any) => {
-            fabric.bringObjectToFront(obj);
         });
 
         fabric.renderAll();
