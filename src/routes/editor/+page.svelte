@@ -15,9 +15,17 @@
         Group,
         PencilBrush,
         ActiveSelection,
-        IText,
-        Path
+        IText,        
     } from 'fabric';
+    import {
+        drawGrid,
+        centerView,
+        resize,
+        renderAll,
+        startDraw,
+        stopDraw
+    } from '$lib/editor/canvas';
+    import { remove, getActive, addRect, addText, addCircle } from '$lib/editor/objects';
 
     let activeButton: String = 'project';
 
@@ -69,14 +77,14 @@
             preserveObjectStacking: true
         });
 
+        drawGrid(fabric, 100, quadSize.w, quadSize.h);
+        resize(fabric, innerWidth, innerHeight);
+        centerView(fabric, quadSize.w, quadSize.h);
+
         fabric.freeDrawingBrush = new PencilBrush(fabric);
 
         fabric.freeDrawingBrush.color = 'red';
         fabric.freeDrawingBrush.width = 12;
-
-        drawGrid();
-        resize();
-        centerView();
 
         fabric.on('mouse:down', function (this: any, { e }) {
             if (fabric.getActiveObject()) {
@@ -108,20 +116,9 @@
                     fabric.remove(obj);
                 });
 
-                fabric.set({ selection: false });
+                addText(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
-                fabric.add(
-                    new IText('Toque para digitar', {
-                        width: 300,
-                        top: fabric.getScenePoint(e).y - 25,
-                        left: fabric.getScenePoint(e).x - 165,
-                        fill: null,
-                        stroke: 'white',
-                        strokeWidth: 2,
-                        strokeUniform: true,
-                        fontFamily: 'sans-serif'
-                    })
-                );
+                fabric.set({ selection: false });
             }
 
             if (mode === 'rect') {
@@ -129,22 +126,9 @@
                     fabric.remove(obj);
                 });
 
-                fabric.set({ selection: false });
+                addRect(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
-                fabric.add(
-                    new Rect({
-                        width: 100,
-                        height: 100,
-                        top: fabric.getScenePoint(e).y - 50,
-                        left: fabric.getScenePoint(e).x - 50,
-                        fill: null,
-                        stroke: 'green',
-                        strokeWidth: 3,
-                        strokeUniform: true,
-                        lockSkewingX: true,
-                        lockSkewingY: true
-                    })
-                );
+                fabric.set({ selection: false });
             }
 
             if (mode === 'circle') {
@@ -152,21 +136,9 @@
                     fabric.remove(obj);
                 });
 
-                fabric.set({ selection: false });
+                addCircle(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
-                fabric.add(
-                    new Circle({
-                        radius: 60,
-                        top: fabric.getScenePoint(e).y - 50,
-                        left: fabric.getScenePoint(e).x - 50,
-                        fill: null,
-                        stroke: 'green',
-                        strokeWidth: 3,
-                        strokeUniform: true,
-                        lockSkewingX: true,
-                        lockSkewingY: true
-                    })
-                );
+                fabric.set({ selection: false });
             }
 
             if (mode === 'line') {
@@ -245,7 +217,7 @@
 
             e.preventDefault();
             e.stopPropagation();
-        });
+        });        
 
         fabric.on('object:rotating', function ({ e, target }) {
             target.snapAngle = ~~e.shiftKey * 15;
@@ -289,13 +261,13 @@
 
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
                 valueSlider = fabric.getActiveObject()?.opacity * 10;
-            }            
+            }
         });
 
-        fabric.on('selection:updated', function () {                       
+        fabric.on('selection:updated', function () {
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
                 valueSlider = fabric.getActiveObject()?.opacity * 10;
-            }            
+            }
         });
 
         fabric.on('selection:cleared', function () {
@@ -335,13 +307,19 @@
         });
 
         addEventListener('keydown', async (e) => {
+            console.log(e.key);
+
             if (e.altKey) {
                 fabric.isDrawingMode = false;
-                mode = 'select';
+                mode = 'select';                
             }
 
             if (e.ctrlKey && e.key == 'x') {
-                deleteObject();
+                e.preventDefault();
+
+                remove(fabric, ...getActive(fabric));
+                renderAll(fabric);
+
                 count = 0;
                 capturedPoints = [];
             }
@@ -394,9 +372,6 @@
             if (e.ctrlKey && e.key == 's') {
                 e.preventDefault();
 
-                stopLine();
-                stopDraw();
-
                 fabric.discardActiveObject();
                 mode = 'select';
 
@@ -432,12 +407,8 @@
             if (e.ctrlKey && e.key == 'q') {
                 e.preventDefault();
 
-                stopLine();
-                stopDraw();
                 if (mode !== 'rect') {
                     mode = 'rect';
-                } else {
-                    mode = 'select';
                 }
             }
 
@@ -537,56 +508,6 @@
         fabric.renderAll();
     }
 
-    function drawGrid() {
-        const grid = 100;
-        const canvasWidth = Math.round(quadSize.w);
-        const canvasHeight = Math.round(quadSize.h);
-
-        const gridPath = [];
-
-        for (let i = 0; i <= canvasWidth / grid; i++) {
-            const x = Math.round(i * grid);
-            gridPath.push(`M ${x} 0 L ${x} ${canvasHeight}`);
-        }
-
-        for (let i = 0; i <= canvasHeight / grid; i++) {
-            const y = Math.round(i * grid);
-            gridPath.push(`M 0 ${y} L ${canvasWidth} ${y}`);
-        }
-
-        const path = new Path(gridPath.join(' '), {
-            fill: '',
-            stroke: '#A3A3A3',
-            strokeWidth: 2,
-            strokeUniform: true,
-            selectable: false,
-            evented: false,
-            objectCaching: false
-        });
-
-        fabric.add(path);
-        path.setCoords();
-    }
-
-    function resize() {
-        if (innerWidth >= 1536) {
-            fabric.setDimensions({
-                width: innerWidth - innerWidth / 5,
-                height: innerHeight - (innerHeight / 100) * 5.5
-            });
-        } else if (innerWidth >= 1280) {
-            fabric.setDimensions({
-                width: innerWidth - innerWidth / 4,
-                height: innerHeight - (innerHeight / 100) * 5.5
-            });
-        } else {
-            fabric.setDimensions({
-                width: innerWidth,
-                height: innerHeight - (innerHeight / 100) * 5.5
-            });
-        }
-    }
-
     function changeBorder(color: string) {
         if (selectedObjects.length > 1) {
             for (const objs of selectedObjects) {
@@ -657,7 +578,7 @@
             <div class="flex gap-4">
                 <button
                     class="hidden xl:block"
-                    on:click={stopDraw}
+                    on:click={() => stopDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'select';
@@ -676,7 +597,7 @@
                 >
                 <button
                     class="hidden xl:block"
-                    on:click={startDraw}
+                    on:click={() => startDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'paint';
@@ -695,7 +616,7 @@
                 >
                 <button
                     class="hidden xl:block"
-                    on:click={stopDraw}
+                    on:click={() => stopDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'text';
@@ -714,7 +635,7 @@
                 >
                 <button
                     class="hidden xl:block"
-                    on:click={stopDraw}
+                    on:click={() => stopDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'rect';
@@ -733,7 +654,7 @@
                 >
                 <button
                     class="hidden xl:block"
-                    on:click={stopDraw}
+                    on:click={() => stopDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'circle';
@@ -752,7 +673,7 @@
                 >
                 <button
                     class="hidden xl:block"
-                    on:click={stopDraw}
+                    on:click={() => stopDraw(fabric)}
                     on:click={stopLine}
                     on:click={() => {
                         mode = 'line';
@@ -774,7 +695,7 @@
         <h1 class="text-2xl font-bold">Título</h1>
         <div class="flex items-center gap-4 mr-4">
             <Icon icon="ph:play-fill" font-size="25px" />
-            <button on:click={centerView}
+            <button on:click={() => centerView(fabric, quadSize.w, quadSize.h)}
                 ><Icon icon="mingcute:align-center-fill" font-size="25px" /></button
             >
 
@@ -943,7 +864,7 @@
                 </section>
             </article>
 
-            <article
+            <!-- <article
                 bind:this={rightMenu}
                 class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
             >
@@ -985,7 +906,7 @@
                         >
                     </li>
                 </ul>
-            </article>
+            </article> -->
 
             <canvas bind:this={canvas} />
         </main>

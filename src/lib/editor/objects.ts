@@ -1,4 +1,4 @@
-import { Group, type Canvas, type FabricObject } from 'fabric';
+import { Group, IText, Rect, Circle, type Canvas, type FabricObject } from 'fabric';
 import { renderAll } from './canvas';
 
 export function getActive(canvas: Canvas): Array<FabricObject> {
@@ -64,6 +64,63 @@ export function unlock(canvas: Canvas) {
         obj.lockScalingY = false;
         obj.lockRotation = false;
     });
+
+    renderAll(canvas);
+}
+
+export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>) {
+    const text = new IText('Toque para digitar',{
+        width: 100,
+        height: 100,
+        top: points[0].y - 25,
+        left: points[0].x - 165,
+        fill: null,
+        stroke: 'white',
+        strokeWidth: 2,
+        strokeUniform: true,
+        lockSkewingX: true,
+        lockSkewingY: true,
+        fontFamily: 'sans-serif'
+    });
+
+    add(canvas, text);
+
+    renderAll(canvas);
+}
+
+export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>) {
+    const rect = new Rect({
+        width: 100,
+        height: 100,
+        top: points[0].y - 50,
+        left: points[0].x - 50,
+        fill: null,
+        stroke: 'green',
+        strokeWidth: 3,
+        strokeUniform: true,
+        lockSkewingX: true,
+        lockSkewingY: true
+    });
+
+    add(canvas, rect);
+
+    renderAll(canvas);
+}
+
+export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }>) {
+    const circle = new Circle({
+        radius: 60,
+        top: points[0].y - 50,
+        left: points[0].x - 60,
+        fill: null,
+        stroke: 'green',
+        strokeWidth: 3,
+        strokeUniform: true,
+        lockSkewingX: true,
+        lockSkewingY: true
+    });
+
+    add(canvas, circle);
 
     renderAll(canvas);
 }
