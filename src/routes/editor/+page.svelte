@@ -24,7 +24,8 @@
         addCircle,
         addPoints,
         addLine,
-        stopLine
+        stopLine,
+        takeOpacity
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
@@ -197,17 +198,21 @@
         });
 
         fabric.on('selection:created', function (options) {
-            selectedObjects = options.selected;
+            selectedObjects = options.selected;            
 
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
                 valueSlider = fabric.getActiveObject()?.opacity! * 10;
             }
+
+            console.log(takeOpacity(fabric));
         });
 
         fabric.on('selection:updated', function () {
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
                 valueSlider = fabric.getActiveObject()?.opacity! * 10;
             }
+
+            console.log(takeOpacity(fabric));
         });
 
         fabric.on('selection:cleared', function () {

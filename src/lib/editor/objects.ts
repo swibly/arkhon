@@ -223,17 +223,20 @@ export function changeFill(canvas: Canvas, color: string, ...objects: FabricObje
     renderAll(canvas);
 }
 
-// function changeOpacity() {
-//     if (selectedObjects.length > 1) {
-//         valueSlider = this.value;
-//         fabric.getActiveObject()?.set('opacity', valueSlider / 10);
-//         for (const objs of selectedObjects) {
-//             objs.set('opacity', this.value / 10);
-//         }
-//     } else {
-//         valueSlider = this.value;
-//         fabric.getActiveObject()?.set('opacity', this.value / 10);
-//     }
+export function changeOpacity(canvas: Canvas, valueSlider: HTMLInputElement) {
+    if (getActive(canvas).length > 1) {        
+        canvas.getActiveObject()?.set('opacity', parseInt(valueSlider.value) / 10);
+        for (const objs of getActive(canvas)) {
+            objs.set('opacity', parseInt(valueSlider.value) / 10);
+        }
+    } else {              
+        getActive(canvas)[0]?.set('opacity', parseInt(valueSlider.value) / 10);
+    }
 
-//     fabric.renderAll();
-// }
+    renderAll(canvas);   
+}
+
+
+export function takeOpacity(canvas: Canvas){
+    return getActive(canvas)[0].opacity * 10;
+}

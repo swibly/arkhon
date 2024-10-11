@@ -30,7 +30,7 @@ export function sendBackward(canvas: Canvas) {
     renderAll(canvas);
 }
 
-export function sendForward(canvas: Canvas) {
+export function bringForward(canvas: Canvas) {
     for (const object of getActive(canvas)) {
         canvas.bringObjectForward(object);
     }

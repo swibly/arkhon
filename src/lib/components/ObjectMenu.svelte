@@ -1,10 +1,18 @@
 <script lang="ts">
-    import { changeBorder, changeFill, getActive } from '$lib/editor/objects';
+    import {
+        changeBorder,
+        changeFill,
+        getActive,
+        changeOpacity,
+        takeOpacity
+    } from '$lib/editor/objects';
     import { type Canvas } from 'fabric';
     import { onMount } from 'svelte';
 
     let objectMenu: HTMLElement;
     export let canvas: Canvas;
+    let valueSlider: HTMLInputElement;
+    let value: number;
 
     onMount(() => {
         addEventListener('mousedown', () => {
@@ -12,6 +20,8 @@
                 if (objectMenu) {
                     objectMenu.style.display = 'flex';
                 }
+
+                value = takeOpacity(canvas);                
             } else {
                 if (objectMenu) {
                     objectMenu.style.display = 'none';
@@ -24,6 +34,8 @@
                 if (objectMenu) {
                     objectMenu.style.display = 'flex';
                 }
+
+                value = takeOpacity(canvas); 
             }
 
             if (e.ctrlKey && e.key === 'x') {
@@ -31,7 +43,7 @@
                     objectMenu.style.display = 'none';
                 }
             }
-        });
+        });               
     });
 </script>
 
@@ -110,17 +122,18 @@
             on:click={() => changeFill(canvas, 'yellow', ...getActive(canvas))}
         />
     </section>
-    <!-- <div class="divider" />
+    <div class="divider" />
     <p class="text-center text-xl font-bold">Opacidade</p>
     <section class="flex gap-2 pt-2">
         <input
             type="range"
             min="0"
             max="10"
-            value={valueSlider}
-            on:input={changeOpacity}
+            {value}
+            bind:this={valueSlider}
+            on:input={() => changeOpacity(canvas, valueSlider)}
             class="range range-secondary"
         />
         <div class="divider" />
-    </section> -->
+    </section>
 </article>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getActive, remove, group, ungroup, lock, unlock } from '$lib/editor/objects';
     import { type Canvas } from 'fabric';
-    import { bringFront, sendBack, sendBackward, sendForward } from '$lib/editor/layers'
+    import { bringFront, sendBack, sendBackward, bringForward } from '$lib/editor/layers'
     import { onMount } from 'svelte';
 
     let rightMenu: HTMLElement;
@@ -67,7 +67,7 @@
         <li on:click={() => sendBack(canvas)}>
             <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Mandar para o fundo</a>
         </li>
-        <li on:click={() => sendForward(canvas)}>
+        <li on:click={() => bringForward(canvas)}>
             <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Trazer para frente</a>
         </li>
         <li on:click={() => bringFront(canvas)}>
