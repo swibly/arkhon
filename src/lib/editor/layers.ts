@@ -12,7 +12,27 @@ export function bringFront(canvas: Canvas): void {
 
 export function sendBack(canvas: Canvas): void {
     for (const object of getActive(canvas)) {
-        canvas.sendObjectToBack(object);
+        canvas.moveObjectTo(object, 1);
+    }
+
+    renderAll(canvas);
+}
+
+export function sendBackward(canvas: Canvas) {
+    for (const object of getActive(canvas)) {
+        if (canvas.getObjects().indexOf(object) > 1) {
+            canvas.sendObjectBackwards(object);
+        } else {
+            canvas.moveObjectTo(object, 1);
+        }        
+    }
+
+    renderAll(canvas);
+}
+
+export function sendForward(canvas: Canvas) {
+    for (const object of getActive(canvas)) {
+        canvas.bringObjectForward(object);
     }
 
     renderAll(canvas);

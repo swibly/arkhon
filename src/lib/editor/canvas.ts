@@ -1,4 +1,4 @@
-import { Point, Path, type Canvas } from 'fabric';
+import { PencilBrush, Point, Path, type Canvas } from 'fabric';
 import { add } from './objects';
 
 export function centerView(canvas: Canvas, width: number, height: number): void {
@@ -19,6 +19,11 @@ function draw(canvas: Canvas, value: boolean): void {
 }
 
 export function startDraw(canvas: Canvas): void {
+    canvas.freeDrawingBrush = new PencilBrush(canvas);
+
+    canvas.freeDrawingBrush.color = 'red';
+    canvas.freeDrawingBrush.width = 12;
+
     draw(canvas, true);
 }
 
@@ -26,8 +31,7 @@ export function stopDraw(canvas: Canvas): void {
     draw(canvas, false);
 }
 
-export function drawGrid(canvas: Canvas, grid: number, width: number, height: number) {        
-
+export function drawGrid(canvas: Canvas, grid: number, width: number, height: number) {
     const gridPath = [];
 
     for (let i = 0; i <= Math.round(width) / grid; i++) {
@@ -49,7 +53,7 @@ export function drawGrid(canvas: Canvas, grid: number, width: number, height: nu
         evented: false,
         objectCaching: false
     });
-    
+
     add(canvas, path);
     path.setCoords();
 }
@@ -71,4 +75,8 @@ export function resize(canvas: Canvas, width: number, height: number) {
             height: height - (height / 100) * 5.5
         });
     }
+}
+
+export function toJSON(canvas: Canvas) {
+    console.log(canvas.toJSON())
 }

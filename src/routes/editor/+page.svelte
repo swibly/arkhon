@@ -6,26 +6,28 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
-    import {
-        Canvas,
-        Rect,
-        Circle,
-        Polygon,
-        Point,
-        Group,
-        PencilBrush,
-        ActiveSelection,
-        IText,        
-    } from 'fabric';
+    import { Canvas, Point, ActiveSelection } from 'fabric';
     import {
         drawGrid,
         centerView,
         resize,
         renderAll,
         startDraw,
-        stopDraw
+        stopDraw,
+        toJSON
     } from '$lib/editor/canvas';
-    import { remove, getActive, addRect, addText, addCircle } from '$lib/editor/objects';
+    import {
+        remove,
+        getActive,
+        addRect,
+        addText,
+        addCircle,
+        addPoints,
+        addLine,
+        stopLine
+    } from '$lib/editor/objects';
+    import RightMenu from '$lib/components/RightMenu.svelte';
+    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
 
     let activeButton: String = 'project';
 
@@ -53,14 +55,9 @@
 
     let canvas: HTMLCanvasElement;
     let fabric: Canvas;
-    let pointerX: number;
-    let pointerY: number;
     let selectedObjects: any = [];
-    let rightMenu: HTMLElement;
-    let buttonInside: boolean;
     let _clipboard: any;
     let mode: string = 'select';
-    let objectMenu: HTMLElement;
     let capturedPoints: any = [];
     let visiblePoints: any = [];
     let count: number = 0;
@@ -80,11 +77,6 @@
         drawGrid(fabric, 100, quadSize.w, quadSize.h);
         resize(fabric, innerWidth, innerHeight);
         centerView(fabric, quadSize.w, quadSize.h);
-
-        fabric.freeDrawingBrush = new PencilBrush(fabric);
-
-        fabric.freeDrawingBrush.color = 'red';
-        fabric.freeDrawingBrush.width = 12;
 
         fabric.on('mouse:down', function (this: any, { e }) {
             if (fabric.getActiveObject()) {
@@ -142,37 +134,11 @@
             }
 
             if (mode === 'line') {
-                count += 1;
-
                 fabric.set({ selection: false });
 
                 const points = { x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y };
 
-                capturedPoints.push(points);
-
-                let circle = new IText(`${count}`, {
-                    fontSize: 25,
-                    top: fabric.getScenePoint(e).y - 5,
-                    left: fabric.getScenePoint(e).x - 5,
-                    fill: 'green',
-                    stroke: 'green',
-                    strokeWidth: 3,
-                    strokeUniform: true,
-                    fontFamily: 'sans-serif',
-                    selectable: false,
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    lockRotation: true,
-                    lockScalingFlip: true,
-                    lockScalingX: true,
-                    lockScalingY: true,
-                    lockSkewingX: true,
-                    lockSkewingY: true
-                });
-
-                fabric.add(circle);
-
-                visiblePoints.push(circle);
+                addPoints(fabric, points);
             }
         });
 
@@ -217,7 +183,7 @@
 
             e.preventDefault();
             e.stopPropagation();
-        });        
+        });
 
         fabric.on('object:rotating', function ({ e, target }) {
             target.snapAngle = ~~e.shiftKey * 15;
@@ -230,93 +196,55 @@
             }
         });
 
-        fabric.on('dragover', function ({ e }) {
-            pointerX = fabric.getScenePoint(e).x;
-            pointerY = fabric.getScenePoint(e).y;
-        });
-
-        fabric.on('dragleave', function () {
-            fabric.add(
-                new Rect({
-                    width: 100,
-                    height: 100,
-                    top: pointerY - 50,
-                    left: pointerX - 50,
-                    fill: null,
-                    stroke: 'green',
-                    strokeWidth: 3,
-                    strokeUniform: true,
-                    lockSkewingX: true,
-                    lockSkewingY: true
-                })
-            );
-        });
-
         fabric.on('selection:created', function (options) {
             selectedObjects = options.selected;
 
-            if (objectMenu) {
-                objectMenu.style.display = 'flex';
-            }
-
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
-                valueSlider = fabric.getActiveObject()?.opacity * 10;
+                valueSlider = fabric.getActiveObject()?.opacity! * 10;
             }
         });
 
         fabric.on('selection:updated', function () {
             if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
-                valueSlider = fabric.getActiveObject()?.opacity * 10;
+                valueSlider = fabric.getActiveObject()?.opacity! * 10;
             }
         });
 
         fabric.on('selection:cleared', function () {
             selectedObjects = [];
-
-            objectMenu.style.display = 'none';
         });
 
-        addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-
-            if (rightMenu) {
-                rightMenu.style.display = 'block';
-                rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
-                rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
-            }
-        });
-
-        addEventListener('mousedown', (e) => {
-            let leftButton = e.which;
-
-            if (leftButton == 1) {
-                if (buttonInside) {
-                    rightMenu.style.display = 'block';
-                    buttonInside = false;
-                } else {
-                    if (rightMenu) {
-                        rightMenu.style.display = 'none';
-                        buttonInside = false;
-                    }
-                }
-            }
-        });
-
-        rightMenu.addEventListener('mousedown', () => {
-            buttonInside = true;
+        addEventListener('resize', function () {
+            resize(fabric, innerWidth, innerHeight);
         });
 
         addEventListener('keydown', async (e) => {
-            console.log(e.key);
-
             if (e.altKey) {
                 fabric.isDrawingMode = false;
-                mode = 'select';                
+                mode = 'select';
+            }
+
+            if (e.ctrlKey && e.shiftKey && e.key == 'Backspace') {
+                e.preventDefault();
+
+                remove(fabric, ...getActive(fabric));
+                renderAll(fabric);
+
+                count = 0;
+                capturedPoints = [];
             }
 
             if (e.ctrlKey && e.key == 'x') {
                 e.preventDefault();
 
+                if (fabric.getActiveObject()) {
+                    fabric
+                        .getActiveObject()!
+                        .clone()
+                        .then((cloned) => {
+                            _clipboard = cloned;
+                        });
+                }
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
 
@@ -372,7 +300,9 @@
             if (e.ctrlKey && e.key == 's') {
                 e.preventDefault();
 
-                fabric.discardActiveObject();
+                stopLine(fabric);
+                stopDraw(fabric);
+
                 mode = 'select';
 
                 fabric.renderAll();
@@ -381,13 +311,13 @@
             if (e.ctrlKey && e.key == 'p') {
                 e.preventDefault();
 
-                stopLine();
-                startDraw();
+                stopLine(fabric);
+                startDraw(fabric);
 
                 if (mode !== 'paint') {
                     mode = 'paint';
                 } else {
-                    stopDraw();
+                    stopDraw(fabric);
                     mode = 'select';
                 }
             }
@@ -395,8 +325,9 @@
             if (e.ctrlKey && e.key == 'd') {
                 e.preventDefault();
 
-                stopLine();
-                stopDraw();
+                stopLine(fabric);
+                stopDraw(fabric);
+
                 if (mode !== 'text') {
                     mode = 'text';
                 } else {
@@ -407,16 +338,22 @@
             if (e.ctrlKey && e.key == 'q') {
                 e.preventDefault();
 
+                stopLine(fabric);
+                stopDraw(fabric);
+
                 if (mode !== 'rect') {
                     mode = 'rect';
+                } else {
+                    mode = 'select';
                 }
             }
 
             if (e.ctrlKey && e.key == 'e') {
                 e.preventDefault();
 
-                stopLine();
-                stopDraw();
+                stopLine(fabric);
+                stopDraw(fabric);
+
                 if (mode !== 'circle') {
                     mode = 'circle';
                 } else {
@@ -427,7 +364,8 @@
             if (e.ctrlKey && e.key == 'r') {
                 e.preventDefault();
 
-                stopDraw();
+                stopDraw(fabric);
+
                 if (mode !== 'line') {
                     mode = 'line';
                 } else {
@@ -439,129 +377,16 @@
                 if (e.ctrlKey && e.key == 'f') {
                     e.preventDefault();
 
-                    visiblePoints.forEach((obj: any) => {
-                        fabric.remove(obj);
-                    });
-
-                    fabric.add(
-                        new Polygon(capturedPoints, {
-                            fill: 'green',
-                            stroke: 'green',
-                            strokeWidth: 2,
-                            originX: 'center',
-                            originY: 'center'
-                        })
-                    );
+                    addLine(fabric);
+                    stopLine(fabric);
 
                     mode = 'select';
-                    capturedPoints = [];
-                    count = 0;
                 }
 
                 fabric.renderAll();
             }
         });
     });
-
-    function deleteObject() {
-        const groups = fabric.getActiveObjects().filter((x) => x.type === 'group') as Group[];
-        const objects = fabric.getActiveObjects().filter((x) => x.type !== 'group') as Group[];
-
-        fabric.remove(...groups);
-        fabric.remove(...objects);
-
-        fabric.discardActiveObject();
-        fabric.requestRenderAll();
-    }
-
-    function stopLine() {
-        visiblePoints.forEach((obj: any) => {
-            fabric.remove(obj);
-            fabric.discardActiveObject();
-        });
-
-        fabric.renderAll();
-
-        visiblePoints = [];
-        capturedPoints = [];
-        count = 0;
-    }
-
-    function sendBackward() {
-        selectedObjects.forEach((obj: any) => {
-            if (fabric.getObjects().indexOf(obj) > 2) {
-                fabric.sendObjectBackwards(obj);
-            } else {
-                fabric.moveObjectTo(obj, 2);
-            }
-        });
-
-        fabric.renderAll();
-    }
-
-    function sendForward() {
-        selectedObjects.forEach((obj: any) => {
-            fabric.bringObjectForward(obj);
-            obj.set();
-        });
-
-        fabric.renderAll();
-    }
-
-    function changeBorder(color: string) {
-        if (selectedObjects.length > 1) {
-            for (const objs of selectedObjects) {
-                if (color === 'null') {
-                    objs.set('stroke', null);
-                } else {
-                    objs.set('stroke', color);
-                }
-            }
-        } else {
-            if (color === 'null') {
-                fabric.getActiveObject()?.set('stroke', null);
-            } else {
-                fabric.getActiveObject()?.set('stroke', color);
-            }
-        }
-
-        fabric.renderAll();
-    }
-
-    function changeFill(color: string) {
-        if (selectedObjects.length > 1) {
-            for (const objs of selectedObjects) {
-                if (color === 'null') {
-                    objs.set('fill', null);
-                } else {
-                    objs.set('fill', color);
-                }
-            }
-        } else {
-            if (color === 'null') {
-                fabric.getActiveObject()?.set('fill', null);
-            } else {
-                fabric.getActiveObject()?.set('fill', color);
-            }
-        }
-
-        fabric.renderAll();
-    }
-
-    function changeOpacity() {
-        if (selectedObjects.length > 1) {
-            valueSlider = this.value;
-            fabric.getActiveObject()?.set('opacity', valueSlider / 10);
-            for (const objs of selectedObjects) {
-                objs.set('opacity', this.value / 10);
-            }
-        } else {
-            valueSlider = this.value;
-            fabric.getActiveObject()?.set('opacity', this.value / 10);
-        }
-
-        fabric.renderAll();
-    }
 </script>
 
 <main class="w-full min-h-screen overflow-hidden">
@@ -579,7 +404,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => stopDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'select';
                     }}
@@ -598,7 +423,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => startDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'paint';
                     }}
@@ -617,7 +442,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => stopDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'text';
                     }}
@@ -636,7 +461,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => stopDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'rect';
                     }}
@@ -655,7 +480,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => stopDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'circle';
                     }}
@@ -674,7 +499,7 @@
                 <button
                     class="hidden xl:block"
                     on:click={() => stopDraw(fabric)}
-                    on:click={stopLine}
+                    on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'line';
                     }}
@@ -705,6 +530,9 @@
                 <Icon icon="ph:moon" class="swap-on" font-size="25px" />
                 <Icon icon="ph:sun" class="swap-off" font-size="25px" />
             </label>
+            <button on:click={() => toJSON(fabric)}>
+                <Icon icon="si:json-duotone" font-size="25px" />
+            </button>
         </div>
     </nav>
     <main class="flex h-[calc(100vh-5.5vh)]">
@@ -782,132 +610,8 @@
         </aside>
 
         <main class="w-full xl:w-3/4 2xl:w-4/5">
-            <article
-                class="absolute hidden mt-12 ml-12 w-72 h-72 bg-base-300 z-50 flex-col items-center rounded-xl"
-                bind:this={objectMenu}
-            >
-                <p class="text-center text-xl pt-4 font-bold">Borda</p>
-                <section class="flex gap-2 pt-2">
-                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeBorder('null')}
-                        >X</button
-                    >
-                    <button
-                        class="w-4 h-4 bg-white rounded"
-                        on:click={() => changeBorder('white')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-black rounded"
-                        on:click={() => changeBorder('black')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-red-400 rounded"
-                        on:click={() => changeBorder('red')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-green-400 rounded"
-                        on:click={() => changeBorder('green')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-blue-400 rounded"
-                        on:click={() => changeBorder('blue')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-pink-400 rounded"
-                        on:click={() => changeBorder('pink')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-yellow-400 rounded"
-                        on:click={() => changeBorder('yellow')}
-                    />
-                </section>
-                <div class="divider" />
-                <p class="text-center text-xl font-bold">Fundo</p>
-                <section class="flex gap-2 pt-2">
-                    <button class="w-4 h-4 font-bold -mt-1" on:click={() => changeFill('null')}
-                        >X</button
-                    >
-                    <button
-                        class="w-4 h-4 bg-white rounded border border-2"
-                        on:click={() => changeFill('white')}
-                    />
-                    <button class="w-4 h-4 bg-black rounded" on:click={() => changeFill('black')} />
-                    <button class="w-4 h-4 bg-red-400 rounded" on:click={() => changeFill('red')} />
-                    <button
-                        class="w-4 h-4 bg-green-400 rounded"
-                        on:click={() => changeFill('green')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-blue-400 rounded"
-                        on:click={() => changeFill('blue')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-pink-400 rounded"
-                        on:click={() => changeFill('pink')}
-                    />
-                    <button
-                        class="w-4 h-4 bg-yellow-400 rounded"
-                        on:click={() => changeFill('yellow')}
-                    />
-                </section>
-                <div class="divider" />
-                <p class="text-center text-xl font-bold">Opacidade</p>
-                <section class="flex gap-2 pt-2">
-                    <input
-                        type="range"
-                        min="0"
-                        max="10"
-                        value={valueSlider}
-                        on:input={changeOpacity}
-                        class="range range-secondary"
-                    />
-                    <div class="divider" />
-                </section>
-            </article>
-
-            <!-- <article
-                bind:this={rightMenu}
-                class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
-            >
-                <ul role="menu" aria-labelledby="menu-button" class="menu vertical div space-y-2">
-                    <li on:click={deleteObject}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Deletar</a>
-                    </li>
-                    <li on:click={group}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Agrupar</a>
-                    </li>
-                    <li on:click={ungroup}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Desagrupar</a
-                        >
-                    </li>
-                    <li on:click={lock}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Travar</a>
-                    </li>
-                    <li on:click={unlock}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Destravar</a>
-                    </li>
-                    <li on:click={sendBackward}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Mandar para trás</a
-                        >
-                    </li>
-                    <li on:click={sendToBack}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Mandar para o fundo</a
-                        >
-                    </li>
-                    <li on:click={sendForward}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Trazer para frente</a
-                        >
-                    </li>
-                    <li on:click={sendToFront}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Trazer para o topo</a
-                        >
-                    </li>
-                </ul>
-            </article> -->
-
+            <ObjectMenu canvas={fabric} />
+            <RightMenu canvas={fabric} />
             <canvas bind:this={canvas} />
         </main>
     </main>

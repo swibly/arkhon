@@ -1,5 +1,9 @@
-import { Group, IText, Rect, Circle, type Canvas, type FabricObject } from 'fabric';
+import { Group, IText, Rect, Circle, Polygon, type Canvas, type FabricObject } from 'fabric';
 import { renderAll } from './canvas';
+
+let capturedPoints: Array<{ x: number; y: number }> = [];
+let visiblePoints: FabricObject[] = [];
+let count: number = 0;
 
 export function getActive(canvas: Canvas): Array<FabricObject> {
     return canvas.getActiveObjects();
@@ -10,6 +14,7 @@ export function add(canvas: Canvas, ...objects: FabricObject[]): void {
 }
 
 export function remove(canvas: Canvas, ...objects: FabricObject[]): FabricObject[] {
+    canvas.discardActiveObject();
     return canvas.remove(...objects);
 }
 
@@ -69,7 +74,7 @@ export function unlock(canvas: Canvas) {
 }
 
 export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>) {
-    const text = new IText('Toque para digitar',{
+    const text = new IText('Toque para digitar', {
         width: 100,
         height: 100,
         top: points[0].y - 25,
@@ -124,3 +129,111 @@ export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }
 
     renderAll(canvas);
 }
+
+export function addPoints(canvas: Canvas, points: { x: number; y: number }) {
+    capturedPoints.push(points);
+    count += 1;
+
+    const point = new IText(`${count}`, {
+        fontSize: 25,
+        top: points.y - 5,
+        left: points.x - 5,
+        fill: 'green',
+        stroke: 'green',
+        strokeWidth: 3,
+        strokeUniform: true,
+        fontFamily: 'sans-serif',
+        selectable: false,
+        lockMovementX: true,
+        lockMovementY: true,
+        lockRotation: true,
+        lockScalingFlip: true,
+        lockScalingX: true,
+        lockScalingY: true,
+        lockSkewingX: true,
+        lockSkewingY: true
+    });
+
+    add(canvas, point);
+
+    visiblePoints.push(point);
+}
+
+export function addLine(canvas: Canvas) {
+    const line = new Polygon(capturedPoints, {
+        fill: 'green',
+        stroke: 'green',
+        strokeWidth: 2,
+        originX: 'center',
+        originY: 'center'
+    });
+
+    add(canvas, line);
+
+    renderAll(canvas);
+
+    count = 0;
+}
+
+export function stopLine(canvas: Canvas) {
+    remove(canvas, ...visiblePoints);
+    capturedPoints = [];
+    visiblePoints = [];
+    count = 0;
+    canvas.discardActiveObject();
+}
+
+export function changeBorder(canvas: Canvas, color: string, ...objects: FabricObject[]) {
+    if (objects.length > 1) {
+        for (const objs of objects) {
+            if (color === 'null') {
+                objs.set('stroke', null);
+            } else {
+                objs.set('stroke', color);
+            }
+        }
+    } else {
+        if (color === 'null') {
+            objects[0].set('stroke', null);
+        } else {
+            objects[0].set('stroke', color);
+        }
+    }
+
+    renderAll(canvas);
+}
+
+export function changeFill(canvas: Canvas, color: string, ...objects: FabricObject[]) {
+    if (objects.length > 1) {
+        for (const objs of objects) {
+            if (color === 'null') {
+                objs.set('fill', null);
+            } else {
+                objs.set('fill', color);
+            }
+        }
+    } else {
+        if (color === 'null') {
+            objects[0].set('fill', null);
+        } else {
+            objects[0].set('fill', color);
+        }
+    }
+
+    renderAll(canvas);
+}
+
+// function changeOpacity() {
+//     if (selectedObjects.length > 1) {
+//         valueSlider = this.value;
+//         fabric.getActiveObject()?.set('opacity', valueSlider / 10);
+//         for (const objs of selectedObjects) {
+//             objs.set('opacity', this.value / 10);
+//         }
+//     } else {
+//         valueSlider = this.value;
+//         fabric.getActiveObject()?.set('opacity', this.value / 10);
+//     }
+
+//     fabric.renderAll();
+// }
