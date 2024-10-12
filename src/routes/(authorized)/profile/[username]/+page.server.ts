@@ -1,5 +1,5 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { follow, getUserByUsername, isFollowing, unfollow } from '$lib/utils';
+import { follow, getUserByUsername, isFollowing, unfollow } from '$lib/user';
 
 import type { Actions, PageServerLoad } from './$types';
 
