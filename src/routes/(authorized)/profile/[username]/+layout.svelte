@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import { page } from '$app/stores';
     import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
@@ -7,6 +8,21 @@
     import type { LayoutServerData } from './$types';
 
     export let data: LayoutServerData & User;
+
+    $: paths = $page.url.pathname.split('/').slice(1);
+    $: ghostPath = '';
+
+    const pathNaming: Record<string, string> = {
+        profile: 'Perfil',
+        following: 'Seguindo',
+        followers: 'Seguidores'
+    };
+
+    const pathIcons: Record<string, string> = {
+        profile: 'mdi:home',
+        following: 'mdi:users-add',
+        followers: 'mdi:users'
+    };
 
     onMount(() => {
         if (data.error !== undefined) {
@@ -105,7 +121,12 @@
 
                     <span>Seguidores:</span>
 
-                    <a href={`/profile/${lookup.username}/followers`} class="link link-primary">
+                    <a
+                        href={`/profile/${lookup.username}/followers`}
+                        class="link link-primary"
+                        on:mouseenter={() => (ghostPath = 'followers')}
+                        on:mouseleave={() => (ghostPath = '')}
+                    >
                         {lookup.followers.toLocaleString(lookup.language, {
                             notation: 'compact',
                             compactDisplay: 'long'
@@ -118,7 +139,12 @@
 
                     <span>Seguindo:</span>
 
-                    <a href={`/profile/${lookup.username}/following`} class="link link-primary">
+                    <a
+                        href={`/profile/${lookup.username}/following`}
+                        class="link link-primary"
+                        on:mouseenter={() => (ghostPath = 'following')}
+                        on:mouseleave={() => (ghostPath = '')}
+                    >
                         {lookup.following.toLocaleString('pt-br', {
                             notation: 'compact',
                             compactDisplay: 'long'
@@ -163,6 +189,41 @@
         </aside>
 
         <main class="w-full p-4">
+            <section class="mb-4 text-sm breadcrumbs">
+                <ul>
+                    {#each paths as path}
+                        <li class="flex items-center justify-center gap-2">
+                            <Icon icon={pathIcons[path] ?? 'mdi:user'} />
+
+                            {#if path === 'profile' || path === paths[paths.length - 1]}
+                                {#if paths.indexOf(path) === 1}
+                                    {lookup.firstname} {lookup.lastname}
+                                {:else}
+                                    {pathNaming[path] ?? path}
+                                {/if}
+                            {:else}
+                                <a
+                                    href="/{paths.slice(0, paths.indexOf(path) + 1).join('/')}"
+                                    class="link link-primary"
+                                >
+                                    {#if paths.indexOf(path) === 1}
+                                        {lookup.firstname} {lookup.lastname}
+                                    {:else}
+                                        {pathNaming[path] ?? path}
+                                    {/if}
+                                </a>
+                            {/if}
+                        </li>
+                    {/each}
+                    {#if ghostPath !== '' && ghostPath !== paths[paths.length - 1]}
+                        <li class="flex items-center justify-center gap-2 text-secondary">
+                            <Icon icon={pathIcons[ghostPath]} />
+                            {pathNaming[ghostPath]}
+                        </li>
+                    {/if}
+                </ul>
+            </section>
+
             <slot />
         </main>
     </div>
