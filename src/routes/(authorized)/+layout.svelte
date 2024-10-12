@@ -23,7 +23,7 @@
 
         <div class="size-8 dropdown dropdown-end">
             <button tabindex="0">
-                <img src={data.image_url} alt="" class="rounded-full size-8" />
+                <img src={data.pfp} alt="" class="rounded-full size-8" />
             </button>
 
             <ul

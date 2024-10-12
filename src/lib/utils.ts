@@ -9,6 +9,7 @@ export type User = {
     firstname: string;
     lastname: string;
     username: string;
+    email: string;
     bio: string;
     verified: boolean;
     xp: number;
@@ -32,19 +33,15 @@ export type User = {
         formations: NumericalBoolean;
     };
     country: string;
-    language: string;
+    language: 'en' | 'pt' | 'ru';
     permissions: string[];
-    image_url: string;
+    pfp: string;
 };
 
 export async function getUserByToken(token: string): Promise<User | null> {
     try {
         const res = await axios.get('/v1/auth/validate', { headers: { Authorization: token } });
         const user = res.data as User;
-
-        user.image_url = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURI(
-            user.username
-        )}&backgroundColor=0a5b83,1c799f,69d2e7,f1f4dc,f88c49,d1d4f9,b6e3f4,c0aede,ffd5dc,ffdfbf&backgroundRotation=0,360,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,150,170,180,350,340,330,320,310,300,290,280,270,260,250,190,200,210,220,230,240&shape1=ellipseFilled,polygonFilled,rectangleFilled,rectangle,polygon,line,ellipse&shape2=ellipseFilled,line,polygonFilled,rectangleFilled,polygon,rectangle,ellipse`;
 
         return user;
     } catch (_) {
@@ -54,15 +51,47 @@ export async function getUserByToken(token: string): Promise<User | null> {
 
 export async function getUserByUsername(token: string, username: string): Promise<User | null> {
     try {
-        const res = await axios.get(`/v1/user/${encodeURI(username)}/profile`, { headers: { Authorization: token } });
+        const res = await axios.get(`/v1/user/${username}/profile`, {
+            headers: { Authorization: token }
+        });
         const user = res.data as User;
-
-        user.image_url = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURI(
-            user.username
-        )}&backgroundColor=0a5b83,1c799f,69d2e7,f1f4dc,f88c49,d1d4f9,b6e3f4,c0aede,ffd5dc,ffdfbf&backgroundRotation=0,360,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,150,170,180,350,340,330,320,310,300,290,280,270,260,250,190,200,210,220,230,240&shape1=ellipseFilled,polygonFilled,rectangleFilled,rectangle,polygon,line,ellipse&shape2=ellipseFilled,line,polygonFilled,rectangleFilled,polygon,rectangle,ellipse`;
 
         return user;
     } catch (_) {
         return null;
+    }
+}
+
+export async function isFollowing(token: string, username: string): Promise<boolean> {
+    try {
+        const res = await axios.get(`/v1/user/${username}/amifollowing`, {
+            headers: { Authorization: token }
+        });
+
+        return res.status === 200;
+    } catch (_) {
+        return false;
+    }
+}
+
+export async function follow(token: string, username: string): Promise<void> {
+    try {
+        await axios.post(`/v1/user/${username}/follow`, {}, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function unfollow(token: string, username: string): Promise<void> {
+    try {
+        await axios.post(`/v1/user/${username}/unfollow`, {}, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
     }
 }
