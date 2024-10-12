@@ -1,5 +1,6 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { follow, getUserByUsername, isFollowing, unfollow } from '$lib/user';
+import { getUserByUsername, isFollowing } from '$lib/user';
+import { userPageActions } from '$lib/utils';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -18,15 +19,4 @@ export const load: PageServerLoad = async function ({ cookies, params }) {
     };
 };
 
-export const actions: Actions = {
-    follow: async function ({ cookies, params }) {
-        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
-
-        await follow(jwt, params.username);
-    },
-    unfollow: async function ({ cookies, params }) {
-        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
-
-        await unfollow(jwt, params.username);
-    }
-};
+export const actions: Actions = userPageActions;

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { spawn } from '$lib/toast';
-    import { onMount } from 'svelte';
-    import Icon from '@iconify/svelte';
-    import type { User } from '$lib/utils';
     import { enhance } from '$app/forms';
+    import { spawn } from '$lib/toast';
+    import type { User } from '$lib/user';
+    import Icon from '@iconify/svelte';
+    import { onMount } from 'svelte';
     import type { LayoutServerData } from './$types';
 
     export let data: LayoutServerData & User;
@@ -22,12 +22,12 @@
 </script>
 
 {#if data.error}
-    <div class="w-full min-h-52 flex justify-center items-center text-error">
+    <div class="flex items-center justify-center w-full min-h-52 text-error">
         Usuário não encontrado com este nome. Tente procurar por algo diferente.
     </div>
 {:else}
     <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex">
-        <aside class="w-full max-w-64 p-4 flex flex-col gap-4 border-r-2">
+        <aside class="flex flex-col w-full gap-4 p-4 border-r-2 max-w-64">
             <section class="space-y-4">
                 <img
                     src={lookup.pfp}
@@ -36,7 +36,7 @@
                 />
 
                 <div>
-                    <h2 class="text-center text-xl flex items-center justify-center gap-1">
+                    <h2 class="flex items-center justify-center gap-1 text-xl text-center">
                         {lookup.firstname}
                         {lookup.lastname}
 
@@ -46,7 +46,7 @@
                             </div>
                         {/if}
                     </h2>
-                    <p class="text-center text-sm opacity-70">@{lookup.username}</p>
+                    <p class="text-sm text-center opacity-70">@{lookup.username}</p>
                 </div>
 
                 {#if lookup.bio && lookup.bio.trim() !== ''}
@@ -66,7 +66,7 @@
                         <p>
                             Arkhoins:
                             <span
-                                class="font-bold tooltip cursor-default"
+                                class="font-bold cursor-default tooltip"
                                 data-tip={lookup.arkhoins.toLocaleString(logged.language)}
                             >
                                 {lookup.arkhoins.toLocaleString(logged.language, {
@@ -83,7 +83,7 @@
                         <p>
                             EXP:
                             <span
-                                class="font-bold tooltip cursor-default"
+                                class="font-bold cursor-default tooltip"
                                 data-tip={lookup.xp.toLocaleString(logged.language)}
                             >
                                 {lookup.xp.toLocaleString(logged.language, {
@@ -133,14 +133,14 @@
                 {#if logged.username !== lookup.username}
                     {#if data.isFollowing}
                         <form action="?/unfollow" method="POST" use:enhance={function () {}}>
-                            <button type="submit" class="btn btn-sm btn-primary w-full">
+                            <button type="submit" class="w-full btn btn-sm btn-primary">
                                 <Icon icon="mingcute:user-follow-2-fill" />
                                 Parar de seguir
                             </button>
                         </form>
                     {:else}
                         <form action="?/follow" method="POST" use:enhance={function () {}}>
-                            <button type="submit" class="btn btn-sm btn-primary w-full">
+                            <button type="submit" class="w-full btn btn-sm btn-primary">
                                 <Icon icon="mingcute:user-follow-2-fill" />
                                 Seguir
                             </button>
@@ -148,13 +148,13 @@
                     {/if}
 
                     <form action="?/report" method="POST" use:enhance={function () {}}>
-                        <button type="submit" class="btn btn-sm btn-error w-full">
+                        <button type="submit" class="w-full btn btn-sm btn-error">
                             <Icon icon="material-symbols:block" />
                             Reportar e bloquear
                         </button>
                     </form>
                 {:else}
-                    <a href="/configuration" class="btn btn-sm w-full">
+                    <a href="/configuration" class="w-full btn btn-sm">
                         <Icon icon="mdi:cog" />
                         Configurações
                     </a>
