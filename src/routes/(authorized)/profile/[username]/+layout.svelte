@@ -43,7 +43,7 @@
     </div>
 {:else}
     <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex">
-        <aside class="flex flex-col w-full gap-4 p-4 border-r-2 max-w-64">
+        <aside class="flex flex-col w-full gap-4 p-4 border-r-2 max-w-64 max-md:hidden">
             <section class="space-y-4">
                 <img
                     src={lookup.pfp}
@@ -158,14 +158,30 @@
             <section class="space-y-2">
                 {#if logged.username !== lookup.username}
                     {#if data.isFollowing}
-                        <form action="?/unfollow" method="POST" use:enhance={function () {}}>
-                            <button type="submit" class="w-full btn btn-sm btn-primary">
-                                <Icon icon="mingcute:user-follow-2-fill" />
+                        <form
+                            action="?/unfollow"
+                            method="POST"
+                            use:enhance={function () {
+                                spawn({
+                                    message: 'Parou de seguir ' + lookup.username
+                                });
+                            }}
+                        >
+                            <button type="submit" class="w-full btn btn-sm btn-error">
+                                <Icon icon="ri:user-unfollow-fill" />
                                 Parar de seguir
                             </button>
                         </form>
                     {:else}
-                        <form action="?/follow" method="POST" use:enhance={function () {}}>
+                        <form
+                            action="?/follow"
+                            method="POST"
+                            use:enhance={function () {
+                                spawn({
+                                    message: 'Começou a seguir ' + lookup.username
+                                });
+                            }}
+                        >
                             <button type="submit" class="w-full btn btn-sm btn-primary">
                                 <Icon icon="mingcute:user-follow-2-fill" />
                                 Seguir
@@ -189,6 +205,155 @@
         </aside>
 
         <main class="w-full p-4">
+            <section class="flex items-center gap-2 md:hidden">
+                <img
+                    src={lookup.pfp}
+                    alt="avatar"
+                    class="object-cover rounded-full size-12 max-[400px]:hidden"
+                />
+
+                <div class="space-y-4">
+                    <p class="text-xl text-primary">
+                        <span>
+                            {(lookup.firstname + ' ' + lookup.lastname).slice(
+                                0,
+                                (lookup.firstname + ' ' + lookup.lastname).length > 10
+                                    ? 10
+                                    : undefined
+                            )}
+                            {#if (lookup.firstname + ' ' + lookup.lastname).length > 10}
+                                <span>...</span>
+                            {/if}
+                        </span>
+                        <span class="text-sm opacity-50 text-base-content">@{lookup.username}</span>
+                    </p>
+
+                    <div class="flex">
+                        <div class="flex items-center gap-1">
+                            <Icon icon="ri:coin-fill" />
+                            <p>
+                                Arkhoins:
+                                <span
+                                    class="font-bold cursor-default tooltip"
+                                    data-tip={lookup.arkhoins.toLocaleString(logged.language)}
+                                >
+                                    {lookup.arkhoins.toLocaleString(logged.language, {
+                                        style: 'decimal',
+                                        notation: 'compact',
+                                        compactDisplay: 'short'
+                                    })}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="divider divider-horizontal" />
+
+                        <div class="flex items-center gap-1">
+                            <Icon icon="mingcute:up-line" />
+                            <p>
+                                EXP:
+                                <span
+                                    class="font-bold cursor-default tooltip"
+                                    data-tip={lookup.xp.toLocaleString(logged.language)}
+                                >
+                                    {lookup.xp.toLocaleString(logged.language, {
+                                        style: 'decimal',
+                                        notation: 'compact',
+                                        compactDisplay: 'short'
+                                    })}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <p class="flex items-center gap-2">
+                            <Icon icon="mdi:users" />
+
+                            <span>Seguidores:</span>
+
+                            <a
+                                href={`/profile/${lookup.username}/followers`}
+                                class="link link-primary"
+                            >
+                                {lookup.followers.toLocaleString(lookup.language, {
+                                    notation: 'compact',
+                                    compactDisplay: 'short'
+                                })}
+                            </a>
+                        </p>
+
+                        <div class="divider divider-horizontal" />
+
+                        <p class="flex items-center gap-2">
+                            <Icon icon="mdi:users-add" />
+
+                            <span>Seguindo:</span>
+
+                            <a
+                                href={`/profile/${lookup.username}/following`}
+                                class="link link-primary"
+                            >
+                                {lookup.following.toLocaleString('pt-br', {
+                                    notation: 'compact',
+                                    compactDisplay: 'short'
+                                })}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex items-center justify-center gap-2 *:grow mt-4 md:hidden">
+                {#if logged.username !== lookup.username}
+                    {#if data.isFollowing}
+                        <form
+                            action="?/unfollow"
+                            method="POST"
+                            use:enhance={function () {
+                                spawn({
+                                    message: 'Parou de seguir ' + lookup.username
+                                });
+                            }}
+                        >
+                            <button type="submit" class="w-full btn btn-sm btn-error">
+                                <Icon icon="ri:user-unfollow-fill" />
+                                Parar de seguir
+                            </button>
+                        </form>
+                    {:else}
+                        <form
+                            action="?/follow"
+                            method="POST"
+                            use:enhance={function () {
+                                spawn({
+                                    message: 'Começou a seguir ' + lookup.username
+                                });
+                            }}
+                        >
+                            <button type="submit" class="w-full btn btn-sm btn-primary">
+                                <Icon icon="mingcute:user-follow-2-fill" />
+                                Seguir
+                            </button>
+                        </form>
+                    {/if}
+
+                    <form action="?/report" method="POST" use:enhance={function () {}}>
+                        <button type="submit" class="w-full btn btn-sm btn-error">
+                            <Icon icon="material-symbols:block" />
+                            Reportar e bloquear
+                        </button>
+                    </form>
+                {:else}
+                    <a href="/configuration" class="w-full btn btn-sm">
+                        <Icon icon="mdi:cog" />
+                        Configurações
+                    </a>
+                {/if}
+            </div>
+
+            <div class="max-md:divider" />
+
             <section class="mb-4 text-sm breadcrumbs">
                 <ul>
                     {#each paths as path}

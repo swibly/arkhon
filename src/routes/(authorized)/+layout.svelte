@@ -5,8 +5,8 @@
     export let data: LayoutServerData;
 </script>
 
-<div class="min-h-screen w-full">
-    <header class="flex items-center gap-2 p-4 shadow sticky top-0">
+<div class="w-full min-h-screen">
+    <header class="sticky top-0 z-50 flex items-center gap-2 p-4 shadow bg-base-100">
         <div>
             <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
             <p class="text-sm opacity-50">Bem-vindo, {data.firstname}!</p>
