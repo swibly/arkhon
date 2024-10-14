@@ -21,6 +21,11 @@
                     Novo projeto
                 </a>
 
+                <a href="/profile/{data.username}/projects" class="btn btn-primary btn-sm">
+                    <Icon icon="eos-icons:project" />
+                    Meus projetos
+                </a>
+
                 <a href="/community/store" class="btn btn-secondary btn-sm">
                     <Icon icon="mdi:store" />
                     Loja
@@ -33,14 +38,14 @@
 
     <section>
         <h1 class="text-3xl font-bold mb-4 text-primary">
-            Projetos Públicos
+            Projetos Criados
             {#if projects.total_records > 0}
                 <a
                     href="/profile/{data.lookup.username}/projects"
                     class="link link-secondary text-sm font-normal"
                 >
-                    {#if projects.data.length - projects.total_records > 0}
-                        (ver mais {projects.data.length - projects.total_records})
+                    {#if projects.total_records - projects.data.length > 0}
+                        (ver mais {projects.total_records - projects.data.length})
                     {:else}
                         (ver todos)
                     {/if}
@@ -75,8 +80,8 @@
                     href="/profile/{data.lookup.username}/favorites"
                     class="link link-secondary text-sm font-normal"
                 >
-                    {#if favorites.data.length - favorites.total_records > 0}
-                        (ver mais {favorites.data.length - favorites.total_records})
+                    {#if favorites.total_records - projects.data.length > 0}
+                        (ver mais {favorites.total_records - favorites.data.length})
                     {:else}
                         (ver todos)
                     {/if}

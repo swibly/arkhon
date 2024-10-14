@@ -32,7 +32,7 @@ export async function getProjectsByUser(
         const limit = options.limit ?? 10;
 
         const res = await axios.get(
-            `/v1/projects/user/${username}${isFavorite}?page=${page}perpage=${limit}`,
+            `/v1/projects/user/${username}${isFavorite}?page=${page}&perpage=${limit}`,
             {
                 headers: { Authorization: token }
             }

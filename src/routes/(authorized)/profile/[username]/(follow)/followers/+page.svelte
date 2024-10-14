@@ -12,10 +12,11 @@
     $: followers = pagination.data;
 </script>
 
-<h1 class="mb-4 text-3xl font-bold text-primary">Seguidores</h1>
+<h1 class="text-3xl font-bold text-primary">Seguidores</h1>
+<p class="mb-4">Acompanhe quem já está conectado com {data.lookup.firstname}</p>
 
 {#if followers.length === 0}
-    <p class="mb-4 opacity-70">Este perfil ainda não tem nenhum seguidor.</p>
+    <p class="mb-4 opacity-70 italic">Este perfil ainda não tem nenhum seguidor.</p>
 
     {#if data.username !== data.lookup.username}
         <form

@@ -9,7 +9,8 @@
     $: projects = pagination.data;
 </script>
 
-<h1 class="mb-4 text-3xl font-bold text-primary">Todos os Projetos</h1>
+<h1 class="text-3xl font-bold text-primary">Todos os Projetos</h1>
+<p class="mb-4">Projetos de {data.lookup.firstname} gerenciados e acompanhados</p>
 
 {#if projects.length === 0}
     <p class="mb-4 opacity-70">Este usuário ainda não tem nenhum projeto.</p>

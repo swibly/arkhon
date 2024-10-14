@@ -13,8 +13,8 @@ export const load: PageServerLoad = async function ({ cookies, params }) {
         return { error: 'Usuário não existe.' };
     }
 
-    const projects = await getProjectsByUser(jwt, params.username);
-    const favorites = await getProjectsByUser(jwt, params.username, true);
+    const projects = await getProjectsByUser(jwt, params.username, false, { limit: 3 });
+    const favorites = await getProjectsByUser(jwt, params.username, true, { limit: 3 });
 
     return {
         lookup: user!,

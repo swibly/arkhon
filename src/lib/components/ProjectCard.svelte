@@ -8,7 +8,7 @@
     export let currentUserID: number;
     export let lang: 'pt' | 'en' | 'ru';
 
-    const limit = 5;
+    const limit = 3;
     const users = [
         ...options.allowed_users.slice(0, limit - 1).map((user) => ({
             name: user.username,
@@ -21,7 +21,17 @@
 <article class="w-full p-4 rounded-lg shadow max-w-96">
     <header class="flex justify-center items-center">
         <div>
-            <h2 class="text-xl font-bold">{options.name}</h2>
+            <h2 class="text-xl font-bold">
+                {options.name}
+                {#if !options.is_public}
+                    <div class="tooltip" data-tip="Visível somente para você">
+                        <span class="badge badge-primary badge-sm gap-1">
+                            <Icon icon="material-symbols:lock" />
+                            Privado
+                        </span>
+                    </div>
+                {/if}
+            </h2>
         </div>
 
         <div class="grow" />
@@ -38,7 +48,7 @@
                     compactDisplay: 'short'
                 })}
                 <button type="submit">
-                    <Icon icon="material-symbols:favorite" class="text-error" />
+                    <Icon icon="material-symbols:favorite" class="transition text-error size-6 hover:scale-125" />
                 </button>
             </form>
         {:else}
@@ -53,7 +63,7 @@
                     compactDisplay: 'short'
                 })}
                 <button type="submit">
-                    <Icon icon="material-symbols:favorite-outline" class="text-error" />
+                    <Icon icon="material-symbols:favorite-outline" class="transition text-error size-6 hover:scale-125" />
                 </button>
             </form>
         {/if}
@@ -66,7 +76,7 @@
     />
 
     <section class="flex gap-2 mb-4">
-        <p class="line-clamp-3 text-justify">{options.description}</p>
+        <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
 
         <div>
             <UserIcon {users} overflow={options.allowed_users.length + 1 - limit} />
@@ -77,7 +87,17 @@
         <p class="flex items-center gap-1">
             <Icon icon="mdi:calendar" />
             Criado:
-            <span class="font-bold">
+            <span
+                class="font-bold tooltip"
+                data-tip={new Date(options.created_at).toLocaleDateString(lang, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })}
+            >
                 {new Date(options.created_at).toLocaleDateString(lang, {
                     day: '2-digit',
                     month: '2-digit'
@@ -90,7 +110,17 @@
         <p class="flex items-center gap-1">
             <Icon icon="mdi:calendar" />
             Editado:
-            <span class="font-bold">
+            <span
+                class="font-bold tooltip"
+                data-tip={new Date(options.updated_at).toLocaleDateString(lang, {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })}
+            >
                 {new Date(options.updated_at).toLocaleDateString(lang, {
                     day: '2-digit',
                     month: '2-digit'
