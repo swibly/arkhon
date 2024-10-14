@@ -42,9 +42,9 @@
         Usuário não encontrado com este nome. Tente procurar por algo diferente.
     </div>
 {:else}
-    <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex">
+    <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex relative">
         <aside
-            class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden"
+            class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden fixed min-h-[calc(100vh-84px)]"
         >
             <section class="space-y-4">
                 <img
@@ -206,7 +206,7 @@
             </section>
         </aside>
 
-        <main class="w-full p-4">
+        <main class="w-full p-4 md:ml-64">
             <section class="flex items-center gap-2 md:hidden">
                 <img
                     src={lookup.pfp}
