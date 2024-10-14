@@ -16,20 +16,15 @@
             <h1 class="text-3xl font-bold mb-4 text-primary">Acesso Rápido</h1>
 
             <div class="flex gap-2 max-md:justify-center">
-                <button class="btn btn-primary btn-sm">
+                <a href="/community/new" class="btn btn-primary btn-sm">
                     <Icon icon="mdi:plus" />
                     Novo projeto
-                </button>
+                </a>
 
-                <button class="btn btn-primary btn-sm">
-                    <Icon icon="mdi:eye" />
-                    Meus projetos
-                </button>
-
-                <button class="btn btn-secondary btn-sm">
+                <a href="/community/store" class="btn btn-secondary btn-sm">
                     <Icon icon="mdi:store" />
                     Loja
-                </button>
+                </a>
             </div>
         </section>
 
