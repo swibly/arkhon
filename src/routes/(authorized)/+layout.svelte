@@ -17,8 +17,8 @@
         <label class="swap swap-rotate">
             <input type="checkbox" class="theme-controller" value="dark" />
 
-            <Icon icon="ph:sun-fill" class="swap-off size-8" />
-            <Icon icon="ph:moon-fill" class="swap-on size-8" />
+            <Icon icon="ph:sun-fill" class="swap-off size-6" />
+            <Icon icon="ph:moon-fill" class="swap-on size-6" />
         </label>
 
         <div class="size-8 dropdown dropdown-end">
@@ -31,7 +31,7 @@
                 class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
             >
                 <li>
-                    <a href="/profile/{data.username}">
+                    <a href="/profile/{data.username}" class="text-primary">
                         <Icon icon="iconamoon:profile-fill" />
                         Perfil
                     </a>
@@ -47,7 +47,7 @@
                 <div class="divider my-1" />
 
                 <li>
-                    <a href="/community/new">
+                    <a href="/community/new" class="text-secondary">
                         <Icon icon="mdi:plus" />
                         Novo projeto
                     </a>
