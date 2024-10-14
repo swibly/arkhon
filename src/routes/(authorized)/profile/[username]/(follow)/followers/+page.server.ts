@@ -15,12 +15,10 @@ export const load: PageServerLoad = async function ({ cookies, params, url }) {
         }
     });
 
-    const followers = await getFollowers(
-        cookies.get(JWT_TOKEN_COOKIE_NAME)!,
-        params.username,
+    const followers = await getFollowers(cookies.get(JWT_TOKEN_COOKIE_NAME)!, params.username, {
         page,
         limit
-    );
+    });
 
     return {
         followers: followers!

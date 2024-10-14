@@ -1,5 +1,5 @@
 import axios from './server/axios';
-import { Pagination } from './utils';
+import { Pagination, PaginationOptions } from './utils';
 
 type NumericalBoolean = 1 | -1;
 
@@ -37,6 +37,19 @@ export type User = {
     language: 'en' | 'pt' | 'ru';
     permissions: string[];
     pfp: string;
+};
+
+export type UserprojectPermissions = {
+    id: number;
+    username: string;
+    profile_picture: string;
+    allow_view: boolean;
+    allow_edit: boolean;
+    allow_delete: boolean;
+    allow_publish: boolean;
+    allow_share: boolean;
+    allow_manage_users: boolean;
+    allow_manage_metadata: boolean;
 };
 
 export type Follower = {
@@ -118,10 +131,12 @@ export async function unfollow(token: string, username: string): Promise<void> {
 export async function getFollowers(
     token: string,
     username: string,
-    page: number = 1,
-    limit: number = 10
+    options: PaginationOptions
 ): Promise<Pagination<Follower> | undefined> {
     try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
         const res = await axios.get(
             `/v1/user/${username}/followers?page=${page}&perpage=${limit}`,
             {
@@ -139,10 +154,12 @@ export async function getFollowers(
 export async function getFollowing(
     token: string,
     username: string,
-    page: number = 1,
-    limit: number = 10
+    options: PaginationOptions
 ): Promise<Pagination<Follower> | undefined> {
     try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
         const res = await axios.get(
             `/v1/user/${username}/following?page=${page}&perpage=${limit}`,
             {

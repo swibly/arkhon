@@ -1,6 +1,6 @@
-import { JWT_TOKEN_COOKIE_NAME } from "$env/static/private";
-import { Actions } from "@sveltejs/kit";
-import { follow, unfollow } from "./user";
+import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
+import { Actions } from '@sveltejs/kit';
+import { follow, unfollow } from './user';
 
 export type Pagination<T> = {
     data: T[];
@@ -11,6 +11,10 @@ export type Pagination<T> = {
     previous_page: number;
 };
 
+export type PaginationOptions = Partial<{
+    page: number;
+    limit: number;
+}>;
 
 export const userPageActions: Actions = {
     follow: async function ({ cookies, params }) {
