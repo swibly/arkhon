@@ -1,6 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
-import UserIcon from '$lib/components/UserIcon.svelte';
+    import UserIcon from '$lib/components/UserIcon.svelte';
     import type { Project } from '$lib/projects';
     import Icon from '@iconify/svelte';
 
@@ -27,13 +27,31 @@ import UserIcon from '$lib/components/UserIcon.svelte';
         <div class="grow" />
 
         {#if options.is_favorited}
-            <form action="/community/{options.id}?/unfavorite" method="POST" use:enhance={function () {}}>
+            <form
+                action="/community/{options.id}?/unfavorite"
+                method="POST"
+                use:enhance={function () {}}
+                class="flex items-center gap-1"
+            >
+                {options.total_favorites.toLocaleString(lang, {
+                    notation: 'compact',
+                    compactDisplay: 'short'
+                })}
                 <button type="submit">
                     <Icon icon="material-symbols:favorite" class="text-error" />
                 </button>
             </form>
         {:else}
-            <form action="/community/{options.id}?/favorite" method="POST" use:enhance={function () {}}>
+            <form
+                action="/community/{options.id}?/favorite"
+                method="POST"
+                use:enhance={function () {}}
+                class="flex items-center gap-1"
+            >
+                {options.total_favorites.toLocaleString(lang, {
+                    notation: 'compact',
+                    compactDisplay: 'short'
+                })}
                 <button type="submit">
                     <Icon icon="material-symbols:favorite-outline" class="text-error" />
                 </button>
