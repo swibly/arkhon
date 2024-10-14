@@ -1,4 +1,5 @@
 import axios from './server/axios';
+import { Pagination } from './utils';
 
 type NumericalBoolean = 1 | -1;
 
@@ -36,6 +37,16 @@ export type User = {
     language: 'en' | 'pt' | 'ru';
     permissions: string[];
     pfp: string;
+};
+
+export type Follower = {
+    id: number;
+    firstname: string;
+    lastname: string;
+    username: string;
+    pfp: string;
+    verified: boolean;
+    following_since: Date;
 };
 
 export async function getUserByToken(token: string): Promise<User | null> {
@@ -76,9 +87,13 @@ export async function isFollowing(token: string, username: string): Promise<bool
 
 export async function follow(token: string, username: string): Promise<void> {
     try {
-        await axios.post(`/v1/user/${username}/follow`, {}, {
-            headers: { Authorization: token }
-        });
+        await axios.post(
+            `/v1/user/${username}/follow`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
     } catch (error) {
         console.error(error);
         // TODO: Add error handling
@@ -87,9 +102,55 @@ export async function follow(token: string, username: string): Promise<void> {
 
 export async function unfollow(token: string, username: string): Promise<void> {
     try {
-        await axios.post(`/v1/user/${username}/unfollow`, {}, {
-            headers: { Authorization: token }
-        });
+        await axios.post(
+            `/v1/user/${username}/unfollow`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function getFollowers(
+    token: string,
+    username: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<Pagination<Follower> | undefined> {
+    try {
+        const res = await axios.get(
+            `/v1/user/${username}/followers?page=${page}&perpage=${limit}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        return res.data as Pagination<Follower>;
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function getFollowing(
+    token: string,
+    username: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<Pagination<Follower> | undefined> {
+    try {
+        const res = await axios.get(
+            `/v1/user/${username}/following?page=${page}&perpage=${limit}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        return res.data as Pagination<Follower>;
     } catch (error) {
         console.error(error);
         // TODO: Add error handling
