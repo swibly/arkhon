@@ -200,7 +200,7 @@
                         </button>
                     </form>
                 {:else}
-                    <a href="/configuration" class="w-full btn btn-sm">
+                    <a href="/settings" class="w-full btn btn-sm">
                         <Icon icon="mdi:cog" />
                         Configurações
                     </a>
@@ -349,7 +349,7 @@
                         </button>
                     </form>
                 {:else}
-                    <a href="/configuration" class="w-full btn btn-sm">
+                    <a href="/settings" class="w-full btn btn-sm">
                         <Icon icon="mdi:cog" />
                         Configurações
                     </a>

@@ -77,7 +77,7 @@
                 </li>
 
                 <li>
-                    <a href="/profile/{data.username}/favorites">
+                    <a href="/community/store">
                         <Icon icon="mdi:store" />
                         Loja
                     </a>
