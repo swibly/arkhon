@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Card from '$lib/components/Card.svelte';
+    import ExampleCard from '$lib/components/ExampleCard.svelte';
     import Logo from '$lib/components/Logo.svelte';
     import Icon from '@iconify/svelte';
 
@@ -15,12 +15,12 @@
 </svelte:head>
 
 <main data-theme="light">
-    <section class="flex flex-col justify-center items-center p-8">
-        <Logo class="mix-blend-difference fill-white mx-auto" />
+    <section class="flex flex-col items-center justify-center p-8">
+        <Logo class="mx-auto mix-blend-difference fill-white" />
 
-        <p class="text-3xl text-center mt-8">Sua plataforma de arquitetura.</p>
+        <p class="mt-8 text-3xl text-center">Sua plataforma de arquitetura.</p>
 
-        <div class="mt-8 flex flex-wrap justify-center gap-2">
+        <div class="flex flex-wrap justify-center gap-2 mt-8">
             <a href="/login" class="btn btn-primary btn-wide">
                 <Icon icon="material-symbols:login" />
                 Iniciar Sessão
@@ -36,7 +36,7 @@
         class="relative flex flex-col items-center justify-center w-full py-20"
         style="background-image: url(/home/banner.png); background-position: center; background-size: cover;"
     >
-        <h2 class="pt-12 text-3xl text-white max-md:text-xl text-center">
+        <h2 class="pt-12 text-3xl text-center text-white max-md:text-xl">
             Papel e caneta tornaram-se obsoletos na prototipação.
         </h2>
 
@@ -87,7 +87,7 @@
     </section>
 
     <section class="flex flex-wrap justify-center my-10">
-        <Card
+        <ExampleCard
             title="Projeto 1"
             date={new Date(Date.now())}
             likes={1209}
@@ -99,9 +99,9 @@
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
             laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
             Voluptatem ratione animi ullam inventore quis.
-        </Card>
+        </ExampleCard>
 
-        <Card
+        <ExampleCard
             title="Projeto 2"
             date={new Date(Date.now())}
             likes={1209}
@@ -113,9 +113,9 @@
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
             laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
             Voluptatem ratione animi ullam inventore quis.
-        </Card>
+        </ExampleCard>
 
-        <Card
+        <ExampleCard
             title="Projeto 3"
             date={new Date(Date.now())}
             likes={1209}
@@ -127,7 +127,7 @@
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, perferendis non
             laborum ab nemo provident aut, vitae quod nihil reprehenderit minima ut pariatur dolor.
             Voluptatem ratione animi ullam inventore quis.
-        </Card>
+        </ExampleCard>
     </section>
 
     <section class="flex justify-between mt-4 sm:mt-20">
