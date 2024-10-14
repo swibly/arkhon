@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
     import UserIcon from '$lib/components/UserIcon.svelte';
     import type { Project } from '$lib/projects';
+    import { spawn } from '$lib/toast';
     import Icon from '@iconify/svelte';
 
     export let options: Project;
@@ -40,7 +41,11 @@
             <form
                 action="/community/projects/{options.id}?/unfavorite"
                 method="POST"
-                use:enhance={function () {}}
+                use:enhance={function () {
+                    spawn({
+                        message: 'Você desfavoritou este projeto'
+                    });
+                }}
                 class="flex items-center gap-1"
             >
                 {options.total_favorites.toLocaleString(lang, {
@@ -48,14 +53,21 @@
                     compactDisplay: 'short'
                 })}
                 <button type="submit">
-                    <Icon icon="material-symbols:favorite" class="transition text-error size-6 hover:scale-125" />
+                    <Icon
+                        icon="material-symbols:favorite"
+                        class="transition text-error size-6 hover:scale-125"
+                    />
                 </button>
             </form>
         {:else}
             <form
                 action="/community/projects/{options.id}?/favorite"
                 method="POST"
-                use:enhance={function () {}}
+                use:enhance={function () {
+                    spawn({
+                        message: 'Você favoritou este projeto'
+                    });
+                }}
                 class="flex items-center gap-1"
             >
                 {options.total_favorites.toLocaleString(lang, {
@@ -63,7 +75,10 @@
                     compactDisplay: 'short'
                 })}
                 <button type="submit">
-                    <Icon icon="material-symbols:favorite-outline" class="transition text-error size-6 hover:scale-125" />
+                    <Icon
+                        icon="material-symbols:favorite-outline"
+                        class="transition text-error size-6 hover:scale-125"
+                    />
                 </button>
             </form>
         {/if}

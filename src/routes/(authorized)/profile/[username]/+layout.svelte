@@ -167,7 +167,7 @@
                             method="POST"
                             use:enhance={function () {
                                 spawn({
-                                    message: 'Parou de seguir ' + lookup.username
+                                    message: 'Você parou de seguir ' + lookup.username
                                 });
                             }}
                         >
@@ -182,7 +182,7 @@
                             method="POST"
                             use:enhance={function () {
                                 spawn({
-                                    message: 'Começou a seguir ' + lookup.username
+                                    message: 'Você começou a seguir ' + lookup.username
                                 });
                             }}
                         >
@@ -316,7 +316,7 @@
                             method="POST"
                             use:enhance={function () {
                                 spawn({
-                                    message: 'Parou de seguir ' + lookup.username
+                                    message: 'Você parou de seguir ' + lookup.username
                                 });
                             }}
                         >
@@ -331,7 +331,7 @@
                             method="POST"
                             use:enhance={function () {
                                 spawn({
-                                    message: 'Começou a seguir ' + lookup.username
+                                    message: 'Você começou a seguir ' + lookup.username
                                 });
                             }}
                         >
