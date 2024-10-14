@@ -28,7 +28,7 @@
 
         {#if options.is_favorited}
             <form
-                action="/community/{options.id}?/unfavorite"
+                action="/community/projects/{options.id}?/unfavorite"
                 method="POST"
                 use:enhance={function () {}}
                 class="flex items-center gap-1"
@@ -43,7 +43,7 @@
             </form>
         {:else}
             <form
-                action="/community/{options.id}?/favorite"
+                action="/community/projects/{options.id}?/favorite"
                 method="POST"
                 use:enhance={function () {}}
                 class="flex items-center gap-1"
