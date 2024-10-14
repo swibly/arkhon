@@ -10,7 +10,7 @@
     $: following = pagination.data;
 </script>
 
-<h1 class="mb-4 text-3xl font-bold">Seguindo</h1>
+<h1 class="mb-4 text-3xl font-bold text-primary">Seguindo</h1>
 
 {#if following.length === 0}
     <p class="mb-4 opacity-70">Este perfil ainda não está seguindo ninguém.</p>

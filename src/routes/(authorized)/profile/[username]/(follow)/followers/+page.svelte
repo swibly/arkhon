@@ -11,7 +11,7 @@
     $: followers = pagination.data;
 </script>
 
-<h1 class="mb-4 text-3xl font-bold">Seguidores</h1>
+<h1 class="mb-4 text-3xl font-bold text-primary">Seguidores</h1>
 
 {#if followers.length === 0}
     <p class="mb-4 opacity-70">Este perfil ainda não tem nenhum seguidor.</p>
