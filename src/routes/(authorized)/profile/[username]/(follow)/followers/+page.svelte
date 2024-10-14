@@ -3,6 +3,7 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import type { PageServerData } from './$types';
+    import UserProfileCard from '$lib/components/UserProfileCard.svelte';
 
     export let data: PageServerData & User & { lookup: User };
 
@@ -56,33 +57,8 @@
 
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         {#each followers as follower}
-            <li class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl bg-base-200">
-                <div class="flex items-center gap-2">
-                    <img src={follower.pfp} alt="" class="rounded-full size-16" />
-
-                    <div>
-                        <h2 class="flex items-center justify-center gap-1 text-xl">
-                            {follower.firstname}
-                            {follower.lastname}
-
-                            {#if follower.id === data.id}
-                                <span class="text-sm text-primary">(você)</span>
-                            {/if}
-
-                            {#if follower.verified}
-                                <div class="tooltip" data-tip="Verificado">
-                                    <Icon icon="material-symbols:verified" class="text-primary" />
-                                </div>
-                            {/if}
-                        </h2>
-                        <p class="text-sm opacity-70">@{follower.username}</p>
-                    </div>
-                </div>
-
-                <a href="/profile/{follower.username}" class="btn btn-sm btn-primary">
-                    <Icon icon="mdi:user" />
-                    Ver perfil
-                </a>
+            <li>
+                <UserProfileCard {...follower} selfID={data.id} />
             </li>
         {/each}
     </ul>
