@@ -44,17 +44,20 @@
                     href="/profile/{data.lookup.username}/projects"
                     class="link link-secondary text-sm font-normal"
                 >
-                    {#if projects.total_records - projects.data.length > 0}
-                        (ver mais {projects.total_records - projects.data.length})
-                    {:else}
-                        (ver todos)
-                    {/if}
+                    (ver todos)
                 </a>
             {/if}
         </h1>
 
         {#if projects.total_records === 0}
             <p class="mb-4 opacity-70">Este usuário ainda não criou nenhum projeto.</p>
+
+            {#if data.id === data.lookup.id}
+                <a href="/community/new" class="btn btn-primary btn-sm">
+                    <Icon icon="mdi:plus" />
+                    Começe a projetar agora mesmo!
+                </a>
+            {/if}
         {:else}
             <ul class="flex flex-wrap gap-2">
                 {#each projects.data as project}
@@ -80,11 +83,7 @@
                     href="/profile/{data.lookup.username}/favorites"
                     class="link link-secondary text-sm font-normal"
                 >
-                    {#if favorites.total_records - projects.data.length > 0}
-                        (ver mais {favorites.total_records - favorites.data.length})
-                    {:else}
-                        (ver todos)
-                    {/if}
+                    (ver todos)
                 </a>
             {/if}
         </h1>

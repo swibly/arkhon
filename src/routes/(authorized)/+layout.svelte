@@ -36,6 +36,71 @@
                         Perfil
                     </a>
                 </li>
+
+                <li>
+                    <a href="/notifications">
+                        <Icon icon="mdi:bell" />
+                        Notificações (0)
+                    </a>
+                </li>
+
+                <div class="divider my-1" />
+
+                <li>
+                    <a href="/community/new">
+                        <Icon icon="mdi:plus" />
+                        Novo projeto
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/profile/{data.username}/projects">
+                        <Icon icon="eos-icons:project" />
+                        Meus projetos
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/profile/{data.username}/favorites">
+                        <Icon icon="mdi:heart" />
+                        Meus favoritos
+                    </a>
+                </li>
+
+                <div class="divider my-1" />
+
+                <li>
+                    <a href="/community">
+                        <Icon icon="fluent:people-community-12-filled" />
+                        Comunidade
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/profile/{data.username}/favorites">
+                        <Icon icon="mdi:store" />
+                        Loja
+                    </a>
+                </li>
+
+                <div class="divider my-1" />
+
+                <li>
+                    <a href="/faq">
+                        <Icon icon="mingcute:question-fill" />
+                        FAQ
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/support">
+                        <Icon icon="streamline:customer-support-1-solid" />
+                        Suporte
+                    </a>
+                </li>
+
+                <div class="divider my-1" />
+
                 <li>
                     <a href="/logout" class="text-error">
                         <Icon icon="pepicons-pop:leave" />
