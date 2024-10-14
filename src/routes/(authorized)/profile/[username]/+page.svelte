@@ -69,7 +69,7 @@
 
     <section>
         <h1 class="text-3xl font-bold mb-4 text-primary">
-            Projetos Favoritos
+            Projetos Favoritados
             {#if favorites.total_records > 0}
                 <a
                     href="/profile/{data.lookup.username}/favorites"

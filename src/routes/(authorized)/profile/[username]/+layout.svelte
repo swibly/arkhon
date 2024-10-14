@@ -15,13 +15,15 @@
     const pathNaming: Record<string, string> = {
         profile: 'Perfil',
         following: 'Seguindo',
-        followers: 'Seguidores'
+        followers: 'Seguidores',
+        projects: 'Projetos'
     };
 
     const pathIcons: Record<string, string> = {
         profile: 'mdi:home',
         following: 'mdi:users-add',
-        followers: 'mdi:users'
+        followers: 'mdi:users',
+        projects: 'eos-icons:project'
     };
 
     onMount(() => {
