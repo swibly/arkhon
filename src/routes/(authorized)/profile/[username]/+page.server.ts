@@ -1,4 +1,5 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
+import { getProjectsByUser } from '$lib/projects';
 import { getUserByUsername, isFollowing } from '$lib/user';
 import { userPageActions } from '$lib/utils';
 
@@ -13,9 +14,14 @@ export const load: PageServerLoad = async function ({ cookies, params }) {
         return { error: 'Usuário não existe.' };
     }
 
+    const projects = await getProjectsByUser(jwt, params.username);
+    const favorites = await getProjectsByUser(jwt, params.username, true);
+
     return {
         lookup: user!,
-        isFollowing: await isFollowing(jwt, params.username)!
+        isFollowing: await isFollowing(jwt, params.username)!,
+        projects: projects!,
+        favorites: favorites!
     };
 };
 

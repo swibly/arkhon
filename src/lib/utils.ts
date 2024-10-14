@@ -1,6 +1,7 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { Actions } from '@sveltejs/kit';
 import { follow, unfollow } from './user';
+import { favorite, unfavorite } from './projects';
 
 export type Pagination<T> = {
     data: T[];
@@ -28,3 +29,22 @@ export const userPageActions: Actions = {
         await unfollow(jwt, params.username!);
     }
 };
+
+//export const projectPageActions: Actions = {
+//    favorite: async function ({ cookies, request }) {
+//        const data = await request.formData();
+//        const projectID = data.get('project')!;
+//
+//        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+//
+//        await favorite(jwt, parseInt(projectID.toString()));
+//    },
+//    unfavorite: async function ({ cookies, request }) {
+//        const data = await request.formData();
+//        const projectID = data.get('project')!;
+//
+//        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+//
+//        await unfavorite(jwt, parseInt(projectID.toString()));
+//    }
+//};
