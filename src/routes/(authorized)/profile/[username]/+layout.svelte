@@ -43,7 +43,9 @@
     </div>
 {:else}
     <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex">
-        <aside class="flex flex-col w-full gap-4 p-4 border-r-2 max-w-64 max-md:hidden">
+        <aside
+            class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden"
+        >
             <section class="space-y-4">
                 <img
                     src={lookup.pfp}
