@@ -1,5 +1,6 @@
 <script lang="ts">
-    import UserIcon from '$lib/components/UserIcon.svelte';
+    import { enhance } from '$app/forms';
+import UserIcon from '$lib/components/UserIcon.svelte';
     import type { Project } from '$lib/projects';
     import Icon from '@iconify/svelte';
 
@@ -25,11 +26,18 @@
 
         <div class="grow" />
 
-        <!-- TODO: Add favorite and unfavorite actions -->
         {#if options.is_favorited}
-            <Icon icon="material-symbols:favorite" class="text-error" />
+            <form action="/community/{options.id}?/unfavorite" method="POST" use:enhance={function () {}}>
+                <button type="submit">
+                    <Icon icon="material-symbols:favorite" class="text-error" />
+                </button>
+            </form>
         {:else}
-            <Icon icon="material-symbols:favorite-outline" class="text-error" />
+            <form action="/community/{options.id}?/favorite" method="POST" use:enhance={function () {}}>
+                <button type="submit">
+                    <Icon icon="material-symbols:favorite-outline" class="text-error" />
+                </button>
+            </form>
         {/if}
     </header>
 
