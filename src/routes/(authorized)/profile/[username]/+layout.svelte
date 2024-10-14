@@ -163,7 +163,7 @@
                 {#if logged.username !== lookup.username}
                     {#if data.isFollowing}
                         <form
-                            action="?/unfollow"
+                            action="/profile/{lookup.username}?/unfollow"
                             method="POST"
                             use:enhance={function () {
                                 spawn({
@@ -178,7 +178,7 @@
                         </form>
                     {:else}
                         <form
-                            action="?/follow"
+                            action="/profile/{lookup.username}?/follow"
                             method="POST"
                             use:enhance={function () {
                                 spawn({
@@ -193,7 +193,7 @@
                         </form>
                     {/if}
 
-                    <form action="?/report" method="POST" use:enhance={function () {}}>
+                    <form action="/profile/{lookup.username}?/report" method="POST" use:enhance={function () {}}>
                         <button type="submit" class="w-full btn btn-sm btn-error">
                             <Icon icon="material-symbols:block" />
                             Reportar e bloquear
@@ -312,7 +312,7 @@
                 {#if logged.username !== lookup.username}
                     {#if data.isFollowing}
                         <form
-                            action="?/unfollow"
+                            action="/profile/{lookup.username}?/unfollow"
                             method="POST"
                             use:enhance={function () {
                                 spawn({
@@ -327,7 +327,7 @@
                         </form>
                     {:else}
                         <form
-                            action="?/follow"
+                            action="/profile/{lookup.username}?/follow"
                             method="POST"
                             use:enhance={function () {
                                 spawn({
@@ -342,7 +342,7 @@
                         </form>
                     {/if}
 
-                    <form action="?/report" method="POST" use:enhance={function () {}}>
+                    <form action="/profile/{lookup.username}?/report" method="POST" use:enhance={function () {}}>
                         <button type="submit" class="w-full btn btn-sm btn-error">
                             <Icon icon="material-symbols:block" />
                             Reportar e bloquear

@@ -4,6 +4,7 @@
     import Icon from '@iconify/svelte';
     import type { PageServerData } from './$types';
     import UserProfileCard from '$lib/components/UserProfileCard.svelte';
+    import { spawn } from '$lib/toast';
 
     export let data: PageServerData & User & { lookup: User };
 
@@ -17,7 +18,15 @@
     <p class="mb-4 opacity-70">Este perfil ainda não tem nenhum seguidor.</p>
 
     {#if data.username !== data.lookup.username}
-        <form action="?/follow" method="POST" use:enhance={function () {}}>
+        <form
+            action="/profile/{data.lookup.username}?/follow"
+            method="POST"
+            use:enhance={function () {
+                spawn({
+                    message: 'Começou a seguir ' + data.lookup.username
+                });
+            }}
+        >
             <button type="submit" class="btn btn-sm btn-primary">
                 <Icon icon="mingcute:user-follow-2-fill" />
                 Seja o primeiro a seguir!
