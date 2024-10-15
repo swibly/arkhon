@@ -48,7 +48,7 @@ export const load: LayoutServerLoad = async function ({ cookies, url }) {
     const tab = url.searchParams.get('tab');
 
     if (tab === null || !validTabs.includes(tab)) {
-        window.location.href = '/settings?tab=profile';
+        throw redirect(304, '/settings?tab=profile');
     }
 
     return {

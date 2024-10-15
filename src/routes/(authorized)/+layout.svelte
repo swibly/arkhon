@@ -44,6 +44,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="/settings">
+                        <Icon icon="mdi:gear" />
+                        Configurações
+                    </a>
+                </li>
+
                 <div class="divider my-1" />
 
                 <li>

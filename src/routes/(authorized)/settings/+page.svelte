@@ -5,8 +5,11 @@
     import PrivacyTab from '$lib/components/settings-tabs/PrivacyTab.svelte';
     import NotificationsTab from '$lib/components/settings-tabs/NotificationsTab.svelte';
     import SecurityTab from '$lib/components/settings-tabs/SecurityTab.svelte';
+    import type { LayoutServerData } from './$types';
 
     $: tab = $page.url.searchParams.get('tab')!;
+
+    export let data: LayoutServerData;
 </script>
 
 {#if tab === 'profile'}
@@ -18,5 +21,5 @@
 {:else if tab === 'notifications'}
     <NotificationsTab />
 {:else if tab === 'security'}
-    <SecurityTab />
+    <SecurityTab user={data.user} />
 {/if}
