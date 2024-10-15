@@ -15,10 +15,12 @@
 <h1 class="text-3xl font-bold text-primary">Seguidores</h1>
 <p class="mb-4">Acompanhe quem já está conectado com {data.lookup.firstname}</p>
 
-{#if followers.length === 0}
-    <p class="mb-4 opacity-70 italic">Este perfil ainda não tem nenhum seguidor.</p>
+{#if data.username !== data.lookup.username && !data.lookup.show.followers}
+    <p class="text-error">Este usuário não permite que outros visualizem quem o segue.</p>
+{:else if followers.length === 0}
+    <p class="mb-4 opacity-70 italic">Este usuário ainda não tem nenhum seguidor.</p>
 
-    {#if data.username !== data.lookup.username}
+    {#if data.username !== data.lookup.username && data.lookup.show.followers}
         <form
             action="/profile/{data.lookup.username}?/follow"
             method="POST"

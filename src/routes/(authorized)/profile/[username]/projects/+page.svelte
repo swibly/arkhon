@@ -12,7 +12,11 @@
 <h1 class="text-3xl font-bold text-primary">Todos os Projetos</h1>
 <p class="mb-4">Projetos de {data.lookup.firstname} gerenciados e acompanhados</p>
 
-{#if projects.length === 0}
+{#if data.username !== data.lookup.username && !data.lookup.show.projects}
+    <p class="text-error">
+        Este usuário não permite que outros visualizem seus projetos.
+    </p>
+{:else if projects.length === 0}
     <p class="mb-4 opacity-70">Este usuário ainda não tem nenhum projeto.</p>
 {:else}
     {#if pagination.total_pages !== 1}

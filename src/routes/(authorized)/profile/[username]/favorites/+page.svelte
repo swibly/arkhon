@@ -12,7 +12,11 @@
 <h1 class="text-3xl font-bold text-primary">Projetos Favoritados</h1>
 <p class="mb-4">Projetos favoritos de {data.lookup.firstname}</p>
 
-{#if projects.length === 0}
+{#if data.username !== data.lookup.username && !data.lookup.show.favorites}
+    <p class="text-error">
+        Este usuário não permite que outros visualizem seus projetos favoritados.
+    </p>
+{:else if projects.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não favoritou nenhum projeto.</p>
 {:else}
     {#if pagination.total_pages !== 1}

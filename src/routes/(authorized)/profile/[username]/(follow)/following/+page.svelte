@@ -12,8 +12,10 @@
 <h1 class="text-3xl font-bold text-primary">Seguindo</h1>
 <p class="mb-4">Veja quem {data.lookup.firstname} está acompanhando de perto</p>
 
-{#if following.length === 0}
-    <p class="mb-4 opacity-70 italic">Este perfil ainda não está seguindo ninguém.</p>
+{#if data.username !== data.lookup.username && !data.lookup.show.following}
+    <p class="text-error">Este usuário não permite que outros visualizem quem ele segue.</p>
+{:else if following.length === 0}
+    <p class="mb-4 opacity-70 italic">Este usuário ainda não está seguindo ninguém.</p>
 {:else}
     {#if pagination.total_pages !== 1}
         <div class="mb-4 join">
