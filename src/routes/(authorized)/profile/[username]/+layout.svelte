@@ -6,6 +6,7 @@
     import Icon from '@iconify/svelte';
     import { onMount } from 'svelte';
     import type { LayoutServerData } from './$types';
+    import Attention from '$lib/components/Attention.svelte';
 
     export let data: LayoutServerData & User;
 
@@ -29,8 +30,8 @@
     onMount(() => {
         if (data.error !== undefined) {
             spawn({
-                status: 'warning',
-                message: 'Não foi possível achar um usuário com este nome.'
+                status: 'error',
+                message: data.error
             });
         }
     });
@@ -40,8 +41,136 @@
 </script>
 
 {#if data.error}
-    <div class="flex items-center justify-center w-full min-h-52 text-error">
-        Usuário não encontrado com este nome. Tente procurar por algo diferente.
+    <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex relative">
+        <aside
+            class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden fixed min-h-[calc(100vh-84px)]"
+        >
+            <section class="space-y-4">
+                <img
+                    src="https://placehold.co/400"
+                    alt="avatar"
+                    class="transition-all ease-in-out duration-150 rounded-[100%] hover:rounded-[10%] motion-reduce:transition-none"
+                />
+
+                <div>
+                    <h2 class="flex items-center justify-center gap-1 text-xl text-center">
+                        Usuário
+                    </h2>
+                    <p class="text-sm text-center opacity-70">@usuario</p>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-1">
+                        <Icon icon="ri:coin-fill" />
+                        <p>
+                            Arkhoins:
+                            <span class="font-bold cursor-default tooltip" data-tip="0">0</span>
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <Icon icon="mingcute:up-line" />
+                        <p>
+                            EXP:
+                            <span class="font-bold cursor-default tooltip" data-tip="0">0</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider" />
+
+            <section>
+                <p class="flex items-center gap-2">
+                    <Icon icon="mdi:users" />
+
+                    <span>Seguidores:</span>
+
+                    0
+                </p>
+
+                <p class="flex items-center gap-2">
+                    <Icon icon="mdi:users-add" />
+
+                    <span>Seguindo:</span>
+
+                    0
+                </p>
+            </section>
+        </aside>
+
+        <main class="w-full p-4 md:ml-64">
+            <section class="flex items-center gap-2 md:hidden">
+                <img
+                    src="https://placehold.co/400"
+                    alt="avatar"
+                    class="object-cover rounded-full size-12 max-[400px]:hidden"
+                />
+
+                <div class="space-y-4">
+                    <p class="text-xl text-primary">
+                        <span> usuario </span>
+                        <span class="text-sm opacity-50 text-base-content">@usuario</span>
+                    </p>
+
+                    <div class="flex">
+                        <div class="flex items-center gap-1">
+                            <Icon icon="ri:coin-fill" />
+                            <p>
+                                Arkhoins:
+                                <span class="font-bold cursor-default tooltip" data-tip="0">
+                                    0
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="divider divider-horizontal" />
+
+                        <div class="flex items-center gap-1">
+                            <Icon icon="mingcute:up-line" />
+                            <p>
+                                EXP:
+                                <span class="font-bold cursor-default tooltip" data-tip="0">
+                                    0
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <p class="flex items-center gap-2">
+                            <Icon icon="mdi:users" />
+
+                            <span>Seguidores:</span>
+
+                            0
+                        </p>
+
+                        <div class="divider divider-horizontal" />
+
+                        <p class="flex items-center gap-2">
+                            <Icon icon="mdi:users-add" />
+
+                            <span>Seguindo:</span>
+
+                            0
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="max-md:divider" />
+
+            <div class="mb-4">
+                <h1 class="text-4xl font-bold mb-4">Desculpa, mas...</h1>
+                <p class="text-error">{data.error}</p>
+            </div>
+
+            <Attention>
+                Pode ser que você tenha encontrado este usuário pela comunidade, isso não significa
+                que seu perfil estará público ou que ele exista ainda.
+            </Attention>
+        </main>
     </div>
 {:else}
     <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex relative">
@@ -51,7 +180,7 @@
             <section class="space-y-4">
                 <img
                     src={lookup.pfp}
-                    alt=""
+                    alt="avatar"
                     class="transition-all ease-in-out duration-150 rounded-[100%] hover:rounded-[10%] motion-reduce:transition-none"
                 />
 
@@ -77,7 +206,9 @@
                     {#if lookup.country.trim() !== ''}
                         <div class="flex items-center gap-1 overflow-auto">
                             <Icon icon="material-symbols:globe" class="shrink-0" />
-                            <p class="shrink-0">Local: <span class="font-bold">{lookup.country}</span></p>
+                            <p class="shrink-0">
+                                Local: <span class="font-bold">{lookup.country}</span>
+                            </p>
                         </div>
                     {/if}
 
@@ -193,7 +324,11 @@
                         </form>
                     {/if}
 
-                    <form action="/profile/{lookup.username}?/report" method="POST" use:enhance={function () {}}>
+                    <form
+                        action="/profile/{lookup.username}?/report"
+                        method="POST"
+                        use:enhance={function () {}}
+                    >
                         <button type="submit" class="w-full btn btn-sm btn-error">
                             <Icon icon="material-symbols:block" />
                             Reportar e bloquear
@@ -342,7 +477,11 @@
                         </form>
                     {/if}
 
-                    <form action="/profile/{lookup.username}?/report" method="POST" use:enhance={function () {}}>
+                    <form
+                        action="/profile/{lookup.username}?/report"
+                        method="POST"
+                        use:enhance={function () {}}
+                    >
                         <button type="submit" class="w-full btn btn-sm btn-error">
                             <Icon icon="material-symbols:block" />
                             Reportar e bloquear

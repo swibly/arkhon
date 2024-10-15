@@ -71,16 +71,27 @@ export async function getUserByToken(token: string): Promise<User | null> {
     }
 }
 
-export async function getUserByUsername(token: string, username: string): Promise<User | null> {
+export async function getUserByUsername(
+    token: string,
+    username: string
+): Promise<(User | { error: string }) & { status: number }> {
     try {
         const res = await axios.get(`/v1/user/${username}/profile`, {
             headers: { Authorization: token }
         });
         const user = res.data as User;
 
-        return user;
-    } catch (_) {
-        return null;
+        return {
+            ...user,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
     }
 }
 

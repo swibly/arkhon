@@ -7,12 +7,19 @@ export const load: LayoutServerLoad = async function ({ cookies, params }) {
 
     const user = await getUserByUsername(jwt, params.username);
 
-    if (user === null) {
-        return { error: 'Usuário não existe.' };
+    if (user.status === 200) {
+        return {
+            lookup: user!,
+            isFollowing: await isFollowing(jwt, params.username)!
+        };
+    } else if (user.status === 404) {
+        return { error: 'Este usuário não existe.' };
+    } else if (user.status === 403) {
+        return { error: 'Este usuário desabilitou outros de verem seu perfil.' };
+    } else {
+        return {
+            // @ts-ignore
+            error: user.error
+        };
     }
-
-    return {
-        lookup: user!,
-        isFollowing: await isFollowing(jwt, params.username)!
-    };
 };
