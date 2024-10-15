@@ -31,7 +31,7 @@ export const actions: Actions = {
         const checkField = (field: string) =>
             data[field] !== undefined ? (data[field] === 'on' ? true : false) : false;
 
-        const notification = {
+        const notify = {
             inapp: checkField('inapp'),
             email: checkField('email')
         };
@@ -39,7 +39,7 @@ export const actions: Actions = {
         try {
             await axios.patch(
                 '/v1/auth/update',
-                { notification },
+                { notify },
                 {
                     headers: {
                         Authorization: cookies.get(JWT_TOKEN_COOKIE_NAME)!
