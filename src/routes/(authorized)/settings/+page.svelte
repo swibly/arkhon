@@ -13,7 +13,7 @@
 </script>
 
 {#if tab === 'profile'}
-    <ProfileTab />
+    <ProfileTab user={data.user} />
 {:else if tab === 'account'}
     <AccountTab />
 {:else if tab === 'privacy'}

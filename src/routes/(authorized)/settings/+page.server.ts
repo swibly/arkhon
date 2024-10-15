@@ -1,8 +1,30 @@
 import axios from '$lib/server/axios';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 
 export const actions: Actions = {
+    updateProfile: async ({ request, cookies }) => {
+        const data = await request.formData();
+
+        try {
+            await axios.patch('/v1/auth/update', Object.fromEntries(data), {
+                headers: {
+                    Authorization: cookies.get(JWT_TOKEN_COOKIE_NAME)!
+                }
+            });
+        } catch (e: any) {
+            if (e.response.data.error) {
+                return fail(
+                    e.status,
+                    e.response.data as { error: string | Record<string, string> }
+                );
+            }
+        }
+        return {
+            message: 'Perfil atualizado!'
+        };
+    },
     resetPassword: async ({ request, cookies }) => {
         const passCookie = cookies.get('pass');
 
@@ -38,7 +60,7 @@ export const actions: Actions = {
         });
 
         return {
-          message: 'Email enviado, verifique sua caixa de entrada e seu spam!'
+            message: 'Email enviado, verifique sua caixa de entrada e seu spam!'
         };
     }
 };
