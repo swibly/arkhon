@@ -12,6 +12,10 @@
     export let data: LayoutServerData;
 </script>
 
+<svelte:head>
+    <title>Configurações de {data.tabsProps[tab].name} - Swibly Arkhon</title>
+</svelte:head>
+
 {#if tab === 'profile'}
     <ProfileTab user={data.user} />
 {:else if tab === 'account'}

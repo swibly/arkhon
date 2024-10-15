@@ -40,6 +40,10 @@
     $: logged = data as User;
 </script>
 
+<svelte:head>
+    <title>Perfil de @{$page.params.username} - Swibly Arkhon</title>
+</svelte:head>
+
 {#if data.error}
     <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex relative">
         <aside
