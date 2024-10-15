@@ -15,7 +15,7 @@
 {#if tab === 'profile'}
     <ProfileTab user={data.user} />
 {:else if tab === 'account'}
-    <AccountTab />
+    <AccountTab user={data.user} />
 {:else if tab === 'privacy'}
     <PrivacyTab />
 {:else if tab === 'notifications'}
