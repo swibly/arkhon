@@ -25,6 +25,43 @@ export const actions: Actions = {
             message: 'Perfil atualizado!'
         };
     },
+    updatePrivacy: async ({ request, cookies }) => {
+        const data = Object.fromEntries(await request.formData());
+
+        const checkField = (field: string) =>
+            data[field] !== undefined ? (data[field] === 'on' ? true : false) : false;
+
+        const show = {
+            profile: checkField('profile'),
+            favorites: checkField('favorites'),
+            projects: checkField('projects'),
+            components: checkField('components'),
+            followers: checkField('followers'),
+            following: checkField('following')
+        };
+
+        try {
+            await axios.patch(
+                '/v1/auth/update',
+                { show },
+                {
+                    headers: {
+                        Authorization: cookies.get(JWT_TOKEN_COOKIE_NAME)!
+                    }
+                }
+            );
+        } catch (e: any) {
+            if (e.response.data.error) {
+                return fail(
+                    e.status,
+                    e.response.data as { error: string | Record<string, string> }
+                );
+            }
+        }
+        return {
+            message: 'Privacidade do perfil atualizada!'
+        };
+    },
     resetPassword: async ({ request, cookies }) => {
         const passCookie = cookies.get('pass');
 
