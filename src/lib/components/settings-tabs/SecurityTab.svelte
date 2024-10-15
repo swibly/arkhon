@@ -79,7 +79,7 @@
         {/if}
     </form>
 
-    <Attention danger>
+    <Attention type="danger">
         Possivelmente, assim que trocar a senha, você será desconectado dos aparelhos conectados.
     </Attention>
 </section>

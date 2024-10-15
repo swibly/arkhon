@@ -153,7 +153,7 @@
         Zona de Risco
     </h1>
 
-    <Attention danger>
+    <Attention type="danger">
         Ao deletar sua conta, TODOS os projetos dos quais você é o proprietário serão apagados, e
         TODOS os componentes que você criou se tornarão órfãos, ou seja, permanecerão no sistema,
         mas não estarão mais associados a nenhum usuário.
