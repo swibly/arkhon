@@ -50,9 +50,11 @@
         use:enhance={async function () {
             loading = true;
 
-            return ({ result }) => {
+            return ({ result, update }) => {
                 // @ts-ignore
                 handleSaveNotifications(result.data);
+
+                return update({ reset: false });
             };
         }}
     >

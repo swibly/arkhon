@@ -52,9 +52,11 @@
         use:enhance={async function () {
             loading = true;
 
-            return ({ result }) => {
+            return ({ result, update }) => {
                 // @ts-ignore
                 handleSavePrivacy(result.data);
+
+                return update({ reset: false });
             };
         }}
     >

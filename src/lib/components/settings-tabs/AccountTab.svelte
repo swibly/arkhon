@@ -63,9 +63,11 @@
         use:enhance={async function () {
             loadingSaveBaseInformation = true;
 
-            return ({ result }) => {
+            return ({ result, update }) => {
                 // @ts-ignore
                 handleSaveBaseInformation(result.data);
+
+                return update({ reset: false });
             };
         }}
     >
