@@ -40,8 +40,14 @@ export async function getProjectsByUser(
 
         return res.data as Pagination<Project>;
     } catch (error) {
-        console.error(error);
-        // TODO: Add error handling
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 1,
+            current_page: 1,
+            previous_page: -1,
+            total_records: 0
+        };
     }
 }
 
@@ -55,8 +61,14 @@ export async function favorite(token: string, projectID: number) {
             }
         );
     } catch (error) {
-        console.error(error);
-        // TODO: Add error handling
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 1,
+            current_page: 1,
+            previous_page: -1,
+            total_records: 0
+        };
     }
 }
 

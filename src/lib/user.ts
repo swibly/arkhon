@@ -144,8 +144,14 @@ export async function getFollowers(
 
         return res.data as Pagination<Follower>;
     } catch (error) {
-        console.error(error);
-        // TODO: Add error handling
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 1,
+            current_page: 1,
+            previous_page: -1,
+            total_records: 0
+        };
     }
 }
 
@@ -167,7 +173,13 @@ export async function getFollowing(
 
         return res.data as Pagination<Follower>;
     } catch (error) {
-        console.error(error);
-        // TODO: Add error handling
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 1,
+            current_page: 1,
+            previous_page: -1,
+            total_records: 0
+        };
     }
 }
