@@ -1,8 +1,6 @@
 import axios from './server/axios';
 import { Pagination, PaginationOptions } from './utils';
 
-type NumericalBoolean = 1 | -1;
-
 export type User = {
     id: number;
     created_at: Date;
@@ -18,20 +16,20 @@ export type User = {
     followers: number;
     following: number;
     notification: {
-        inapp: NumericalBoolean;
-        email: NumericalBoolean;
+        inapp: boolean;
+        email: boolean;
     };
     show: {
-        profile: NumericalBoolean;
-        image: NumericalBoolean;
-        comments: NumericalBoolean;
-        favorites: NumericalBoolean;
-        projects: NumericalBoolean;
-        components: NumericalBoolean;
-        followers: NumericalBoolean;
-        following: NumericalBoolean;
-        inventory: NumericalBoolean;
-        formations: NumericalBoolean;
+        profile: boolean;
+        image: boolean;
+        comments: boolean;
+        favorites: boolean;
+        projects: boolean;
+        components: boolean;
+        followers: boolean;
+        following: boolean;
+        inventory: boolean;
+        formations: boolean;
     };
     country: string;
     language: 'en' | 'pt' | 'ru';
