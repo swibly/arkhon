@@ -139,7 +139,7 @@
                 checked={user.show.following}
                 class="checkbox checkbox-xs checkbox-primary"
             />
-            Exibir seguidos
+            Exibir seguindo
         </label>
 
         {#if loading}

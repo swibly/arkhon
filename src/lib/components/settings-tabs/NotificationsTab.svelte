@@ -79,8 +79,9 @@
             <span
                 class="badge tooltip"
                 data-tip="Enviaremos coisas importantes, tipo tentativas de login, mudanças na sua conta etc."
-                >Relaxa, não vamos spammar!</span
             >
+                Relaxa, não vamos spammar!
+            </span>
         </label>
 
         {#if loading}
