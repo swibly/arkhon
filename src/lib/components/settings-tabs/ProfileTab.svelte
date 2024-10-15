@@ -86,7 +86,7 @@
         <label class="form-control grow">
             <div class="label">
                 <span class="label-text">Nome</span>
-                <span class="label-text text-error">obrigatório*</span>
+                <span class="label-text text-error">Obrigatório</span>
             </div>
             <label
                 class="flex items-center gap-2 input input-bordered grow"
@@ -107,7 +107,7 @@
         <label class="form-control grow">
             <div class="label">
                 <span class="label-text">Sobrenome</span>
-                <span class="label-text text-error">obrigatório*</span>
+                <span class="label-text text-error">Obrigatório</span>
             </div>
             <label
                 class="flex items-center gap-2 input input-bordered grow"

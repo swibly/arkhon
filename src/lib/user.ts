@@ -194,3 +194,13 @@ export async function getFollowing(
         };
     }
 }
+
+export async function deleteAccount(token: string) {
+    try {
+        await axios.delete('/v1/auth/delete', {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}

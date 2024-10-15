@@ -1,9 +1,16 @@
 import axios from '$lib/server/axios';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
+import { deleteAccount } from '$lib/user';
 
 export const actions: Actions = {
+    deleteAccount: async ({ cookies }) => {
+        await deleteAccount(cookies.get(JWT_TOKEN_COOKIE_NAME)!);
+
+        cookies.delete(JWT_TOKEN_COOKIE_NAME, { path: '/' });
+        throw redirect(302, '/');
+    },
     updateProfile: async ({ request, cookies }) => {
         const data = await request.formData();
 
