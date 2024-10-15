@@ -37,12 +37,14 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="/notifications">
-                        <Icon icon="mdi:bell" />
-                        Notificações (0)
-                    </a>
-                </li>
+                {#if data.notification.inapp}
+                    <li>
+                        <a href="/notifications">
+                            <Icon icon="mdi:bell" />
+                            Notificações
+                        </a>
+                    </li>
+                {/if}
 
                 <li>
                     <a href="/settings">
