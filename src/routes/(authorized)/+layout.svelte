@@ -76,6 +76,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="/trash" class="text-error">
+                        <Icon icon="mdi:trash" />
+                        Lixeira
+                    </a>
+                </li>
+
                 <div class="divider my-1" />
 
                 <li>
