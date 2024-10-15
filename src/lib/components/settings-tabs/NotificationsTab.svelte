@@ -64,7 +64,7 @@
                 checked={user.notification.inapp}
                 class="checkbox checkbox-xs checkbox-primary"
             />
-            Dentro da plataform
+            Dentro da plataforma
         </label>
 
         <label for="email" class="flex items-center gap-2">
