@@ -75,9 +75,9 @@
 
                 <div>
                     {#if lookup.country.trim() !== ''}
-                        <div class="flex items-center gap-1">
-                            <Icon icon="material-symbols:globe" />
-                            <p>Local: <span class="font-bold">{lookup.country}</span></p>
+                        <div class="flex items-center gap-1 overflow-auto">
+                            <Icon icon="material-symbols:globe" class="shrink-0" />
+                            <p class="shrink-0">Local: <span class="font-bold">{lookup.country}</span></p>
                         </div>
                     {/if}
 
