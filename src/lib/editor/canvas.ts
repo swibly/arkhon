@@ -78,5 +78,23 @@ export function resize(canvas: Canvas, width: number, height: number) {
 }
 
 export function toJSON(canvas: Canvas) {
-    console.log(canvas.toJSON())
+    console.log(canvas.toJSON());
+}
+
+export function toPNG(canvas: Canvas) {
+    let dataURL = canvas.toDataURL({
+        multiplier: 1,
+        format: 'png',
+        left: -1000,
+        top: -1000,
+        width: 3000,
+        height: 3000
+    });
+
+    const link = document.createElement('a');
+    link.download = 'canvas.png';
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

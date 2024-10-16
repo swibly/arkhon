@@ -6,7 +6,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
-    import { Canvas, Point, ActiveSelection } from 'fabric';
+    import { Canvas, Point, ActiveSelection, type FabricObject } from 'fabric';
     import {
         drawGrid,
         centerView,
@@ -14,7 +14,8 @@
         renderAll,
         startDraw,
         stopDraw,
-        toJSON
+        toJSON,
+        toPNG
     } from '$lib/editor/canvas';
     import {
         remove,
@@ -24,27 +25,25 @@
         addCircle,
         addPoints,
         addLine,
-        stopLine,
-        takeOpacity
+        stopLine
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
 
+    // Váriaveis e funções do aside
+
     let activeButton: String = 'project';
+    let components = [...Array(120)].map((_, i) => {
+        return { Name: `${i + 1}` };
+    });
+    let categories = [...Array(80)].map((_, i) => {
+        return { Name: `${i + 1}` };
+    });
+    let currentPageStore = writable(1);
 
     function setActiveButton(value: String) {
         activeButton = value;
     }
-
-    let components = [...Array(120)].map((_, i) => {
-        return { Name: `${i + 1}` };
-    });
-
-    let categories = [...Array(80)].map((_, i) => {
-        return { Name: `${i + 1}` };
-    });
-
-    let currentPageStore = writable(1);
 
     function start(currentPage: number): number {
         return (currentPage - 1) * 8;
@@ -54,16 +53,15 @@
         return start(currentPage) + 8;
     }
 
+    // Váriaveis e todo o funcionamento do canvas
+
     let canvas: HTMLCanvasElement;
     let fabric: Canvas;
-    let selectedObjects: any = [];
-    let _clipboard: any;
+    let _clipboard: FabricObject;
     let mode: string = 'select';
-    let capturedPoints: any = [];
-    let visiblePoints: any = [];
-    let count: number = 0;
-    let valueSlider: number = 10;
-
+    let lastPosX: number;
+    let lastPosY: number;
+    let isDragging: boolean;
     const quadSize = {
         w: 10000,
         h: 10000
@@ -75,11 +73,13 @@
             preserveObjectStacking: true
         });
 
+        fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+
         drawGrid(fabric, 100, quadSize.w, quadSize.h);
         resize(fabric, innerWidth, innerHeight);
         centerView(fabric, quadSize.w, quadSize.h);
 
-        fabric.on('mouse:down', function (this: any, { e }) {
+        fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
                 mode = 'select';
             }
@@ -88,47 +88,31 @@
                 fabric.isDrawingMode = false;
                 mode = 'select';
 
-                this.lastPosX = fabric.getViewportPoint(e).x;
-                this.lastPosY = fabric.getViewportPoint(e).y;
+                lastPosX = fabric.getViewportPoint(e).x;
+                lastPosY = fabric.getViewportPoint(e).y;
 
-                this.isDragging = true;
-                this.selection = false;
-                this.isDrawingMode = false;
+                isDragging = true;
+                fabric.selection = false;
+                fabric.isDrawingMode = false;
             }
 
             if (mode === 'select') {
-                visiblePoints.forEach((obj: any) => {
-                    fabric.remove(obj);
-                });
-
                 fabric.isDrawingMode = false;
             }
 
             if (mode === 'text') {
-                visiblePoints.forEach((obj: any) => {
-                    fabric.remove(obj);
-                });
-
                 addText(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
                 fabric.set({ selection: false });
             }
 
             if (mode === 'rect') {
-                visiblePoints.forEach((obj: any) => {
-                    fabric.remove(obj);
-                });
-
                 addRect(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
                 fabric.set({ selection: false });
             }
 
             if (mode === 'circle') {
-                visiblePoints.forEach((obj: any) => {
-                    fabric.remove(obj);
-                });
-
                 addCircle(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
 
                 fabric.set({ selection: false });
@@ -143,23 +127,23 @@
             }
         });
 
-        fabric.on('mouse:move', function (this: any, { e }) {
-            if (this.isDragging) {
-                let vpt = this.viewportTransform;
+        fabric.on('mouse:move', function ({ e }) {
+            if (isDragging) {
+                let vpt = fabric.viewportTransform;
                 if (e.type === 'mousemove') {
-                    vpt[4] += fabric.getViewportPoint(e).x - this.lastPosX;
-                    vpt[5] += fabric.getViewportPoint(e).y - this.lastPosY;
-                    this.requestRenderAll();
-                    this.lastPosX = fabric.getViewportPoint(e).x;
-                    this.lastPosY = fabric.getViewportPoint(e).y;
+                    vpt[4] += fabric.getViewportPoint(e).x - lastPosX;
+                    vpt[5] += fabric.getViewportPoint(e).y - lastPosY;
+                    fabric.requestRenderAll();
+                    lastPosX = fabric.getViewportPoint(e).x;
+                    lastPosY = fabric.getViewportPoint(e).y;
                 }
             }
         });
 
-        fabric.on('mouse:up', function (this: any) {
-            this.setViewportTransform(this.viewportTransform);
-            this.isDragging = false;
-            this.selection = true;
+        fabric.on('mouse:up', function () {
+            fabric.setViewportTransform(fabric.viewportTransform);
+            isDragging = false;
+            fabric.selection = true;
         });
 
         fabric.on('mouse:wheel', function ({ e }) {
@@ -197,28 +181,6 @@
             }
         });
 
-        fabric.on('selection:created', function (options) {
-            selectedObjects = options.selected;            
-
-            if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
-                valueSlider = fabric.getActiveObject()?.opacity! * 10;
-            }
-
-            console.log(takeOpacity(fabric));
-        });
-
-        fabric.on('selection:updated', function () {
-            if (fabric.getActiveObjects() && fabric.getActiveObjects().length === 1) {
-                valueSlider = fabric.getActiveObject()?.opacity! * 10;
-            }
-
-            console.log(takeOpacity(fabric));
-        });
-
-        fabric.on('selection:cleared', function () {
-            selectedObjects = [];
-        });
-
         addEventListener('resize', function () {
             resize(fabric, innerWidth, innerHeight);
         });
@@ -227,6 +189,9 @@
             if (e.altKey) {
                 fabric.isDrawingMode = false;
                 mode = 'select';
+
+                fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+                fabric.hoverCursor = 'default';
             }
 
             if (e.ctrlKey && e.shiftKey && e.key == 'Backspace') {
@@ -234,9 +199,6 @@
 
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
-
-                count = 0;
-                capturedPoints = [];
             }
 
             if (e.ctrlKey && e.key == 'x') {
@@ -252,9 +214,6 @@
                 }
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
-
-                count = 0;
-                capturedPoints = [];
             }
 
             if (e.ctrlKey && e.key == 'a') {
@@ -303,6 +262,9 @@
             }
 
             if (e.ctrlKey && e.key == 's') {
+                fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+                fabric.hoverCursor = 'default';
+
                 e.preventDefault();
 
                 stopLine(fabric);
@@ -341,6 +303,10 @@
             }
 
             if (e.ctrlKey && e.key == 'q') {
+                fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
+
+                fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
+
                 e.preventDefault();
 
                 stopLine(fabric);
@@ -350,10 +316,17 @@
                     mode = 'rect';
                 } else {
                     mode = 'select';
+                    fabric.defaultCursor =
+                        'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+                    fabric.hoverCursor = 'default';
                 }
             }
 
             if (e.ctrlKey && e.key == 'e') {
+                fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
+
+                fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
+
                 e.preventDefault();
 
                 stopLine(fabric);
@@ -363,6 +336,9 @@
                     mode = 'circle';
                 } else {
                     mode = 'select';
+                    fabric.defaultCursor =
+                        'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+                    fabric.hoverCursor = 'default';
                 }
             }
 
@@ -412,6 +388,10 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'select';
+
+                        fabric.defaultCursor =
+                            'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+                        fabric.hoverCursor = 'default';
                     }}
                     ><Icon
                         icon="fluent:cursor-16-filled"
@@ -469,6 +449,9 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'rect';
+                        fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
+
+                        fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
                     }}
                     ><Icon
                         icon="bi:square-fill"
@@ -488,6 +471,10 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'circle';
+
+                        fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
+
+                        fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
                     }}
                     ><Icon
                         icon="material-symbols:circle"
@@ -537,6 +524,9 @@
             </label>
             <button on:click={() => toJSON(fabric)}>
                 <Icon icon="si:json-duotone" font-size="25px" />
+            </button>
+            <button on:click={() => toPNG(fabric)}>
+                <Icon icon="material-symbols:download" font-size="25px" />
             </button>
         </div>
     </nav>
