@@ -4,11 +4,7 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import Attention from '../Attention.svelte';
-
-    let loadingSaveBaseInformation = false;
-    let deleteDialog: HTMLDialogElement;
-
-    export let user: User;
+    import Input from '../Input.svelte';
 
     type ActionResult =
         | {
@@ -16,17 +12,17 @@
               error: string | Record<string, string>;
           }
         | {
-              error: string;
-              message?: undefined;
-          }
-        | {
               message: string;
               error?: undefined;
-          }
-        | null;
+          };
+
+    let loading = false;
+    let deleteDialog: HTMLDialogElement;
+
+    export let user: User;
 
     function handleSaveBaseInformation(data: ActionResult) {
-        loadingSaveBaseInformation = false;
+        loading = false;
         errorField = '';
 
         if (data?.message) {
@@ -54,14 +50,12 @@
 <section>
     <h1 class="text-2xl font-bold mb-4">Acesso</h1>
 
-    <Attention>Ao trocar o email, certifique-se de que o mesmo exista.</Attention>
-
     <form
         method="POST"
         action="/settings?/updateProfile"
-        class="flex flex-col gap-2 mt-4"
+        class="flex flex-col gap-2"
         use:enhance={async function () {
-            loadingSaveBaseInformation = true;
+            loading = true;
 
             return ({ result, update }) => {
                 // @ts-ignore
@@ -72,56 +66,38 @@
         }}
     >
         <section class="flex gap-2 max-md:flex-col">
-            <label class="form-control grow">
-                <div class="label">
-                    <span class="label-text">Email</span>
-                    <span class="label-text text-error">Obrigatório</span>
-                </div>
-                <label
-                    class="flex items-center gap-2 input input-bordered grow"
-                    class:input-error={errorField === 'email'}
-                >
-                    <Icon icon="material-symbols:mail" />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={user.email}
-                        class="grow"
-                        required
-                    />
-                </label>
-            </label>
+            <Input
+                name="email"
+                icon="material-symbols:mail"
+                placeholder="Email"
+                size="md"
+                labels={{ topLeft: 'Email' }}
+                required
+                value={user.email}
+            />
 
-            <label class="form-control grow">
-                <div class="label">
-                    <span class="label-text">Nome de usuário</span>
-                    <span class="label-text text-error">Obrigatório</span>
-                </div>
-                <label
-                    class="flex items-center gap-2 input input-bordered grow"
-                    class:input-error={errorField === 'username'}
-                >
-                    <Icon icon="mdi:at" />
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Nome de usuário"
-                        value={user.username}
-                        class="grow"
-                        required
-                    />
-                </label>
-            </label>
+            <Input
+                name="username"
+                icon="mdi:at"
+                placeholder="Nome de usuário"
+                size="md"
+                labels={{ topLeft: 'Nome de usuário' }}
+                required
+                value={user.username}
+            />
         </section>
 
-        {#if loadingSaveBaseInformation}
-            <button type="button" class="mt-4 btn btn-sm btn-disabled w-fit">
+        <div class="mb-4">
+            <Attention>Ao trocar o email, certifique-se de que o mesmo exista.</Attention>
+        </div>
+
+        {#if loading}
+            <button type="button" class="btn btn-sm btn-disabled w-fit">
                 <span class="loading loading-spinner loading-md" />
                 Carregando...
             </button>
         {:else}
-            <button type="submit" class="mt-4 btn btn-sm btn-primary w-fit">
+            <button type="submit" class="btn btn-sm btn-primary w-fit">
                 <Icon icon="mdi:feather" />
                 Salvar
             </button>

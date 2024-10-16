@@ -3,10 +3,7 @@
     import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
-
-    let loadingSaveBaseInformation = false;
-
-    export let user: User;
+    import Input from '../Input.svelte';
 
     type ActionResult =
         | {
@@ -14,17 +11,16 @@
               error: string | Record<string, string>;
           }
         | {
-              error: string;
-              message?: undefined;
-          }
-        | {
               message: string;
               error?: undefined;
-          }
-        | null;
+          };
+
+    let loading = false;
+
+    export let user: User;
 
     function handleSaveBaseInformation(data: ActionResult) {
-        loadingSaveBaseInformation = false;
+        loading = false;
         errorField = '';
 
         if (data?.message) {
@@ -72,7 +68,7 @@
     action="/settings?/updateProfile"
     class="flex flex-col gap-2"
     use:enhance={async function () {
-        loadingSaveBaseInformation = true;
+        loading = true;
 
         return ({ result, update }) => {
             // @ts-ignore
@@ -85,82 +81,49 @@
     <h1 class="text-2xl font-bold mb-4">Informações Básicas</h1>
 
     <section class="flex gap-2 max-md:flex-col">
-        <label class="form-control grow">
-            <div class="label">
-                <span class="label-text">Nome</span>
-                <span class="label-text text-error">Obrigatório</span>
-            </div>
-            <label
-                class="flex items-center gap-2 input input-bordered grow"
-                class:input-error={errorField === 'firstname'}
-            >
-                <Icon icon="ph:user-fill" />
-                <input
-                    type="text"
-                    name="firstname"
-                    placeholder="Nome"
-                    value={user.firstname}
-                    class="grow"
-                    required
-                />
-            </label>
-        </label>
+        <Input
+            name="firstname"
+            icon="ph:user-fill"
+            placeholder="Nome"
+            size="md"
+            labels={{ topLeft: 'Nome' }}
+            required
+            bind:value={user.firstname}
+            error={errorField === 'firstname'}
+        />
 
-        <label class="form-control grow">
-            <div class="label">
-                <span class="label-text">Sobrenome</span>
-                <span class="label-text text-error">Obrigatório</span>
-            </div>
-            <label
-                class="flex items-center gap-2 input input-bordered grow"
-                class:input-error={errorField === 'lastname'}
-            >
-                <Icon icon="ph:user-fill" />
-                <input
-                    type="text"
-                    name="lastname"
-                    placeholder="Sobrenome"
-                    value={user.lastname}
-                    class="grow"
-                    required
-                />
-            </label>
-        </label>
+        <Input
+            name="lastname"
+            icon="ph:user-fill"
+            placeholder="Sobrenome"
+            size="md"
+            labels={{ topLeft: 'Nome' }}
+            required
+            bind:value={user.lastname}
+            error={errorField === 'lastname'}
+        />
     </section>
 
-    <label class="form-control grow">
-        <div class="label">
-            <span class="label-text">Local/Lugar/País</span>
-        </div>
-        <label
-            class="flex items-center gap-2 input input-bordered grow"
-            class:input-error={errorField === 'country'}
-        >
-            <Icon icon="mdi:planet" />
-            <input
-                type="text"
-                name="country"
-                placeholder="Local"
-                value={user.country}
-                class="grow"
-            />
-        </label>
-    </label>
+    <Input
+        name="country"
+        icon="mdi:planet"
+        placeholder="Local"
+        size="md"
+        bind:value={user.country}
+        error={errorField === 'country'}
+    />
 
-    <label class="form-control grow">
-        <div class="label">
-            <span class="label-text">Bio</span>
-        </div>
-        <textarea
-            name="bio"
-            class="resize-none textarea textarea-bordered"
-            placeholder="Bio: Inclua informações, piadas, ou só dê um 'bom dia'!"
-            value={user.bio}
-            class:input-error={errorField === 'bio'}
-        />
-    </label>
+    <Input
+        name="bio"
+        element="textarea"
+        placeholder="Bio: Inclua informações, piadas, ou só dê um 'bom dia'!"
+        size="md"
+        labels={{ topLeft: 'Bio' }}
+        bind:value={user.country}
+        error={errorField === 'bio'}
+    />
 
-    {#if loadingSaveBaseInformation}
+    {#if loading}
         <button type="button" class="mt-4 btn btn-sm btn-disabled w-fit">
             <span class="loading loading-spinner loading-md" />
             Carregando...
