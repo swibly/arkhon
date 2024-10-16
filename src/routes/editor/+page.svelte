@@ -6,7 +6,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
-    import { Canvas, Point, ActiveSelection, type FabricObject } from 'fabric';
+    import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
         drawGrid,
         centerView,
@@ -25,10 +25,11 @@
         addCircle,
         addPoints,
         addLine,
-        stopLine
+        stopLine,
+        resetOpacity
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
-    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
+    import ObjectMenu from '$lib/components/ObjectMenu.svelte';    
 
     // Váriaveis e funções do aside
 
@@ -62,6 +63,8 @@
     let lastPosX: number;
     let lastPosY: number;
     let isDragging: boolean;
+    let rect: FabricObject;
+    let circle: FabricObject;
     const quadSize = {
         w: 10000,
         h: 10000
@@ -73,11 +76,31 @@
             preserveObjectStacking: true
         });
 
-        fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
+        rect = new Rect({
+            width: 100,
+            height: 100,
+            top: quadSize.h / 2 - 50,
+            left: quadSize.w / 2 - 50,
+            fill: 'white',
+            opacity: 0,
+            selectable: false
+        });
+
+        circle = new Circle({
+            radius: 60,
+            top: quadSize.h / 2 - 50,
+            left: quadSize.w / 2 - 50,
+            fill: 'white',
+            opacity: 0,
+            selectable: false
+        });
 
         drawGrid(fabric, 100, quadSize.w, quadSize.h);
         resize(fabric, innerWidth, innerHeight);
         centerView(fabric, quadSize.w, quadSize.h);
+
+        fabric.add(rect);
+        fabric.add(circle);
 
         fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
@@ -96,7 +119,7 @@
                 fabric.isDrawingMode = false;
             }
 
-            if (mode === 'select') {
+            if (mode === 'select') {                
                 fabric.isDrawingMode = false;
             }
 
@@ -137,6 +160,27 @@
                     lastPosX = fabric.getViewportPoint(e).x;
                     lastPosY = fabric.getViewportPoint(e).y;
                 }
+            }
+
+            if (mode === 'rect') {
+                rect.set({
+                    top: fabric.getScenePoint(e).y - 50,
+                    left: fabric.getScenePoint(e).x - 50,
+                    opacity: 0.1
+                });
+
+                fabric.requestRenderAll();              
+            }
+
+            
+            if (mode === 'circle') {
+                circle.set({
+                    top: fabric.getScenePoint(e).y - 50,
+                    left: fabric.getScenePoint(e).x - 50,
+                    opacity: 0.1
+                });
+
+                fabric.requestRenderAll();              
             }
         });
 
@@ -189,9 +233,6 @@
             if (e.altKey) {
                 fabric.isDrawingMode = false;
                 mode = 'select';
-
-                fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
-                fabric.hoverCursor = 'default';
             }
 
             if (e.ctrlKey && e.shiftKey && e.key == 'Backspace') {
@@ -220,7 +261,7 @@
                 e.preventDefault();
 
                 fabric.discardActiveObject();
-                var sel = new ActiveSelection(fabric.getObjects().slice(1), {
+                var sel = new ActiveSelection(fabric.getObjects().filter((e) => e.selectable), {
                     canvas: fabric
                 });
                 fabric.setActiveObject(sel);
@@ -262,11 +303,10 @@
             }
 
             if (e.ctrlKey && e.key == 's') {
-                fabric.defaultCursor = 'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
-                fabric.hoverCursor = 'default';
-
                 e.preventDefault();
 
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
                 stopLine(fabric);
                 stopDraw(fabric);
 
@@ -278,6 +318,8 @@
             if (e.ctrlKey && e.key == 'p') {
                 e.preventDefault();
 
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
                 stopLine(fabric);
                 startDraw(fabric);
 
@@ -292,6 +334,8 @@
             if (e.ctrlKey && e.key == 'd') {
                 e.preventDefault();
 
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
                 stopLine(fabric);
                 stopDraw(fabric);
 
@@ -303,12 +347,9 @@
             }
 
             if (e.ctrlKey && e.key == 'q') {
-                fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
-
-                fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
-
                 e.preventDefault();
 
+                resetOpacity(fabric, circle);
                 stopLine(fabric);
                 stopDraw(fabric);
 
@@ -316,19 +357,14 @@
                     mode = 'rect';
                 } else {
                     mode = 'select';
-                    fabric.defaultCursor =
-                        'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
-                    fabric.hoverCursor = 'default';
+                    resetOpacity(fabric, rect);
                 }
             }
 
             if (e.ctrlKey && e.key == 'e') {
-                fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
-
-                fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
-
                 e.preventDefault();
 
+                resetOpacity(fabric, rect);
                 stopLine(fabric);
                 stopDraw(fabric);
 
@@ -336,15 +372,15 @@
                     mode = 'circle';
                 } else {
                     mode = 'select';
-                    fabric.defaultCursor =
-                        'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
-                    fabric.hoverCursor = 'default';
+                    resetOpacity(fabric, circle);
                 }
             }
 
             if (e.ctrlKey && e.key == 'r') {
                 e.preventDefault();
 
+                resetOpacity(fabric, circle);
+                resetOpacity(fabric, rect);
                 stopDraw(fabric);
 
                 if (mode !== 'line') {
@@ -389,9 +425,8 @@
                     on:click={() => {
                         mode = 'select';
 
-                        fabric.defaultCursor =
-                            'url(https://ossrs.net/wiki/images/figma-cursor.png), auto';
-                        fabric.hoverCursor = 'default';
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                     }}
                     ><Icon
                         icon="fluent:cursor-16-filled"
@@ -411,6 +446,9 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'paint';
+
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                     }}
                     ><Icon
                         icon="ri:brush-fill"
@@ -430,6 +468,9 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'text';
+
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                     }}
                     ><Icon
                         icon="solar:text-bold"
@@ -449,9 +490,8 @@
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
                         mode = 'rect';
-                        fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
 
-                        fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Cpath fill='%23a2a2a2' opacity='0.5' d='M3 3h18v18H3z'/%3E%3C/svg%3E"), auto`;
+                        resetOpacity(fabric, circle);
                     }}
                     ><Icon
                         icon="bi:square-fill"
@@ -472,9 +512,7 @@
                     on:click={() => {
                         mode = 'circle';
 
-                        fabric.defaultCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
-
-                        fabric.hoverCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8em' height='8em' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23a2a2a2' opacity='0.5' /%3E%3C/svg%3E"), auto`;
+                        resetOpacity(fabric, rect);
                     }}
                     ><Icon
                         icon="material-symbols:circle"
@@ -493,7 +531,10 @@
                     on:click={() => stopDraw(fabric)}
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
-                        mode = 'line';
+                        mode = 'line';  
+
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                     }}
                     ><Icon
                         icon="vaadin:line-h"

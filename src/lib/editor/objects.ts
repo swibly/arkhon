@@ -97,8 +97,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
     const rect = new Rect({
         width: 100,
         height: 100,
-        top: points[0].y + 12,
-        left: points[0].x + 12,
+        top: points[0].y - 50,
+        left: points[0].x - 50,
         fill: null,
         stroke: 'green',
         strokeWidth: 3,
@@ -115,8 +115,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
 export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }>) {
     const circle = new Circle({
         radius: 60,
-        top: points[0].y + 4,
-        left: points[0].x + 3,
+        top: points[0].y - 50,
+        left: points[0].x - 50,
         fill: null,
         stroke: 'green',
         strokeWidth: 3,
@@ -241,4 +241,12 @@ export function changeOpacity(canvas: Canvas, valueSlider: HTMLInputElement) {
 
 export function takeOpacity(canvas: Canvas){
     return getActive(canvas)[0].opacity * 10;
+}
+
+export function resetOpacity(canvas: Canvas, obj: FabricObject){
+    obj.set({
+        opacity: 0
+    })
+
+    canvas.requestRenderAll();
 }

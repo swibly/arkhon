@@ -10,6 +10,7 @@
     import { onMount } from 'svelte';
     import Icon from '@iconify/svelte';
     import { draggable } from '@neodrag/svelte';
+    import { get } from 'svelte/store';
 
     let objectMenu: HTMLElement;
 
@@ -53,7 +54,7 @@
         });
 
         addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'a') {
+            if (e.ctrlKey && e.key === 'a' && getActive(canvas).length > 0) {
                 if (objectMenu) {
                     objectMenu.style.display = 'flex';
                 }
