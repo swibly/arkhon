@@ -10,6 +10,9 @@ export type Project = {
     name: string;
     description: string;
     budget: number;
+    width: number;
+    height: number;
+    banner_url: string;
     is_public: boolean;
     fork: number | null;
     owner_id: number;
@@ -19,6 +22,45 @@ export type Project = {
     is_favorited: boolean;
     total_favorites: number;
 };
+
+export async function createProject(
+    token: string,
+    data: FormData
+): Promise<
+    | {
+          status: number;
+          message: string;
+          project: string;
+          error?: undefined;
+      }
+    | {
+          status: number;
+          error: string | [string, string];
+          message?: undefined;
+          project?: undefined;
+      }
+> {
+    try {
+        const isPublic = data.get('public') === 'on' || false;
+
+        const res = await axios.post(`/v1/projects${isPublic ? '?public=true' : ''}`, data, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            status: res.status,
+            message: res.data.message,
+            project: res.data.project
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
+    }
+}
 
 export async function getProjectsByUser(
     token: string,
@@ -33,9 +75,7 @@ export async function getProjectsByUser(
 
         const res = await axios.get(
             `/v1/projects/user/${username}${isFavorite}?page=${page}&perpage=${limit}`,
-            {
-                headers: { Authorization: token }
-            }
+            { headers: { Authorization: token } }
         );
 
         return res.data as Pagination<Project>;
@@ -56,9 +96,7 @@ export async function favorite(token: string, projectID: number) {
         await axios.patch(
             `/v1/projects/${projectID}/favorite`,
             {},
-            {
-                headers: { Authorization: token }
-            }
+            { headers: { Authorization: token } }
         );
     } catch (error) {
         return {
