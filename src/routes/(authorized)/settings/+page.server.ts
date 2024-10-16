@@ -73,11 +73,14 @@ export const actions: Actions = {
 
         const show = {
             profile: checkField('profile'),
+            image: checkField('image'),
             favorites: checkField('favorites'),
             projects: checkField('projects'),
             components: checkField('components'),
             followers: checkField('followers'),
-            following: checkField('following')
+            following: checkField('following'),
+            inventory: checkField('inventory'),
+            formations: checkField('formations')
         };
 
         try {

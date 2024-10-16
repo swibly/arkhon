@@ -3,10 +3,9 @@
     import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
-
-    let loading = false;
-
-    export let user: User;
+    import Input from '../Input.svelte';
+    import QuestionMark from '../QuestionMark.svelte';
+    import NewBadge from '../NewBadge.svelte';
 
     type ActionResult =
         | {
@@ -14,14 +13,12 @@
               error: string | Record<string, string>;
           }
         | {
-              error: string;
-              message?: undefined;
-          }
-        | {
               message: string;
               error?: undefined;
-          }
-        | null;
+          };
+
+    let loading = false;
+    export let user: User;
 
     function handleSavePrivacy(data: ActionResult) {
         loading = false;
@@ -40,6 +37,12 @@
             });
         }
     }
+
+    function privateProfile() {
+        document.querySelectorAll('input[type="checkbox"]').forEach((element) => {
+            (element as HTMLInputElement).checked = false;
+        });
+    }
 </script>
 
 <form
@@ -57,99 +60,77 @@
         };
     }}
 >
-    <label for="profile" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="profile"
-            name="profile"
-            checked={user.show.profile}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
+    <Input name="profile" element="checkbox" size="xs" checked={user.show.profile}>
         Exibir perfil publicamente
-        <span
-            class="badge tooltip"
-            data-tip={'Independente das outras permissões, se desativar esta, seu perfil irá aparecer como "não encontrado" para os outros'}
-        >
-            Modificador global
-        </span>
-    </label>
+        <QuestionMark>
+            Se desativado, independentemente de outras configurações, seu perfil não será exibido
+            para outros usuários.
+        </QuestionMark>
+    </Input>
 
-    <label for="projects" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="projects"
-            name="projects"
-            checked={user.show.projects}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
+    <Input name="image" element="checkbox" size="xs" checked={user.show.image}>
+        Exibir foto de perfil
+        <QuestionMark>
+            Se sua foto estiver bloqueada, uma imagem genérica será exibida em seu lugar.
+        </QuestionMark>
+    </Input>
+
+    <Input name="projects" element="checkbox" size="xs" checked={user.show.projects}>
         Exibir projetos
-        <span
-            class="badge tooltip"
-            data-tip="Seu projeto ainda pode ser visto na comunidade (se estiver público)"
-        >
-            Aplicavel apenas para o perfil
-        </span>
-    </label>
+        <QuestionMark>
+            Exibe os projetos que você criou em seu perfil. No entanto, projetos públicos
+            continuarão visíveis na comunidade.
+        </QuestionMark>
+    </Input>
 
-    <label for="favorites" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="favorites"
-            name="favorites"
-            checked={user.show.favorites}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
-        Exibir favoritos
-    </label>
+    <Input name="favorites" element="checkbox" size="xs" checked={user.show.favorites}>
+        Exibir projetos favoritados
+        <QuestionMark>Exibe os projetos que você marcou como favoritos em seu perfil.</QuestionMark>
+    </Input>
 
-    <label for="components" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="components"
-            name="components"
-            checked={user.show.components}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
+    <Input name="components" element="checkbox" size="xs" checked={user.show.components}>
         Exibir componentes
-        <span
-            class="badge tooltip"
-            data-tip="Seu componente ainda pode ser visto na comunidade (se estiver público)"
-        >
-            Aplicavel apenas para o perfil
-        </span>
-    </label>
+        <QuestionMark>Exibe os componentes que você criou no seu perfil.</QuestionMark>
+    </Input>
 
-    <label for="followers" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="followers"
-            name="followers"
-            checked={user.show.followers}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
+    <Input name="followers" element="checkbox" size="xs" checked={user.show.followers}>
         Exibir seguidores
-    </label>
+        <QuestionMark>Exibe a lista de usuários que seguem você.</QuestionMark>
+    </Input>
 
-    <label for="following" class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            id="following"
-            name="following"
-            checked={user.show.following}
-            class="checkbox checkbox-xs checkbox-primary"
-        />
+    <Input name="following" element="checkbox" size="xs" checked={user.show.following}>
         Exibir seguindo
-    </label>
+        <QuestionMark>Exibe os usuários que você está seguindo.</QuestionMark>
+    </Input>
 
-    {#if loading}
-        <button type="button" class="mt-4 btn btn-sm btn-disabled w-fit">
-            <span class="loading loading-spinner loading-md" />
-            Carregando...
-        </button>
-    {:else}
-        <button type="submit" class="mt-4 btn btn-sm btn-primary w-fit">
-            <Icon icon="mdi:feather" />
-            Salvar
-        </button>
-    {/if}
+    <Input name="inventory" element="checkbox" size="xs" checked={user.show.inventory}>
+        Exibir inventário
+        <QuestionMark>Exibe os itens e acessórios que você possui no perfil.</QuestionMark>
+        <NewBadge />
+    </Input>
+
+    <Input name="formations" element="checkbox" size="xs" checked={user.show.formations}>
+        Exibir formações acadêmicas
+        <QuestionMark>Exibe suas formações acadêmicas e certificados no perfil.</QuestionMark>
+        <NewBadge />
+    </Input>
+
+    <div>
+        {#if loading}
+            <button type="button" class="mt-4 btn btn-sm btn-disabled w-fit">
+                <span class="loading loading-spinner loading-md" />
+                Carregando...
+            </button>
+        {:else}
+            <button type="submit" class="mt-4 btn btn-sm btn-primary w-fit">
+                <Icon icon="mdi:feather" />
+                Salvar
+            </button>
+
+            <button type="submit" class="btn btn-sm btn-error" on:click={privateProfile}>
+                <Icon icon="mdi:block" />
+                Privar perfil
+            </button>
+        {/if}
+    </div>
 </form>
