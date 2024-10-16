@@ -6,6 +6,7 @@
     import Input from '../Input.svelte';
     import QuestionMark from '../QuestionMark.svelte';
     import NewBadge from '../NewBadge.svelte';
+    import Attention from '../Attention.svelte';
 
     type ActionResult =
         | {
@@ -17,8 +18,10 @@
               error?: undefined;
           };
 
-    let loading = false;
+    let loading: boolean = false;
     export let user: User;
+
+    $: hasVisibleProfileOptions = Object.values(user.show).some((value) => value);
 
     function handleSavePrivacy(data: ActionResult) {
         loading = false;
@@ -39,9 +42,29 @@
     }
 
     function privateProfile() {
-        document.querySelectorAll('input[type="checkbox"]').forEach((element) => {
-            (element as HTMLInputElement).checked = false;
-        });
+        user.show.profile = false;
+        user.show.image = false;
+        user.show.comments = false;
+        user.show.projects = false;
+        user.show.favorites = false;
+        user.show.components = false;
+        user.show.followers = false;
+        user.show.following = false;
+        user.show.inventory = false;
+        user.show.formations = false;
+    }
+
+    function unprivateProfile() {
+        user.show.profile = true;
+        user.show.image = true;
+        user.show.comments = true;
+        user.show.projects = true;
+        user.show.favorites = true;
+        user.show.components = true;
+        user.show.followers = true;
+        user.show.following = true;
+        user.show.inventory = true;
+        user.show.formations = true;
     }
 </script>
 
@@ -60,7 +83,7 @@
         };
     }}
 >
-    <Input name="profile" element="checkbox" size="xs" checked={user.show.profile}>
+    <Input name="profile" element="checkbox" size="xs" bind:checked={user.show.profile}>
         Exibir perfil publicamente
         <QuestionMark>
             Se desativado, independentemente de outras configurações, seu perfil não será exibido
@@ -68,14 +91,22 @@
         </QuestionMark>
     </Input>
 
-    <Input name="image" element="checkbox" size="xs" checked={user.show.image}>
+    <Input name="comments" element="checkbox" size="xs" bind:checked={user.show.comments}>
+        Permitir comentários no perfil
+        <QuestionMark>
+            Se desativado, usuários não poderão comentar, nem ver comentários já existentes no seu
+            perfil.
+        </QuestionMark>
+    </Input>
+
+    <Input name="image" element="checkbox" size="xs" bind:checked={user.show.image}>
         Exibir foto de perfil
         <QuestionMark>
             Se sua foto estiver bloqueada, uma imagem genérica será exibida em seu lugar.
         </QuestionMark>
     </Input>
 
-    <Input name="projects" element="checkbox" size="xs" checked={user.show.projects}>
+    <Input name="projects" element="checkbox" size="xs" bind:checked={user.show.projects}>
         Exibir projetos
         <QuestionMark>
             Exibe os projetos que você criou em seu perfil. No entanto, projetos públicos
@@ -83,54 +114,65 @@
         </QuestionMark>
     </Input>
 
-    <Input name="favorites" element="checkbox" size="xs" checked={user.show.favorites}>
+    <Input name="favorites" element="checkbox" size="xs" bind:checked={user.show.favorites}>
         Exibir projetos favoritados
         <QuestionMark>Exibe os projetos que você marcou como favoritos em seu perfil.</QuestionMark>
     </Input>
 
-    <Input name="components" element="checkbox" size="xs" checked={user.show.components}>
+    <Input name="components" element="checkbox" size="xs" bind:checked={user.show.components}>
         Exibir componentes
         <QuestionMark>Exibe os componentes que você criou no seu perfil.</QuestionMark>
     </Input>
 
-    <Input name="followers" element="checkbox" size="xs" checked={user.show.followers}>
+    <Input name="followers" element="checkbox" size="xs" bind:checked={user.show.followers}>
         Exibir seguidores
         <QuestionMark>Exibe a lista de usuários que seguem você.</QuestionMark>
     </Input>
 
-    <Input name="following" element="checkbox" size="xs" checked={user.show.following}>
+    <Input name="following" element="checkbox" size="xs" bind:checked={user.show.following}>
         Exibir seguindo
         <QuestionMark>Exibe os usuários que você está seguindo.</QuestionMark>
     </Input>
 
-    <Input name="inventory" element="checkbox" size="xs" checked={user.show.inventory}>
+    <Input name="inventory" element="checkbox" size="xs" bind:checked={user.show.inventory}>
         Exibir inventário
         <QuestionMark>Exibe os itens e acessórios que você possui no perfil.</QuestionMark>
         <NewBadge />
     </Input>
 
-    <Input name="formations" element="checkbox" size="xs" checked={user.show.formations}>
+    <Input name="formations" element="checkbox" size="xs" bind:checked={user.show.formations}>
         Exibir formações acadêmicas
         <QuestionMark>Exibe suas formações acadêmicas e certificados no perfil.</QuestionMark>
         <NewBadge />
     </Input>
 
+    <div class="my-4">
+        <Attention>Não se esqueça de salvar as alterações!</Attention>
+    </div>
+
     <div>
         {#if loading}
-            <button type="button" class="mt-4 btn btn-sm btn-disabled w-fit">
+            <button type="button" class="btn btn-sm btn-disabled w-fit">
                 <span class="loading loading-spinner loading-md" />
                 Carregando...
             </button>
         {:else}
-            <button type="submit" class="mt-4 btn btn-sm btn-primary w-fit">
+            <button type="submit" class="btn btn-sm btn-primary w-fit">
                 <Icon icon="mdi:feather" />
                 Salvar
             </button>
 
-            <button type="submit" class="btn btn-sm btn-error" on:click={privateProfile}>
-                <Icon icon="mdi:block" />
-                Privar perfil
-            </button>
+            {#if hasVisibleProfileOptions}
+                <button type="button" class="btn btn-sm btn-error" on:click={privateProfile}>
+                    <Icon icon="mdi:block" />
+                    Privar perfil
+                </button>
+            {:else}
+                <button type="button" class="btn btn-sm btn-secondary" on:click={unprivateProfile}>
+                    <Icon icon="gg:unblock" />
+                    Desprivar perfil
+                </button>
+            {/if}
         {/if}
     </div>
 </form>

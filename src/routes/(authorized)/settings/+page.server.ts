@@ -73,6 +73,7 @@ export const actions: Actions = {
 
         const show = {
             profile: checkField('profile'),
+            comments: checkField('comments'),
             image: checkField('image'),
             favorites: checkField('favorites'),
             projects: checkField('projects'),
