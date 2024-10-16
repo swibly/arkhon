@@ -42,6 +42,7 @@
   ],
   "type": "module",
   "dependencies": {
+    "@neodrag/svelte": "^2.0.6",
     "@types/js-cookie": "^3.0.6",
     "ef-infinite-canvas": "^0.6.6",
     "fabric": "^6.4.3",

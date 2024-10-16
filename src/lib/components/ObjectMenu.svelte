@@ -8,45 +8,18 @@
     } from '$lib/editor/objects';
     import { type Canvas } from 'fabric';
     import { onMount } from 'svelte';
-    import Icon from '@iconify/svelte';    
+    import Icon from '@iconify/svelte';
+    import { draggable } from '@neodrag/svelte';
 
     let objectMenu: HTMLElement;
-    let allowMovement: HTMLElement;
+
     export let canvas: Canvas;
+
     let valueSlider: HTMLInputElement;
     let value: number;
     let mixed: boolean = false;
-    let newX: number = 0;
-    let newY: number = 0;
-    let startX: number = 0;
-    let startY: number = 0;
 
-    onMount(() => {     
-        allowMovement.addEventListener('mousedown', mouseDown)
-        
-        function mouseDown(e: MouseEvent) {
-            startX = canvas.getViewportPoint(e).x;
-            startY = canvas.getViewportPoint(e).y;
-
-            document.addEventListener('mousemove', mouseMove);
-            document.addEventListener('mouseup', mouseUp);
-        }
-
-        function mouseMove(e: MouseEvent) {
-            // newX = startX - canvas.getViewportPoint(e).x;
-            // newY = startY - canvas.getViewportPoint(e).y;
-
-            startX = canvas.getViewportPoint(e).x;
-            startY = canvas.getViewportPoint(e).y;        
-
-            objectMenu.style.top = startY + 'px';
-            objectMenu.style.left = startX + 195 + 'px';
-        }
-
-        function mouseUp() {
-            document.removeEventListener('mousemove', mouseMove);
-        }
-
+    onMount(() => {
         addEventListener('mousedown', () => {
             canvas.on('selection:created', () => {
                 if (getActive(canvas).length > 1) {
@@ -98,11 +71,12 @@
 </script>
 
 <article
-    class="absolute hidden mt-12 ml-12 w-72 h-80 bg-base-300 z-50 flex-col items-center rounded-xl"
+    class="hidden absolute w-72 h-80 bg-base-300 z-50 flex-col items-center rounded-xl"
     bind:this={objectMenu}
+    use:draggable={{ bounds: 'canvas', handle: '.handler', position: { x: 20, y: 20 } }}
 >
-    <div class="w-full h-8 bg-primary flex items-center justify-center" bind:this={allowMovement}>
-        <Icon icon="stash:drag-squares-horizontal-solid"  class="text-white text-xl" />
+    <div class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler">
+        <Icon icon="stash:drag-squares-horizontal-solid" class="text-white text-xl" />
     </div>
     <p class="text-xl pt-4 font-bold">Borda</p>
     <section class="flex gap-2 pt-2">
