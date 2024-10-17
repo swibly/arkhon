@@ -85,7 +85,7 @@
     </header>
 
     <img
-        src="https://placehold.co/600x400"
+        src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
         alt=""
         class="w-full h-48 object-cover my-4 rounded-md"
     />
