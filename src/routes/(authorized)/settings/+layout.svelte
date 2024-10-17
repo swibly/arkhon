@@ -10,10 +10,10 @@
 
 <div class="w-full max-w-7xl mx-auto p-4">
     <header class="flex gap-4 items-center">
-        <img src={data.user.pfp} alt="" class="size-28 rounded-full max-sm:size-20" />
+        <img src={data.user.pfp} alt="" class="size-28 rounded-full max-md:hidden" />
 
         <div>
-            <h2 class="font-bold text-4xl">
+            <h2 class="font-bold text-4xl max-md:text-xl">
                 {data.user.firstname}
                 {data.user.lastname}
             </h2>
@@ -23,7 +23,7 @@
 
         <div class="grow" />
 
-        <section class="max-md:hidden">
+        <section class="max-md:hidden shrink-0">
             <a href="/profile/{data.user.username}" class="btn btn-sm btn-primary">
                 <Icon icon="iconamoon:profile-fill" />
                 Ver perfil
