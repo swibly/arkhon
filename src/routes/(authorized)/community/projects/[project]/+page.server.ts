@@ -1,8 +1,13 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { favorite, unfavorite } from '$lib/projects';
+import { deleteProject, favorite, unfavorite } from '$lib/projects';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
+    delete: async function ({ cookies, params }) {
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+
+        await deleteProject(jwt, parseInt(params.project));
+    },
     favorite: async function ({ cookies, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
 

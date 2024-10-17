@@ -120,3 +120,14 @@ export async function unfavorite(token: string, projectID: number) {
         // TODO: Add error handling
     }
 }
+
+export async function deleteProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/trash`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}

@@ -129,7 +129,9 @@
     </div>
 
     <section class="flex gap-2 mb-4 pt-2">
-        <p class="min-h-[72px] line-clamp-3 text-justify grow whitespace-pre-line">{options.description}</p>
+        <p class="min-h-[72px] line-clamp-3 text-justify grow whitespace-pre-line">
+            {options.description}
+        </p>
     </section>
 
     <section class="flex">
@@ -178,17 +180,34 @@
         </p>
     </section>
 
-    <section class="flex gap-2 *:grow">
-        <a href="/community/projects/{options.id}" class="btn btn-primary btn-sm mt-4">
+    <section class="flex gap-2 mt-4">
+        <a href="/community/projects/{options.id}" class="btn btn-primary btn-sm grow">
             <Icon icon="fa6-solid:magnifying-glass" />
             Ver projeto
         </a>
 
         {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_edit === true).length > 0}
-            <a href="/community/projects/{options.id}/edit" class="btn btn-secondary btn-sm mt-4">
+            <a href="/community/projects/{options.id}/edit" class="btn btn-secondary btn-sm grow">
                 <Icon icon="mdi:pen" />
                 Editar projeto
             </a>
+        {/if}
+
+        {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_delete === true).length > 0}
+            <form
+                action="/community/projects/{options.id}?/delete"
+                method="POST"
+                use:enhance={() => {
+                    return ({ update }) => {
+                        spawn({ message: 'Projeto movido para a lixeira.' });
+                        update({ reset: false });
+                    };
+                }}
+            >
+                <button class="btn btn-error btn-sm">
+                    <Icon icon="mdi:trash" />
+                </button>
+            </form>
         {/if}
     </section>
 </article>
