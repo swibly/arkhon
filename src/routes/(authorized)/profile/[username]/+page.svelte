@@ -68,7 +68,7 @@
                     </a>
                 {/if}
             {:else}
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 max-md:justify-center">
                     {#each projects.data as project}
                         <ProjectCard
                             options={project}
@@ -108,7 +108,7 @@
             {#if favorites.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não favoritou nenhum projeto.</p>
             {:else}
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 max-md:justify-center">
                     {#each favorites.data as favorite}
                         <ProjectCard
                             options={favorite}

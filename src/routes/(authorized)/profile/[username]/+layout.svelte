@@ -53,7 +53,7 @@
                 <img
                     src="https://placehold.co/400"
                     alt="avatar"
-                    class="transition-all ease-in-out duration-150 rounded-[100%] hover:rounded-[10%] motion-reduce:transition-none"
+                    class="object-cover rounded-full size-32 mx-auto"
                 />
 
                 <div>
@@ -108,7 +108,7 @@
                 <img
                     src="https://placehold.co/400"
                     alt="avatar"
-                    class="object-cover rounded-full size-12 max-[400px]:hidden"
+                    class="object-cover rounded-full size-32 max-[400px]:hidden"
                 />
 
                 <div class="space-y-4">
@@ -182,13 +182,24 @@
             class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden fixed min-h-[calc(100vh-84px)]"
         >
             <section class="space-y-4">
-                <img
-                    src={lookup.show.image || lookup.id === logged.id
-                        ? lookup.pfp
-                        : 'https://placehold.co/400'}
-                    alt="avatar"
-                    class="transition-all ease-in-out duration-150 rounded-[100%] hover:rounded-[10%] motion-reduce:transition-none"
-                />
+                <div class="relative w-fit mx-auto">
+                    <img
+                        src={lookup.show.image || lookup.id === logged.id
+                            ? lookup.pfp
+                            : 'https://placehold.co/400'}
+                        alt="avatar"
+                        class="object-cover rounded-full size-32 mx-auto"
+                    />
+
+                    {#if lookup.verified}
+                        <span>
+                            <Icon
+                                icon="material-symbols:verified"
+                                class="text-primary absolute bottom-0 -right-2 size-12 bg-base-100 rounded-full border-2 border-base-100"
+                            />
+                        </span>
+                    {/if}
+                </div>
 
                 <div>
                     <h2
@@ -347,23 +358,32 @@
 
         <main class="w-full p-4 md:ml-64">
             <section class="flex items-center gap-2 md:hidden">
-                <img
-                    src={lookup.show.image || lookup.id === logged.id
-                        ? lookup.pfp
-                        : 'https://placehold.co/400'}
-                    alt="avatar"
-                    class="object-cover rounded-full size-12 max-sm:hidden"
-                />
-
                 <div class="space-y-4">
-                    <div class="text-xl text-primary">
+                    <div class="relative w-fit mx-auto">
+                        <img
+                            src={lookup.show.image || lookup.id === logged.id
+                                ? lookup.pfp
+                                : 'https://placehold.co/400'}
+                            alt="avatar"
+                            class="object-cover rounded-full size-24 mx-auto"
+                        />
+
+                        {#if lookup.verified}
+                            <Icon
+                                icon="material-symbols:verified"
+                                class="text-primary absolute bottom-0 -right-2 size-8 bg-base-100 rounded-full border-2 border-base-100"
+                            />
+                        {/if}
+                    </div>
+
+                    <div class="text-xl text-primary text-center">
                         <span>
                             {lookup.firstname + ' ' + lookup.lastname}
                         </span>
                         <span class="text-sm opacity-50 text-base-content">@{lookup.username}</span>
                     </div>
 
-                    <div class="flex">
+                    <div class="flex justify-center">
                         <div class="flex items-center gap-1">
                             <Icon icon="ri:coin-fill" />
                             <p>
@@ -401,7 +421,7 @@
                         </div>
                     </div>
 
-                    <div class="flex">
+                    <div class="flex justify-center">
                         <p class="flex items-center gap-2">
                             <Icon icon="mdi:users" />
 
