@@ -21,7 +21,7 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg shadow w-full max-w-96">
+<article class="p-4 rounded-lg shadow w-full max-w-96 shrink-0">
     <article class="min-h-6">
         {#if options.fork !== null}
             <a
@@ -116,18 +116,20 @@
         {/if}
     </header>
 
-    <img
-        src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
-        alt=""
-        class="w-full h-48 object-cover my-4 rounded-md"
-    />
+    <div class="relative">
+        <img
+            src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
+            alt=""
+            class="w-full h-48 object-cover my-4 rounded-md"
+        />
 
-    <section class="flex gap-2 mb-4">
-        <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
-
-        <div>
+        <div class="absolute -bottom-6 right-0">
             <UserIcon {users} overflow={options.allowed_users.length + 1 - limit} />
         </div>
+    </div>
+
+    <section class="flex gap-2 mb-4 pt-2">
+        <p class="min-h-[72px] line-clamp-3 text-justify grow whitespace-pre-line">{options.description}</p>
     </section>
 
     <section class="flex">
