@@ -13,9 +13,7 @@
 <p class="mb-4">Projetos de {data.lookup.firstname} gerenciados e acompanhados</p>
 
 {#if data.username !== data.lookup.username && !data.lookup.show.projects}
-    <p class="text-error">
-        Este usuário não permite que outros visualizem seus projetos.
-    </p>
+    <p class="text-error">Este usuário não permite que outros visualizem seus projetos.</p>
 {:else if projects.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não tem nenhum projeto.</p>
 {:else}
@@ -49,11 +47,9 @@
         </div>
     {/if}
 
-    <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
+    <div class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-md:place-items-center">
         {#each projects as project}
-            <li>
-                <ProjectCard options={project} currentUserID={data.id} lang={data.language} />
-            </li>
+            <ProjectCard options={project} currentUserID={data.id} lang={data.language} />
         {/each}
-    </ul>
+    </div>
 {/if}
