@@ -19,7 +19,7 @@
     ];
 </script>
 
-<article class="w-full p-4 rounded-lg shadow max-w-96">
+<article class="p-4 rounded-lg shadow w-96 max-w-96">
     <header class="flex justify-center items-center">
         <div>
             <h2 class="text-xl font-bold">
@@ -90,7 +90,7 @@
         class="w-full h-48 object-cover my-4 rounded-md"
     />
 
-    <section class="flex gap-2 mb-4 w-full">
+    <section class="flex gap-2 mb-4">
         <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
 
         <div>
