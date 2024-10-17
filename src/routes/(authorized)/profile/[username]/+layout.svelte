@@ -183,23 +183,21 @@
         >
             <section class="space-y-4">
                 <img
-                    src={lookup.pfp}
+                    src={lookup.show.image || lookup.id === logged.id
+                        ? lookup.pfp
+                        : 'https://placehold.co/400'}
                     alt="avatar"
                     class="transition-all ease-in-out duration-150 rounded-[100%] hover:rounded-[10%] motion-reduce:transition-none"
                 />
 
                 <div>
-                    <h2 class="flex items-center justify-center gap-1 text-xl text-center">
+                    <h2
+                        class="flex items-center justify-center gap-1 text-xl text-center break-phrase"
+                    >
                         {lookup.firstname}
                         {lookup.lastname}
-
-                        {#if lookup.verified}
-                            <div class="tooltip" data-tip="Verificado">
-                                <Icon icon="material-symbols:verified" class="text-primary" />
-                            </div>
-                        {/if}
                     </h2>
-                    <p class="text-sm text-center opacity-70">@{lookup.username}</p>
+                    <p class="text-sm text-center opacity-70 break-phrase">@{lookup.username}</p>
                 </div>
 
                 {#if lookup.bio && lookup.bio.trim() !== ''}
@@ -350,26 +348,20 @@
         <main class="w-full p-4 md:ml-64">
             <section class="flex items-center gap-2 md:hidden">
                 <img
-                    src={lookup.pfp}
+                    src={lookup.show.image || lookup.id === logged.id
+                        ? lookup.pfp
+                        : 'https://placehold.co/400'}
                     alt="avatar"
-                    class="object-cover rounded-full size-12 max-[400px]:hidden"
+                    class="object-cover rounded-full size-12 max-sm:hidden"
                 />
 
                 <div class="space-y-4">
-                    <p class="text-xl text-primary">
+                    <div class="text-xl text-primary">
                         <span>
-                            {(lookup.firstname + ' ' + lookup.lastname).slice(
-                                0,
-                                (lookup.firstname + ' ' + lookup.lastname).length > 10
-                                    ? 10
-                                    : undefined
-                            )}
-                            {#if (lookup.firstname + ' ' + lookup.lastname).length > 10}
-                                <span>...</span>
-                            {/if}
+                            {lookup.firstname + ' ' + lookup.lastname}
                         </span>
                         <span class="text-sm opacity-50 text-base-content">@{lookup.username}</span>
-                    </p>
+                    </div>
 
                     <div class="flex">
                         <div class="flex items-center gap-1">

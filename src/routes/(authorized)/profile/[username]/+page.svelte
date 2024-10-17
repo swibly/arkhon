@@ -68,17 +68,15 @@
                     </a>
                 {/if}
             {:else}
-                <ul class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2">
                     {#each projects.data as project}
-                        <li>
-                            <ProjectCard
-                                options={project}
-                                currentUserID={data.id}
-                                lang={data.language}
-                            />
-                        </li>
+                        <ProjectCard
+                            options={project}
+                            currentUserID={data.id}
+                            lang={data.language}
+                        />
                     {/each}
-                </ul>
+                </div>
             {/if}
         </section>
 
@@ -89,7 +87,9 @@
         <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Projetos Favoritados</h1>
 
-            <p class="text-error">Este usuário não permite que outros visualizem seus projetos favoritados.</p>
+            <p class="text-error">
+                Este usuário não permite que outros visualizem seus projetos favoritados.
+            </p>
         </section>
     {:else}
         <section>
@@ -108,17 +108,15 @@
             {#if favorites.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não favoritou nenhum projeto.</p>
             {:else}
-                <ul class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2">
                     {#each favorites.data as favorite}
-                        <li>
-                            <ProjectCard
-                                options={favorite}
-                                currentUserID={data.id}
-                                lang={data.language}
-                            />
-                        </li>
+                        <ProjectCard
+                            options={favorite}
+                            currentUserID={data.id}
+                            lang={data.language}
+                        />
                     {/each}
-                </ul>
+                </div>
             {/if}
         </section>
     {/if}

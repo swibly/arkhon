@@ -17,7 +17,7 @@
         Este usuário não permite que outros visualizem seus projetos.
     </p>
 {:else if projects.length === 0}
-    <p class="mb-4 opacity-70">Este usuário ainda não tem nenhum projeto.</p>
+    <p class="mb-4 opacity-70 italic">Este usuário ainda não tem nenhum projeto.</p>
 {:else}
     {#if pagination.total_pages !== 1}
         <div class="mb-4 join">

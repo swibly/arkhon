@@ -20,7 +20,7 @@
 </script>
 
 <article class="p-4 rounded-lg shadow w-full max-w-96">
-    <article class="w-full">
+    <article>
         {#if options.fork !== null}
             <a
                 href="/community/projects/{options.fork}"
@@ -97,10 +97,10 @@
     <img
         src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
         alt=""
-        class="w-full max-w-96 h-48 object-cover my-4 rounded-md"
+        class="w-full h-48 object-cover my-4 rounded-md"
     />
 
-    <section class="flex gap-2 mb-4 w-full">
+    <section class="flex gap-2 mb-4">
         <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
 
         <div>
@@ -108,8 +108,8 @@
         </div>
     </section>
 
-    <section class="flex w-full">
-        <p class="flex items-center gap-1 w-full">
+    <section class="flex">
+        <p class="flex items-center gap-1">
             <Icon icon="mdi:calendar" />
             Criado:
             <span
