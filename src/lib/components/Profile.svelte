@@ -3,7 +3,6 @@
     import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
-    import Attention from './Attention.svelte';
 
     export let logged: User;
     export let lookup: User;
@@ -185,6 +184,148 @@
     </aside>
 
     <main class="w-full p-4 md:ml-64">
+        <section class="md:hidden">
+            <div class="space-y-4">
+                <div class="relative w-fit mx-auto">
+                    <img
+                        src={lookup.show.image || lookup.id === logged.id
+                            ? lookup.pfp
+                            : 'https://placehold.co/400'}
+                        alt="avatar"
+                        class="object-cover rounded-full size-24 mx-auto"
+                    />
+
+                    {#if lookup.verified}
+                        <Icon
+                            icon="material-symbols:verified"
+                            class="text-primary absolute bottom-0 -right-2 size-8 bg-base-100 rounded-full border-2 border-base-100"
+                        />
+                    {/if}
+                </div>
+
+                <div class="text-xl text-primary text-center">
+                    <span>{lookup.firstname} {lookup.lastname}</span>
+                    <br />
+                    <span class="text-sm opacity-50 text-base-content">@{lookup.username}</span>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="flex items-center gap-1">
+                        <Icon icon="ri:coin-fill" />
+                        <p>
+                            Arkhoins:
+                            <span
+                                class="font-bold cursor-default tooltip"
+                                data-tip={lookup.arkhoins.toLocaleString(logged.language)}
+                            >
+                                {lookup.arkhoins.toLocaleString(logged.language, {
+                                    style: 'decimal',
+                                    notation: 'compact',
+                                    compactDisplay: 'short'
+                                })}
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="divider divider-horizontal" />
+
+                    <div class="flex items-center gap-1">
+                        <Icon icon="mingcute:up-line" />
+                        <p>
+                            EXP:
+                            <span
+                                class="font-bold cursor-default tooltip"
+                                data-tip={lookup.xp.toLocaleString(logged.language)}
+                            >
+                                {lookup.xp.toLocaleString(logged.language, {
+                                    style: 'decimal',
+                                    notation: 'compact',
+                                    compactDisplay: 'short'
+                                })}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <p class="flex items-center gap-2">
+                        <Icon icon="mdi:users" />
+                        <span>Seguidores:</span>
+                        <a href={`/profile/${lookup.username}/followers`} class="link link-primary">
+                            {lookup.followers.toLocaleString(logged.language, {
+                                notation: 'compact',
+                                compactDisplay: 'short'
+                            })}
+                        </a>
+                    </p>
+
+                    <div class="divider divider-horizontal" />
+
+                    <p class="flex items-center gap-2">
+                        <Icon icon="mdi:users-add" />
+                        <span>Seguindo:</span>
+                        <a href={`/profile/${lookup.username}/following`} class="link link-primary">
+                            {lookup.following.toLocaleString('pt-br', {
+                                notation: 'compact',
+                                compactDisplay: 'short'
+                            })}
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <section class="mt-4 flex gap-2">
+                {#if logged.username !== lookup.username}
+                    {#if isFollowing}
+                        <form
+                            action="/profile/{lookup.username}?/unfollow"
+                            method="POST"
+                            class="grow"
+                            use:enhance={() =>
+                                spawn({ message: `Você parou de seguir ${lookup.username}` })}
+                        >
+                            <button type="submit" class="w-full btn btn-sm btn-error">
+                                <Icon icon="ri:user-unfollow-fill" />
+                                Parar de seguir
+                            </button>
+                        </form>
+                    {:else}
+                        <form
+                            action="/profile/{lookup.username}?/follow"
+                            method="POST"
+                            class="grow"
+                            use:enhance={() =>
+                                spawn({ message: `Você começou a seguir ${lookup.username}` })}
+                        >
+                            <button type="submit" class="w-full btn btn-sm btn-primary">
+                                <Icon icon="mingcute:user-follow-2-fill" />
+                                Seguir
+                            </button>
+                        </form>
+                    {/if}
+                    <form
+                        action="/profile/{lookup.username}?/report"
+                        method="POST"
+                        class="grow"
+                        use:enhance={() => {}}
+                    >
+                        <button type="submit" class="w-full btn btn-sm btn-error">
+                            <Icon icon="material-symbols:block" />
+                            Reportar e bloquear
+                        </button>
+                    </form>
+                {:else}
+                    <a href="/settings" class="w-full btn btn-sm">
+                        <Icon icon="mdi:cog" />
+                        Configurações
+                    </a>
+                {/if}
+            </section>
+        </section>
+
+        <!-- Slot for mobile-specific content -->
+        <div class="max-md:divider" />
+
         <section class="mb-4 text-sm breadcrumbs">
             <ul>
                 {#each paths as path}
