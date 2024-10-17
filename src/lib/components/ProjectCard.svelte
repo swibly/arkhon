@@ -90,7 +90,7 @@
         class="w-full h-48 object-cover my-4 rounded-md"
     />
 
-    <section class="flex gap-2 mb-4">
+    <section class="flex gap-2 mb-4 w-full">
         <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
 
         <div>
