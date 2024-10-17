@@ -177,35 +177,43 @@
             element="textarea"
         />
 
-        <div class="flex gap-2">
-            <Input
-                name="width"
-                icon="akar-icons:width"
-                type="number"
-                placeholder="30"
-                labels={{ topLeft: 'Largura (metros)' }}
-                min={1}
-                max={1000}
-            />
-            <Input
-                name="height"
-                icon="akar-icons:height"
-                type="number"
-                placeholder="30"
-                labels={{ topLeft: 'Altura (metros)' }}
-                min={1}
-                max={1000}
-            />
-            <Input
-                name="budget"
-                icon="mdi:dollar"
-                type="number"
-                step="0.01"
-                placeholder="0"
-                labels={{ topLeft: 'Orçamento' }}
-                min={0}
-            />
+        <div class="flex gap-2 flex-wrap">
+            <div class="grow">
+                <Input
+                    name="width"
+                    icon="akar-icons:width"
+                    type="number"
+                    placeholder="30"
+                    labels={{ topLeft: 'Largura (metros)' }}
+                    min={1}
+                    max={1000}
+                />
+            </div>
+            <div class="grow">
+                <Input
+                    name="height"
+                    icon="akar-icons:height"
+                    type="number"
+                    placeholder="30"
+                    labels={{ topLeft: 'Altura (metros)' }}
+                    min={1}
+                    max={1000}
+                />
+            </div>
+            <div class="grow">
+                <Input
+                    name="budget"
+                    icon="mdi:dollar"
+                    type="number"
+                    step="0.01"
+                    placeholder="0"
+                    labels={{ topLeft: 'Orçamento' }}
+                    min={0}
+                />
+            </div>
         </div>
+
+        <div class="divider" />
 
         <Input name="public" element="checkbox" size="xs">
             Publicar na comunidade
@@ -223,7 +231,7 @@
                 Carregando...
             </button>
         {:else}
-            <button type="submit" class="btn btn-sm btn-primary mt-4">
+            <button type="submit" class="btn btn-sm btn-primary mt-8">
                 <Icon icon="mdi:plus" />
                 Criar
             </button>
