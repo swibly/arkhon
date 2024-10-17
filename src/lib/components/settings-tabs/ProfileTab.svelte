@@ -97,7 +97,7 @@
             icon="ph:user-fill"
             placeholder="Sobrenome"
             size="md"
-            labels={{ topLeft: 'Nome' }}
+            labels={{ topLeft: 'Sobrenome' }}
             required
             bind:value={user.lastname}
             error={errorField === 'lastname'}
