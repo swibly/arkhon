@@ -49,11 +49,9 @@
         </div>
     {/if}
 
-    <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
+    <div class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-md:place-items-center">
         {#each projects as project}
-            <li>
-                <ProjectCard options={project} currentUserID={data.id} lang={data.language} />
-            </li>
+            <ProjectCard options={project} currentUserID={data.id} lang={data.language} />
         {/each}
-    </ul>
+    </div>
 {/if}

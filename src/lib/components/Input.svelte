@@ -1,9 +1,13 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
 
+    export let defaultValue: string = '';
+    $: value = defaultValue;
+
     export let name: string;
     export let placeholder: string = '';
     export let required: boolean = false;
+    export let maxSize: number = 0;
 
     export let labels: {
         topLeft?: string;
@@ -41,6 +45,7 @@
 
         {#if element === 'textarea'}
             <textarea
+                bind:value
                 class="textarea textarea-bordered resize-none"
                 class:textarea-error={error}
                 class:textarea-xs={size === 'xs'}
@@ -65,13 +70,22 @@
                     <Icon {icon} />
                 {/if}
                 {textShow}
-                <input {name} {placeholder} {required} class="grow" {...$$restProps} />
+
+                <input {name} {placeholder} {required} class="grow" bind:value {...$$restProps} />
             </label>
         {/if}
 
         <div class="label">
             <span class="label-text">{@html labels.bottomLeft ?? ''}</span>
-            <span class="label-text">{@html labels.bottomRight ?? ''}</span>
+            <span class="label-text" class:text-error={value.length > maxSize}>
+                {@html labels.bottomRight
+                    ? labels.bottomRight
+                    : disableDefaultLabels
+                    ? ''
+                    : maxSize === 0
+                    ? ''
+                    : `${value.length}/${maxSize}`}
+            </span>
         </div>
     </label>
 {:else}

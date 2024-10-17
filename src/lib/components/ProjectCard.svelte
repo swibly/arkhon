@@ -19,19 +19,29 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg shadow w-96 max-w-96">
+<article class="p-4 rounded-lg shadow w-full max-w-96">
+    <article>
+        {#if options.fork !== null}
+            <a
+                href="/community/projects/{options.fork}"
+                class="badge badge-primary badge-outline gap-1"
+            >
+                <Icon icon="prime:clone" />
+                Clone
+            </a>
+        {/if}
+        {#if !options.is_public}
+            <p class="badge badge-primary badge-outline gap-1">
+                <Icon icon="mdi:lock" />
+                Privado
+            </p>
+        {/if}
+    </article>
+
     <header class="flex justify-center items-center">
         <div>
             <h2 class="text-xl font-bold">
                 {options.name}
-                {#if !options.is_public}
-                    <div class="tooltip" data-tip="Visível somente para você">
-                        <span class="badge badge-primary badge-sm gap-1">
-                            <Icon icon="material-symbols:lock" />
-                            Privado
-                        </span>
-                    </div>
-                {/if}
             </h2>
         </div>
 

@@ -88,7 +88,8 @@
             size="md"
             labels={{ topLeft: 'Nome' }}
             required
-            bind:value={user.firstname}
+            defaultValue={user.firstname}
+            maxSize={32}
             error={errorField === 'firstname'}
         />
 
@@ -97,9 +98,10 @@
             icon="ph:user-fill"
             placeholder="Sobrenome"
             size="md"
-            labels={{ topLeft: 'Nome' }}
+            labels={{ topLeft: 'Sobrenome' }}
             required
-            bind:value={user.lastname}
+            defaultValue={user.lastname}
+            maxSize={32}
             error={errorField === 'lastname'}
         />
     </section>
@@ -109,7 +111,9 @@
         icon="mdi:planet"
         placeholder="Local"
         size="md"
-        bind:value={user.country}
+        labels={{ topLeft: 'Lugar/País' }}
+        defaultValue={user.country}
+        maxSize={40}
         error={errorField === 'country'}
     />
 
@@ -119,7 +123,8 @@
         placeholder="Bio: Inclua informações, piadas, ou só dê um 'bom dia'!"
         size="md"
         labels={{ topLeft: 'Bio' }}
-        bind:value={user.bio}
+        defaultValue={user.bio}
+        maxSize={480}
         error={errorField === 'bio'}
     />
 

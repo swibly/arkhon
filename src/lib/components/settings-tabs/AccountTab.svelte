@@ -72,8 +72,9 @@
                 placeholder="Email"
                 size="md"
                 labels={{ topLeft: 'Email' }}
+                defaultValue={user.email}
                 required
-                value={user.email}
+                error={errorField === 'email'}
             />
 
             <Input
@@ -82,8 +83,10 @@
                 placeholder="Nome de usuário"
                 size="md"
                 labels={{ topLeft: 'Nome de usuário' }}
+                defaultValue={user.username}
+                maxSize={32}
                 required
-                value={user.username}
+                error={errorField === 'username'}
             />
         </section>
 
