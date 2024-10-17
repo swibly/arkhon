@@ -19,19 +19,29 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg shadow w-96 max-w-96">
+<article class="p-4 rounded-lg shadow w-full max-w-96">
+    <article class="w-full">
+        {#if options.fork !== null}
+            <a
+                href="/community/projects/{options.fork}"
+                class="badge badge-primary badge-outline gap-1"
+            >
+                <Icon icon="prime:clone" />
+                Clone
+            </a>
+        {/if}
+        {#if !options.is_public}
+            <p class="badge badge-primary badge-outline gap-1">
+                <Icon icon="mdi:lock" />
+                Privado
+            </p>
+        {/if}
+    </article>
+
     <header class="flex justify-center items-center">
         <div>
             <h2 class="text-xl font-bold">
                 {options.name}
-                {#if !options.is_public}
-                    <div class="tooltip" data-tip="Visível somente para você">
-                        <span class="badge badge-primary badge-sm gap-1">
-                            <Icon icon="material-symbols:lock" />
-                            Privado
-                        </span>
-                    </div>
-                {/if}
             </h2>
         </div>
 
@@ -87,10 +97,10 @@
     <img
         src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
         alt=""
-        class="w-full h-48 object-cover my-4 rounded-md"
+        class="w-full max-w-96 h-48 object-cover my-4 rounded-md"
     />
 
-    <section class="flex gap-2 mb-4">
+    <section class="flex gap-2 mb-4 w-full">
         <p class="min-h-[72px] line-clamp-3 text-justify grow">{options.description}</p>
 
         <div>
@@ -98,8 +108,8 @@
         </div>
     </section>
 
-    <section class="flex">
-        <p class="flex items-center gap-1">
+    <section class="flex w-full">
+        <p class="flex items-center gap-1 w-full">
             <Icon icon="mdi:calendar" />
             Criado:
             <span
