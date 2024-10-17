@@ -37,7 +37,7 @@ export type User = {
     pfp: string;
 };
 
-export type UserprojectPermissions = {
+export type UserProjectPermissions = {
     id: number;
     username: string;
     profile_picture: string;

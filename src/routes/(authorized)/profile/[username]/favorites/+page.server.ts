@@ -1,7 +1,6 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { getProjectsByUser } from '$lib/projects';
-import { userPageActions } from '$lib/utils';
-import type { Actions, PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async function ({ cookies, params, url }) {
     let page = 1;
@@ -29,5 +28,3 @@ export const load: PageServerLoad = async function ({ cookies, params, url }) {
         projects: projects!
     };
 };
-
-export const actions: Actions = userPageActions;

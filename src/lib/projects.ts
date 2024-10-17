@@ -1,5 +1,5 @@
 import axios from './server/axios';
-import { UserprojectPermissions } from './user';
+import { UserProjectPermissions } from './user';
 import { Pagination, PaginationOptions } from './utils';
 
 export type Project = {
@@ -18,7 +18,7 @@ export type Project = {
     owner_id: number;
     owner_username: string;
     owner_profile_picture: string;
-    allowed_users: UserprojectPermissions[];
+    allowed_users: UserProjectPermissions[];
     is_favorited: boolean;
     total_favorites: number;
 };
