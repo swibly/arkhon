@@ -9,6 +9,8 @@
     export let currentUserID: number;
     export let lang: 'pt' | 'en' | 'ru';
 
+    let loadingFavorite = false;
+
     const limit = 3;
     const users = [
         ...options.allowed_users.slice(0, limit - 1).map((user) => ({
@@ -20,7 +22,7 @@
 </script>
 
 <article class="p-4 rounded-lg shadow w-full max-w-96">
-    <article>
+    <article class="min-h-6">
         {#if options.fork !== null}
             <a
                 href="/community/projects/{options.fork}"
@@ -47,14 +49,28 @@
 
         <div class="grow" />
 
-        {#if options.is_favorited}
+        {#if loadingFavorite}
+            <div class="flex items-center gap-1">
+                {options.total_favorites.toLocaleString(lang, {
+                    notation: 'compact',
+                    compactDisplay: 'short'
+                })}
+                <span class="loading loading-spinner loading-sm" />
+            </div>
+        {:else if options.is_favorited}
             <form
                 action="/community/projects/{options.id}?/unfavorite"
                 method="POST"
                 use:enhance={function () {
-                    spawn({
-                        message: 'Você desfavoritou este projeto'
-                    });
+                    loadingFavorite = true;
+                    return ({ update }) => {
+                        loadingFavorite = false;
+                        spawn({
+                            message: 'Você desfavoritou este projeto.'
+                        });
+
+                        return update({ reset: true });
+                    };
                 }}
                 class="flex items-center gap-1"
             >
@@ -74,9 +90,15 @@
                 action="/community/projects/{options.id}?/favorite"
                 method="POST"
                 use:enhance={function () {
-                    spawn({
-                        message: 'Você favoritou este projeto'
-                    });
+                    loadingFavorite = true;
+                    return ({ update }) => {
+                        loadingFavorite = false;
+                        spawn({
+                            message: 'Você favoritou este projeto.'
+                        });
+
+                        return update({ reset: true });
+                    };
                 }}
                 class="flex items-center gap-1"
             >
