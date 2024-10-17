@@ -119,7 +119,7 @@
         placeholder="Bio: Inclua informações, piadas, ou só dê um 'bom dia'!"
         size="md"
         labels={{ topLeft: 'Bio' }}
-        bind:value={user.country}
+        bind:value={user.bio}
         error={errorField === 'bio'}
     />
 
