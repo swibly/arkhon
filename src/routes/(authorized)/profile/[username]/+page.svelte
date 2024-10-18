@@ -82,7 +82,8 @@
                             class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
-                            Ver mais {projects.total_records - projects.data.length} projetos
+                            Ver mais {projects.total_records - projects.data.length}
+                            projeto{projects.total_records - projects.data.length > 1 ? 's' : ''}
                         </a>
                     {/if}
                 </div>
@@ -131,7 +132,8 @@
                             class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
-                            Ver mais {favorites.total_records - favorites.data.length} favoritados
+                            Ver mais {favorites.total_records - favorites.data.length}
+                            favorito{favorites.total_records - favorites.data.length > 1 ? 's' : ''}
                         </a>
                     {/if}
                 </div>
