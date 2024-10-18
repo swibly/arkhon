@@ -6,7 +6,6 @@
     import type { LayoutServerData } from './$types';
     import Icon from '@iconify/svelte';
     import Profile from '$lib/components/Profile.svelte';
-    import Attention from '$lib/components/Attention.svelte';
 
     export let data: LayoutServerData & User;
 

@@ -31,7 +31,7 @@
                     Loja
                 </a>
 
-                <a href="/trash" class="btn btn-error btn-sm">
+                <a href="/profile/{data.username}/trash" class="btn btn-error btn-sm">
                     <Icon icon="mdi:trash" />
                     Lixeira
                 </a>
