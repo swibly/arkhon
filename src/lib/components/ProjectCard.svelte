@@ -23,24 +23,26 @@
 
 <article class="p-4 rounded-lg shadow-md w-full max-w-96 shrink-0 overflow-hidden">
     <article class="min-h-6 flex gap-1">
+        {#if options.is_public}
+            <p class="badge badge-primary badge-outline gap-1">
+                <Icon icon="mdi:globe" />
+                Público
+            </p>
+        {:else}
+            <p class="badge badge-error badge-outline gap-1">
+                <Icon icon="mdi:lock" />
+                Privado
+            </p>
+        {/if}
         {#if options.fork !== null}
             <a
                 href="/community/projects/{options.fork}"
-                class="badge badge-primary badge-outline gap-1"
+                class="badge badge-secondary badge-outline gap-1"
             >
                 <Icon icon="prime:clone" />
-                Clone
+                Clonado
             </a>
         {/if}
-        <p class="badge badge-primary badge-outline gap-1">
-            {#if options.is_public}
-                <Icon icon="mdi:globe" />
-                Público
-            {:else}
-                <Icon icon="mdi:lock" />
-                Privado
-            {/if}
-        </p>
 
         <div class="grow" />
 
@@ -199,5 +201,4 @@
     </section>
 </article>
 
-<dialog>
-</dialog>
+<dialog />
