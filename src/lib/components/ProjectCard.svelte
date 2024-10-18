@@ -21,8 +21,8 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg shadow w-full max-w-96 shrink-0">
-    <article class="min-h-6">
+<article class="p-4 rounded-lg shadow-md w-full max-w-96 shrink-0 overflow-hidden">
+    <article class="min-h-6 flex gap-1">
         {#if options.fork !== null}
             <a
                 href="/community/projects/{options.fork}"
@@ -32,30 +32,24 @@
                 Clone
             </a>
         {/if}
-        {#if !options.is_public}
-            <p class="badge badge-primary badge-outline gap-1">
+        <p class="badge badge-primary badge-outline gap-1">
+            {#if options.is_public}
+                <Icon icon="mdi:globe" />
+                Público
+            {:else}
                 <Icon icon="mdi:lock" />
                 Privado
-            </p>
-        {/if}
-    </article>
-
-    <header class="flex justify-center items-center">
-        <div>
-            <h2 class="text-xl font-bold">
-                {options.name}
-            </h2>
-        </div>
+            {/if}
+        </p>
 
         <div class="grow" />
 
         {#if loadingFavorite}
             <div class="flex items-center gap-1">
-                {options.total_favorites.toLocaleString(lang, {
-                    notation: 'compact',
-                    compactDisplay: 'short'
-                })}
-                <span class="loading loading-spinner loading-sm" />
+                <Icon
+                    icon="material-symbols:favorite-outline"
+                    class="transition text-neutral size-6"
+                />
             </div>
         {:else if options.is_favorited}
             <form
@@ -74,10 +68,6 @@
                 }}
                 class="flex items-center gap-1"
             >
-                {options.total_favorites.toLocaleString(lang, {
-                    notation: 'compact',
-                    compactDisplay: 'short'
-                })}
                 <button type="submit">
                     <Icon
                         icon="material-symbols:favorite"
@@ -102,10 +92,6 @@
                 }}
                 class="flex items-center gap-1"
             >
-                {options.total_favorites.toLocaleString(lang, {
-                    notation: 'compact',
-                    compactDisplay: 'short'
-                })}
                 <button type="submit">
                     <Icon
                         icon="material-symbols:favorite-outline"
@@ -114,13 +100,13 @@
                 </button>
             </form>
         {/if}
-    </header>
+    </article>
 
     <div class="relative">
         <img
             src={options.banner_url === '' ? 'https://placehold.co/600x400' : options.banner_url}
             alt=""
-            class="w-full h-48 object-cover my-4 rounded-md"
+            class="w-full h-48 object-cover mt-2 mb-4 rounded-md shadow-md"
         />
 
         <div class="absolute -bottom-6 right-0">
@@ -128,9 +114,17 @@
         </div>
     </div>
 
-    <section class="flex gap-2 mb-4 pt-2">
+    <section class="flex flex-col gap-2 mb-4 pt-2">
+        <h2 class="text-xl font-bold">
+            {options.name}
+        </h2>
+
         <p class="min-h-[72px] line-clamp-3 text-justify grow whitespace-pre-line">
-            {options.description}
+            {#if options.description !== ''}
+                {options.description}
+            {:else}
+                <span class="italic opacity-50">Projeto sem descrição.</span>
+            {/if}
         </p>
     </section>
 
