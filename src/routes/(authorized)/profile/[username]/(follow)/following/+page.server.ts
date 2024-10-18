@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async function ({ cookies, params, url }) {
     let page = 1;
-    let limit = 9;
+    let limit = 15;
 
     url.searchParams.forEach((value, key) => {
         if (key === 'page') {

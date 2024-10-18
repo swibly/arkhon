@@ -11,7 +11,9 @@
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Projetos Favoritados</h1>
-<p class="mb-4">Projetos favoritos de {data.lookup.firstname}</p>
+<p>Projetos favoritos de {data.lookup.firstname}</p>
+
+<div class="divider" />
 
 {#if data.username !== data.lookup.username && !data.lookup.show.favorites}
     <p class="text-error">
@@ -20,9 +22,13 @@
 {:else if projects.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não favoritou nenhum projeto.</p>
 {:else}
-    <Pagination {pagination} />
+    <div class="mx-auto w-fit">
+        <Pagination {pagination} />
+    </div>
 
-    <div class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-md:place-items-center">
+    <div
+        class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-x-2 gap-y-4 place-items-center"
+    >
         {#each projects as project}
             <ProjectCard options={project} currentUserID={data.id} lang={data.language} />
         {/each}
