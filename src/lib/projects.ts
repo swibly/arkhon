@@ -67,7 +67,7 @@ export async function getProjectsByUser(
     username: string,
     favorite: boolean = false,
     options: PaginationOptions = {}
-): Promise<Pagination<Project> | undefined> {
+): Promise<Pagination<Project>> {
     try {
         const isFavorite = favorite ? '/favorite' : '';
         const page = options.page ?? 1;
@@ -83,11 +83,11 @@ export async function getProjectsByUser(
         return {
             data: [],
             next_page: -1,
-            total_pages: 1,
-            current_page: 1,
+            total_pages: 0,
+            current_page: 0,
             previous_page: -1,
             total_records: 0
-        };
+        } as Pagination<Project>;
     }
 }
 
@@ -99,14 +99,8 @@ export async function favorite(token: string, projectID: number) {
             { headers: { Authorization: token } }
         );
     } catch (error) {
-        return {
-            data: [],
-            next_page: -1,
-            total_pages: 1,
-            current_page: 1,
-            previous_page: -1,
-            total_records: 0
-        };
+        console.error(error);
+        // TODO: Add error handling
     }
 }
 
@@ -129,5 +123,27 @@ export async function deleteProject(token: string, projectID: number) {
     } catch (error) {
         console.error(error);
         // TODO: Add error handling
+    }
+}
+
+export async function getTrashed(token: string, options: PaginationOptions = {}) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.get(`/v1/projects/trash?page=${page}&perpage=${limit}`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data as Pagination<Project>;
+    } catch (error) {
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 0,
+            current_page: 0,
+            previous_page: -1,
+            total_records: 0
+        } as Pagination<Project>;
     }
 }
