@@ -77,7 +77,7 @@
                 </li>
 
                 <li>
-                    <a href="/trash" class="text-error">
+                    <a href="/profile/{data.username}/trash" class="text-error">
                         <Icon icon="mdi:trash" />
                         Lixeira
                     </a>

@@ -2,6 +2,7 @@
     import type { User } from '$lib/user';
     import type { PageServerData } from './$types';
     import UserProfileCard from '$lib/components/UserProfileCard.svelte';
+    import Pagination from '$lib/components/Pagination.svelte';
 
     export let data: PageServerData & User & { lookup: User };
 
@@ -10,42 +11,18 @@
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Seguindo</h1>
-<p class="mb-4">Veja quem {data.lookup.firstname} está acompanhando de perto</p>
+<p>Veja quem {data.lookup.firstname} está acompanhando de perto</p>
+
+<div class="divider" />
 
 {#if data.username !== data.lookup.username && !data.lookup.show.following}
     <p class="text-error">Este usuário não permite que outros visualizem quem ele segue.</p>
 {:else if following.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não está seguindo ninguém.</p>
 {:else}
-    {#if pagination.total_pages !== 1}
-        <div class="mb-4 join">
-            {#if pagination.current_page > 2}
-                <a href="?page={pagination.previous_page}" class="join-item btn btn-sm">1</a>
-                <button class="join-item btn btn-sm btn-disabled">...</button>
-            {/if}
-
-            {#if pagination.previous_page !== -1}
-                <a href="?page={pagination.previous_page}" class="join-item btn btn-sm">
-                    {pagination.previous_page}
-                </a>
-            {/if}
-
-            <button class="join-item btn btn-sm btn-primary">{pagination.current_page}</button>
-
-            {#if pagination.next_page !== -1}
-                <a href="?page={pagination.next_page}" class="join-item btn btn-sm">
-                    {pagination.next_page}
-                </a>
-            {/if}
-
-            {#if pagination.current_page < pagination.total_pages - 1}
-                <button class="join-item btn btn-sm btn-disabled">...</button>
-                <a href="?page={pagination.total_pages}" class="join-item btn btn-sm">
-                    {pagination.total_pages}
-                </a>
-            {/if}
-        </div>
-    {/if}
+    <div class="mx-auto w-fit">
+        <Pagination {pagination} />
+    </div>
 
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-2xl:grid-cols-2">
         {#each following as following}

@@ -5,6 +5,7 @@
     import type { PageServerData } from './$types';
     import UserProfileCard from '$lib/components/UserProfileCard.svelte';
     import { spawn } from '$lib/toast';
+    import Pagination from '$lib/components/Pagination.svelte';
 
     export let data: PageServerData & User & { lookup: User };
 
@@ -13,7 +14,9 @@
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Seguidores</h1>
-<p class="mb-4">Acompanhe quem já está conectado com {data.lookup.firstname}</p>
+<p>Acompanhe quem já está conectado com {data.lookup.firstname}</p>
+
+<div class="divider" />
 
 {#if data.username !== data.lookup.username && !data.lookup.show.followers}
     <p class="text-error">Este usuário não permite que outros visualizem quem o segue.</p>
@@ -37,35 +40,9 @@
         </form>
     {/if}
 {:else}
-    {#if pagination.total_pages !== 1}
-        <div class="mb-4 join">
-            {#if pagination.current_page > 2}
-                <a href="?page={pagination.previous_page}" class="join-item btn btn-sm">1</a>
-                <button class="join-item btn btn-sm btn-disabled">...</button>
-            {/if}
-
-            {#if pagination.previous_page !== -1}
-                <a href="?page={pagination.previous_page}" class="join-item btn btn-sm">
-                    {pagination.previous_page}
-                </a>
-            {/if}
-
-            <button class="join-item btn btn-sm btn-primary">{pagination.current_page}</button>
-
-            {#if pagination.next_page !== -1}
-                <a href="?page={pagination.next_page}" class="join-item btn btn-sm">
-                    {pagination.next_page}
-                </a>
-            {/if}
-
-            {#if pagination.current_page < pagination.total_pages - 1}
-                <button class="join-item btn btn-sm btn-disabled">...</button>
-                <a href="?page={pagination.total_pages}" class="join-item btn btn-sm">
-                    {pagination.total_pages}
-                </a>
-            {/if}
-        </div>
-    {/if}
+    <div class="mx-auto w-fit">
+        <Pagination {pagination} />
+    </div>
 
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         {#each followers as follower}

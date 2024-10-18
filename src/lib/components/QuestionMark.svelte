@@ -3,13 +3,9 @@
     export let displayText: string = '';
 </script>
 
-<div contenteditable="true" bind:textContent={tip} hidden>
-    <slot />
-</div>
-
 {#if displayText === ''}
     <span
-        class="tooltip size-4 rounded-full text-xs text-primary-content bg-primary flex justify-center items-center"
+        class="tooltip size-4 rounded-full text-xs text-primary-content bg-primary inline-flex justify-center items-center cursor-default"
         data-tip={tip}
     >
         ?
@@ -19,3 +15,7 @@
         {displayText}
     </span>
 {/if}
+
+<div contenteditable="true" bind:textContent={tip} hidden>
+    <slot />
+</div>

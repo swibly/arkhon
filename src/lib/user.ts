@@ -141,7 +141,7 @@ export async function getFollowers(
     token: string,
     username: string,
     options: PaginationOptions
-): Promise<Pagination<Follower> | undefined> {
+): Promise<Pagination<Follower>> {
     try {
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;
@@ -170,7 +170,7 @@ export async function getFollowing(
     token: string,
     username: string,
     options: PaginationOptions
-): Promise<Pagination<Follower> | undefined> {
+): Promise<Pagination<Follower>> {
     try {
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;

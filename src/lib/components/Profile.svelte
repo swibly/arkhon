@@ -16,14 +16,16 @@
         profile: 'Perfil',
         following: 'Seguindo',
         followers: 'Seguidores',
-        projects: 'Projetos'
+        projects: 'Projetos',
+        trash: 'Lixeira'
     };
 
     const pathIcons: Record<string, string> = {
         profile: 'mdi:home',
         following: 'mdi:users-add',
         followers: 'mdi:users',
-        projects: 'eos-icons:project'
+        projects: 'eos-icons:project',
+        trash: 'mdi:trash'
     };
 </script>
 
@@ -45,7 +47,7 @@
                     <span>
                         <Icon
                             icon="material-symbols:verified"
-                            class="text-primary absolute bottom-0 -right-2 size-12 bg-base-100 rounded-full border-2 border-base-100"
+                            class="text-primary absolute bottom-0 -right-2 size-10 bg-base-100 rounded-full border-2 border-base-100"
                         />
                     </span>
                 {/if}
@@ -60,7 +62,7 @@
             </div>
 
             {#if lookup.bio && lookup.bio.trim() !== ''}
-                <p>{lookup.bio}</p>
+                <p class="break-phrase">{lookup.bio}</p>
             {/if}
 
             <div>
@@ -323,7 +325,6 @@
             </section>
         </section>
 
-        <!-- Slot for mobile-specific content -->
         <div class="max-md:divider" />
 
         <section class="mb-4 text-sm breadcrumbs">

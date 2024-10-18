@@ -8,6 +8,7 @@
     export let placeholder: string = '';
     export let required: boolean = false;
     export let maxSize: number = 0;
+    export let resizeable: boolean = false;
 
     export let labels: {
         topLeft?: string;
@@ -46,7 +47,9 @@
         {#if element === 'textarea'}
             <textarea
                 bind:value
-                class="textarea textarea-bordered resize-none"
+                class="textarea textarea-bordered resize-y"
+                class:resize-none={!resizeable}
+                class:resize-y={resizeable}
                 class:textarea-error={error}
                 class:textarea-xs={size === 'xs'}
                 class:textarea-sm={size === 'sm'}

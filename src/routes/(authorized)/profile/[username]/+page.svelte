@@ -15,7 +15,7 @@
         <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Acesso Rápido</h1>
 
-            <div class="flex gap-2 max-md:justify-center">
+            <div class="flex gap-2 max-md:py-2 overflow-auto">
                 <a href="/community/new" class="btn btn-primary btn-sm">
                     <Icon icon="mdi:plus" />
                     Novo projeto
@@ -30,10 +30,15 @@
                     <Icon icon="mdi:store" />
                     Loja
                 </a>
+
+                <a href="/profile/{data.username}/trash" class="btn btn-error btn-sm">
+                    <Icon icon="mdi:trash" />
+                    Lixeira
+                </a>
             </div>
         </section>
 
-        <div class="divider" />
+        <div class="divider py-8" />
     {/if}
 
     {#if data.username !== data.lookup.username && !data.lookup.show.projects}
@@ -43,20 +48,20 @@
             <p class="text-error">Este usuário não permite que outros visualizem seus projetos.</p>
         </section>
 
-        <div class="divider" />
+        <div class="divider py-8" />
     {:else}
-        <section>
-            <h1 class="text-3xl font-bold mb-4 text-primary">
-                Projetos Criados
+        <section class="md:max-w-[calc(100vw-256px)]">
+            <div class="mb-4">
+                <h1 class="text-3xl font-bold text-primary">Projetos Criados</h1>
                 {#if projects.total_records > 0}
                     <a
                         href="/profile/{data.lookup.username}/projects"
-                        class="link link-secondary text-sm font-normal"
+                        class="link link-secondary text-sm font-normal mb-4"
                     >
-                        (ver todos)
+                        Ver todos os projetos
                     </a>
                 {/if}
-            </h1>
+            </div>
 
             {#if projects.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não criou nenhum projeto.</p>
@@ -68,7 +73,7 @@
                     </a>
                 {/if}
             {:else}
-                <div class="flex flex-wrap gap-2 max-md:justify-center">
+                <div class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4">
                     {#each projects.data as project}
                         <ProjectCard
                             options={project}
@@ -76,11 +81,21 @@
                             lang={data.language}
                         />
                     {/each}
+                    {#if projects.total_records > projects.data.length}
+                        <a
+                            href="/profile/{data.lookup.username}/projects"
+                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                        >
+                            <Icon icon="ph:magnifying-glass-bold" />
+                            Ver mais {projects.total_records - projects.data.length}
+                            projeto{projects.total_records - projects.data.length > 1 ? 's' : ''}
+                        </a>
+                    {/if}
                 </div>
             {/if}
         </section>
 
-        <div class="divider" />
+        <div class="divider py-8" />
     {/if}
 
     {#if data.username !== data.lookup.username && !data.lookup.show.favorites}
@@ -92,23 +107,23 @@
             </p>
         </section>
     {:else}
-        <section>
-            <h1 class="text-3xl font-bold mb-4 text-primary">
-                Projetos Favoritados
+        <section class="md:max-w-[calc(100vw-256px)]">
+            <div class="mb-4">
+                <h1 class="text-3xl font-bold text-primary">Projetos Favoritados</h1>
                 {#if favorites.total_records > 0}
                     <a
                         href="/profile/{data.lookup.username}/favorites"
                         class="link link-secondary text-sm font-normal"
                     >
-                        (ver todos)
+                        Ver todos os favoritos
                     </a>
                 {/if}
-            </h1>
+            </div>
 
             {#if favorites.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não favoritou nenhum projeto.</p>
             {:else}
-                <div class="flex flex-wrap gap-2 max-md:justify-center">
+                <div class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4">
                     {#each favorites.data as favorite}
                         <ProjectCard
                             options={favorite}
@@ -116,6 +131,16 @@
                             lang={data.language}
                         />
                     {/each}
+                    {#if favorites.total_records > favorites.data.length}
+                        <a
+                            href="/profile/{data.lookup.username}/favorites"
+                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                        >
+                            <Icon icon="ph:magnifying-glass-bold" />
+                            Ver mais {favorites.total_records - favorites.data.length}
+                            favorito{favorites.total_records - favorites.data.length > 1 ? 's' : ''}
+                        </a>
+                    {/if}
                 </div>
             {/if}
         </section>
