@@ -200,7 +200,7 @@
                 method="POST"
                 use:enhance={() => {
                     return ({ update }) => {
-                        spawn({ message: 'Projeto removido da lixeira.' });
+                        spawn({ message: 'Projeto restaurado.' });
                         update({ reset: false });
                     };
                 }}
@@ -216,7 +216,7 @@
                 method="POST"
                 use:enhance={() => {
                     return ({ update }) => {
-                        spawn({ message: 'Projeto removido da lixeira.' });
+                        spawn({ message: 'Projeto deletado da lixeira.' });
                         update({ reset: false });
                     };
                 }}
