@@ -16,14 +16,16 @@
         profile: 'Perfil',
         following: 'Seguindo',
         followers: 'Seguidores',
-        projects: 'Projetos'
+        projects: 'Projetos',
+        trash: 'Lixeira'
     };
 
     const pathIcons: Record<string, string> = {
         profile: 'mdi:home',
         following: 'mdi:users-add',
         followers: 'mdi:users',
-        projects: 'eos-icons:project'
+        projects: 'eos-icons:project',
+        trash: 'mdi:trash'
     };
 </script>
 

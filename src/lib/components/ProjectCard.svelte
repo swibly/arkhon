@@ -8,6 +8,7 @@
     export let options: Project;
     export let currentUserID: number;
     export let lang: 'pt' | 'en' | 'ru';
+    export let showDeleteOperations = false;
 
     let loadingFavorite = false;
 
@@ -131,74 +132,123 @@
     </section>
 
     <section class="flex">
-        <p class="flex items-center gap-1">
-            <Icon icon="mdi:calendar" />
-            Criado:
-            <span
-                class="font-bold tooltip tooltip-right"
-                data-tip={new Date(options.created_at).toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                })}
-            >
-                {new Date(options.created_at).toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: '2-digit'
-                })}
-            </span>
-        </p>
+        {#if showDeleteOperations}
+            <p class="flex items-center gap-1">
+                <Icon icon="mdi:calendar" />
+                Deletado:
+                <span class="font-bold">
+                    {new Date(options.created_at).toLocaleDateString(lang, {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}
+                </span>
+            </p>
+        {:else}
+            <p class="flex items-center gap-1">
+                <Icon icon="mdi:calendar" />
+                Criado:
+                <span
+                    class="font-bold tooltip tooltip-right"
+                    data-tip={new Date(options.created_at).toLocaleDateString(lang, {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })}
+                >
+                    {new Date(options.created_at).toLocaleDateString(lang, {
+                        day: '2-digit',
+                        month: '2-digit'
+                    })}
+                </span>
+            </p>
 
-        <div class="mx-auto divider divider-horizontal" />
+            <div class="mx-auto divider divider-horizontal" />
 
-        <p class="flex items-center gap-1">
-            <Icon icon="mdi:calendar" />
-            Editado:
-            <span
-                class="font-bold tooltip tooltip-left"
-                data-tip={new Date(options.updated_at).toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                })}
-            >
-                {new Date(options.updated_at).toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: '2-digit'
-                })}
-            </span>
-        </p>
+            <p class="flex items-center gap-1">
+                <Icon icon="mdi:calendar" />
+                Editado:
+                <span
+                    class="font-bold tooltip tooltip-left"
+                    data-tip={new Date(options.updated_at).toLocaleDateString(lang, {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })}
+                >
+                    {new Date(options.updated_at).toLocaleDateString(lang, {
+                        day: '2-digit',
+                        month: '2-digit'
+                    })}
+                </span>
+            </p>
+        {/if}
     </section>
 
     <section class="flex gap-2 mt-4">
-        <a href="/community/projects/{options.id}" class="btn btn-primary btn-sm grow">
-            <Icon icon="fa6-solid:magnifying-glass" />
-            Ver projeto
-        </a>
-
-        {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_delete === true).length > 0}
+        {#if showDeleteOperations && currentUserID === options.owner_id}
             <form
-                action="/community/projects/{options.id}?/delete"
+                action="/community/projects/{options.id}?/restore"
                 method="POST"
                 use:enhance={() => {
                     return ({ update }) => {
-                        spawn({ message: 'Projeto movido para a lixeira.' });
+                        spawn({ message: 'Projeto removido da lixeira.' });
                         update({ reset: false });
                     };
                 }}
+                class="grow"
             >
-                <button class="btn btn-error btn-sm">
-                    <Icon icon="mdi:trash" />
+                <button class="btn btn-primary btn-sm w-full">
+                    <Icon icon="mdi:restore" />
+                    Restaurar
                 </button>
             </form>
+            <form
+                action="/community/projects/{options.id}?/unsafeDelete"
+                method="POST"
+                use:enhance={() => {
+                    return ({ update }) => {
+                        spawn({ message: 'Projeto removido da lixeira.' });
+                        update({ reset: false });
+                    };
+                }}
+                class="grow"
+            >
+                <button class="btn btn-error btn-sm w-full">
+                    <Icon icon="mdi:trash" />
+                    Deletar
+                </button>
+            </form>
+        {:else}
+            <a href="/community/projects/{options.id}" class="btn btn-primary btn-sm grow">
+                <Icon icon="fa6-solid:magnifying-glass" />
+                Ver projeto
+            </a>
+
+            {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_delete === true).length > 0}
+                <form
+                    action="/community/projects/{options.id}?/delete"
+                    method="POST"
+                    use:enhance={() => {
+                        return ({ update }) => {
+                            spawn({ message: 'Projeto movido para a lixeira.' });
+                            update({ reset: false });
+                        };
+                    }}
+                >
+                    <button class="btn btn-error btn-sm">
+                        <Icon icon="mdi:trash" />
+                    </button>
+                </form>
+            {/if}
         {/if}
     </section>
 </article>
-
-<dialog />
