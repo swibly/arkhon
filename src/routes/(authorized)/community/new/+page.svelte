@@ -45,10 +45,10 @@
         const input = event.target as HTMLInputElement;
         if (input.files && input.files.length > 0) {
             const selectedFile = input.files[0];
-            const fileSizeLimit = 20 * 1024 * 1024;
+            const fileSizeLimit = 5 * 1024 * 1024;
 
             if (selectedFile.size > fileSizeLimit) {
-                fileError = 'Tamanho do arquivo não pode ser maior que 20MB';
+                fileError = 'Tamanho do arquivo não pode ser maior que 5MB';
                 file = null;
 
                 imgPreview.src = 'https://placehold.co/600x400';
