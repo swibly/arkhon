@@ -20,7 +20,7 @@
     {#if pagination.total_pages !== 1}
         <div class="mb-4 join">
             {#if pagination.current_page > 2}
-                <a href="?page={pagination.previous_page}" class="join-item btn btn-sm">1</a>
+                <a href="?page=1" class="join-item btn btn-sm">1</a>
                 <button class="join-item btn btn-sm btn-disabled">...</button>
             {/if}
 
