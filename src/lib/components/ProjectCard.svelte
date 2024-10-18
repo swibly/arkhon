@@ -133,7 +133,7 @@
             <Icon icon="mdi:calendar" />
             Criado:
             <span
-                class="font-bold tooltip"
+                class="font-bold tooltip tooltip-right"
                 data-tip={new Date(options.created_at).toLocaleDateString(lang, {
                     day: '2-digit',
                     month: '2-digit',
@@ -156,7 +156,7 @@
             <Icon icon="mdi:calendar" />
             Editado:
             <span
-                class="font-bold tooltip"
+                class="font-bold tooltip tooltip-left"
                 data-tip={new Date(options.updated_at).toLocaleDateString(lang, {
                     day: '2-digit',
                     month: '2-digit',
@@ -180,13 +180,6 @@
             Ver projeto
         </a>
 
-        {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_edit === true).length > 0}
-            <a href="/community/projects/{options.id}/edit" class="btn btn-secondary btn-sm grow">
-                <Icon icon="mdi:pen" />
-                Editar projeto
-            </a>
-        {/if}
-
         {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_delete === true).length > 0}
             <form
                 action="/community/projects/{options.id}?/delete"
@@ -205,3 +198,6 @@
         {/if}
     </section>
 </article>
+
+<dialog>
+</dialog>
