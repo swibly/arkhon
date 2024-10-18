@@ -12,10 +12,10 @@
 
 <div class="space-y-4">
     {#if data.id === data.lookup.id}
-        <section class="overflow-auto">
+        <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Acesso Rápido</h1>
 
-            <div class="flex gap-2 max-md:justify-center">
+            <div class="flex gap-2 max-md:py-2 overflow-auto">
                 <a href="/community/new" class="btn btn-primary btn-sm">
                     <Icon icon="mdi:plus" />
                     Novo projeto
@@ -29,6 +29,11 @@
                 <a href="/community/store" class="btn btn-secondary btn-sm">
                     <Icon icon="mdi:store" />
                     Loja
+                </a>
+
+                <a href="/trash" class="btn btn-error btn-sm">
+                    <Icon icon="mdi:trash" />
+                    Lixeira
                 </a>
             </div>
         </section>
