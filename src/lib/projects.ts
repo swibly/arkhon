@@ -126,6 +126,32 @@ export async function deleteProject(token: string, projectID: number) {
     }
 }
 
+export async function unsafeDeleteProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/trash/force`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function restoreProject(token: string, projectID: number) {
+    try {
+        await axios.patch(
+            `/v1/projects/${projectID}/trash/restore`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
 export async function getTrashed(token: string, options: PaginationOptions = {}) {
     try {
         const page = options.page ?? 1;
