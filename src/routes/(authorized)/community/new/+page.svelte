@@ -48,7 +48,7 @@
             const fileSizeLimit = 20 * 1024 * 1024;
 
             if (selectedFile.size > fileSizeLimit) {
-                fileError = 'Tamanho do arquivo não pode ser maior que 5MB';
+                fileError = 'Tamanho do arquivo não pode ser maior que 20MB';
                 file = null;
 
                 imgPreview.src = 'https://placehold.co/600x400';
