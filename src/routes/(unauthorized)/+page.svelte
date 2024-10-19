@@ -2,17 +2,27 @@
     import ExampleCard from '$lib/components/ExampleCard.svelte';
     import Logo from '$lib/components/Logo.svelte';
     import Icon from '@iconify/svelte';
+    import type { LayoutServerData } from './$types';
 
     let aboutArkhonModal: HTMLDialogElement;
 
     function showModal() {
         aboutArkhonModal.showModal();
     }
+
+    export let data: LayoutServerData;
 </script>
 
 <svelte:head>
     <title>Home - Swibly Arkhon</title>
 </svelte:head>
+
+{#if data.token !== undefined}
+    <a href="/home" class="w-full bg-warning p-4 flex items-center gap-2 justify-center">
+        <Icon icon="mdi:home" />
+        Você já estava logado, clique aqui para entrar.
+    </a>
+{/if}
 
 <main data-theme="light">
     <section class="flex flex-col items-center justify-center p-8">
