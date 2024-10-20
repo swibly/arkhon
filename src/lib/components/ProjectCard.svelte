@@ -44,6 +44,10 @@
                 Clonado
             </a>
         {/if}
+        <p class="badge badge-info badge-outline gap-1">
+            <Icon icon="bxs:area" />
+            {options.width * options.height}m²
+        </p>
 
         <div class="grow" />
 
