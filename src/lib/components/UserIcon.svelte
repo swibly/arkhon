@@ -1,6 +1,8 @@
 <script lang="ts">
     export let users: { name: string; pfp: string }[];
-    export let overflow: number = 0;
+    export let limit: number = 5;
+
+    let overflow = users.length - limit;
 </script>
 
 <div class="-space-x-4 avatar-group">
@@ -12,7 +14,7 @@
         </div>
     {/if}
 
-    {#each users as user}
+    {#each users.slice(0, limit) as user}
         <div class="avatar size-12">
             <a href={`/profile/${user.name}`} class="hover:z-50">
                 <img src={user.pfp} alt="" />

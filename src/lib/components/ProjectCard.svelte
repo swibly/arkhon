@@ -14,7 +14,7 @@
 
     const limit = 3;
     const users = [
-        ...options.allowed_users.slice(0, limit - 1).map((user) => ({
+        ...options.allowed_users.map((user) => ({
             name: user.username,
             pfp: user.profile_picture
         })),
@@ -117,7 +117,7 @@
         />
 
         <div class="absolute -bottom-6 right-0">
-            <UserIcon {users} overflow={options.allowed_users.length + 1 - limit} />
+            <UserIcon {users} {limit} />
         </div>
     </div>
 
