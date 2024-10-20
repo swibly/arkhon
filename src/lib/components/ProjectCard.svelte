@@ -51,6 +51,12 @@
 
         <div class="grow" />
 
+        <span>
+            {options.total_favorites.toLocaleString(lang, {
+                notation: 'compact',
+                compactDisplay: 'long'
+            })}
+        </span>
         {#if loadingFavorite}
             <div class="flex items-center gap-1">
                 <Icon
