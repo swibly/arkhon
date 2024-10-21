@@ -17,9 +17,9 @@
     const users = [
         ...options.allowed_users.map((user) => ({
             name: user.username,
-            pfp: user.profile_picture
+            pfp: user.pfp
         })),
-        { name: options.owner_username, pfp: options.owner_profile_picture }
+        { name: options.owner_username, pfp: options.owner_pfp }
     ];
 </script>
 

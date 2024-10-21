@@ -16,9 +16,9 @@
     $: users = [
         ...project.allowed_users.map((user) => ({
             name: user.username,
-            pfp: user.profile_picture
+            pfp: user.pfp
         })),
-        { name: project.owner_username, pfp: project.owner_profile_picture }
+        { name: project.owner_username, pfp: project.owner_pfp }
     ];
 </script>
 

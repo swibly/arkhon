@@ -39,8 +39,11 @@ export type User = {
 
 export type UserProjectPermissions = {
     id: number;
+    firstname: string;
+    lastname: string;
     username: string;
-    profile_picture: string;
+    pfp: string;
+    verified: boolean;
     allow_view: boolean;
     allow_edit: boolean;
     allow_delete: boolean;
@@ -49,6 +52,16 @@ export type UserProjectPermissions = {
     allow_manage_users: boolean;
     allow_manage_metadata: boolean;
 };
+
+export type UserProjectAllowList = Partial<{
+    view: boolean;
+    edit: boolean;
+    delete: boolean;
+    publish: boolean;
+    share: boolean;
+    manage_users: boolean;
+    manage_metadata: boolean;
+}>;
 
 export type Follower = {
     id: number;
