@@ -3,10 +3,11 @@
     import UserIcon from '$lib/components/UserIcon.svelte';
     import type { Project } from '$lib/projects';
     import { spawn } from '$lib/toast';
+    import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
 
     export let options: Project;
-    export let currentUserID: number;
+    export let currentUser: User;
     export let lang: 'pt' | 'en' | 'ru';
     export let showDeleteOperations = false;
 
@@ -204,7 +205,7 @@
     </section>
 
     <section class="flex gap-2 mt-4">
-        {#if showDeleteOperations && currentUserID === options.owner_id}
+        {#if showDeleteOperations && currentUser.id === options.owner_id}
             <form
                 action="/community/projects/{options.id}?/restore"
                 method="POST"
@@ -243,7 +244,7 @@
                 Ver projeto
             </a>
 
-            {#if currentUserID === options.owner_id || options.allowed_users.filter((x) => x.id === currentUserID && x.allow_delete === true).length > 0}
+            {#if currentUser.id === options.owner_id || options.allowed_users.filter((x) => x.id === currentUser.id && x.allow_delete === true).length > 0}
                 <form
                     action="/community/projects/{options.id}?/delete"
                     method="POST"
