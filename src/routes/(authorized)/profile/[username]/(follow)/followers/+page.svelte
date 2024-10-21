@@ -47,7 +47,7 @@
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         {#each followers as follower}
             <li>
-                <UserProfileCard {...follower} selfID={data.user.id} />
+                <UserProfileCard user={follower} selfID={data.user.id} />
             </li>
         {/each}
     </ul>
