@@ -9,8 +9,7 @@
     import { type Canvas } from 'fabric';
     import { onMount } from 'svelte';
     import Icon from '@iconify/svelte';
-    import { draggable } from '@neodrag/svelte';
-    import { get } from 'svelte/store';
+    import { draggable } from '@neodrag/svelte';    
 
     let objectMenu: HTMLElement;
 

@@ -3,7 +3,7 @@
     import { toggle } from '$lib/stores/theme';
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
-    import { writable } from 'svelte/store';
+    import { get, writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
@@ -14,7 +14,8 @@
         renderAll,
         startDraw,
         stopDraw,
-        toJSON,
+        saveCanvas,
+        loadCanvas,
         toPNG
     } from '$lib/editor/canvas';
     import {
@@ -26,10 +27,10 @@
         addPoints,
         addLine,
         stopLine,
-        resetOpacity
+        resetOpacity,        
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
-    import ObjectMenu from '$lib/components/ObjectMenu.svelte';    
+    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
 
     // Váriaveis e funções do aside
 
@@ -65,6 +66,7 @@
     let isDragging: boolean;
     let rect: FabricObject;
     let circle: FabricObject;
+    let loadCount: number = 0;
     const quadSize = {
         w: 10000,
         h: 10000
@@ -74,7 +76,9 @@
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
-        });
+        });     
+        
+        loadCanvas(fabric);
 
         rect = new Rect({
             width: 100,
@@ -95,19 +99,28 @@
             selectable: false
         });
 
-        drawGrid(fabric, 100, quadSize.w, quadSize.h);
         resize(fabric, innerWidth, innerHeight);
         centerView(fabric, quadSize.w, quadSize.h);
 
-        fabric.add(rect);
-        fabric.add(circle);
+        fabric.on('after:render', () => {
+            loadCount++;
+
+            if (loadCount === 1) {
+                drawGrid(fabric, 100, quadSize.w, quadSize.h);
+
+                fabric.add(rect);
+                fabric.add(circle);
+                rect.excludeFromExport = true;
+                circle.excludeFromExport = true;                
+            }
+        });
 
         fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
                 mode = 'select';
-            }
+            }            
 
-            if (e.altKey === true) {
+            if (e.altKey) {
                 fabric.isDrawingMode = false;
                 mode = 'select';
 
@@ -119,7 +132,7 @@
                 fabric.isDrawingMode = false;
             }
 
-            if (mode === 'select') {                
+            if (mode === 'select') {
                 fabric.isDrawingMode = false;
             }
 
@@ -169,10 +182,9 @@
                     opacity: 0.1
                 });
 
-                fabric.requestRenderAll();              
+                fabric.requestRenderAll();
             }
 
-            
             if (mode === 'circle') {
                 circle.set({
                     top: fabric.getScenePoint(e).y - 50,
@@ -180,7 +192,7 @@
                     opacity: 0.1
                 });
 
-                fabric.requestRenderAll();              
+                fabric.requestRenderAll();
             }
         });
 
@@ -195,7 +207,7 @@
             const panY = e.deltaY * 0.5;
 
             if (e.ctrlKey) {
-                const maximum = 0.45;
+                const maximum = 0.25;
                 const minimum = 5;
 
                 var zoom = fabric.getZoom();
@@ -231,13 +243,16 @@
 
         addEventListener('keydown', async (e) => {
             if (e.altKey) {
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
+                stopLine(fabric);
+                startDraw(fabric);
+
                 fabric.isDrawingMode = false;
                 mode = 'select';
             }
 
-            if (e.ctrlKey && e.shiftKey && e.key == 'Backspace') {
-                e.preventDefault();
-
+            if (e.key == 'Delete') {
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
             }
@@ -261,9 +276,12 @@
                 e.preventDefault();
 
                 fabric.discardActiveObject();
-                var sel = new ActiveSelection(fabric.getObjects().filter((e) => e.selectable), {
-                    canvas: fabric
-                });
+                var sel = new ActiveSelection(
+                    fabric.getObjects().filter((e) => e.selectable),
+                    {
+                        canvas: fabric
+                    }
+                );
                 fabric.setActiveObject(sel);
                 fabric.renderAll();
             }
@@ -302,105 +320,95 @@
                 fabric.requestRenderAll();
             }
 
-            if (e.ctrlKey && e.key == 's') {
-                e.preventDefault();
-
-                resetOpacity(fabric, rect);
-                resetOpacity(fabric, circle);
-                stopLine(fabric);
-                stopDraw(fabric);
-
-                mode = 'select';
-
-                fabric.renderAll();
-            }
-
-            if (e.ctrlKey && e.key == 'p') {
-                e.preventDefault();
-
-                resetOpacity(fabric, rect);
-                resetOpacity(fabric, circle);
-                stopLine(fabric);
-                startDraw(fabric);
-
-                if (mode !== 'paint') {
-                    mode = 'paint';
-                } else {
-                    stopDraw(fabric);
-                    mode = 'select';
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'd') {
-                e.preventDefault();
-
-                resetOpacity(fabric, rect);
-                resetOpacity(fabric, circle);
-                stopLine(fabric);
-                stopDraw(fabric);
-
-                if (mode !== 'text') {
-                    mode = 'text';
-                } else {
-                    mode = 'select';
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'q') {
-                e.preventDefault();
-
-                resetOpacity(fabric, circle);
-                stopLine(fabric);
-                stopDraw(fabric);
-
-                if (mode !== 'rect') {
-                    mode = 'rect';
-                } else {
-                    mode = 'select';
+            if (
+                (getActive(fabric).length === 1 && getActive(fabric)[0].type !== 'i-text') ||
+                getActive(fabric).length !== 1
+            ) {
+                if (e.key === 'p') {
                     resetOpacity(fabric, rect);
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'e') {
-                e.preventDefault();
-
-                resetOpacity(fabric, rect);
-                stopLine(fabric);
-                stopDraw(fabric);
-
-                if (mode !== 'circle') {
-                    mode = 'circle';
-                } else {
-                    mode = 'select';
                     resetOpacity(fabric, circle);
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'r') {
-                e.preventDefault();
-
-                resetOpacity(fabric, circle);
-                resetOpacity(fabric, rect);
-                stopDraw(fabric);
-
-                if (mode !== 'line') {
-                    mode = 'line';
-                } else {
-                    mode = 'select';
-                }
-            }
-
-            if (mode === 'line') {
-                if (e.ctrlKey && e.key == 'f') {
-                    e.preventDefault();
-
-                    addLine(fabric);
                     stopLine(fabric);
-
-                    mode = 'select';
+                    startDraw(fabric);
+                    if (mode !== 'paint') {
+                        mode = 'paint';
+                    } else {
+                        stopDraw(fabric);
+                        mode = 'select';
+                    }
                 }
 
-                fabric.renderAll();
+                if (e.key == 's') {
+                    resetOpacity(fabric, rect);
+                    resetOpacity(fabric, circle);
+                    stopLine(fabric);
+                    stopDraw(fabric);
+
+                    mode = 'select';
+
+                    fabric.renderAll();
+                }
+
+                if (e.key == 't') {
+                    resetOpacity(fabric, rect);
+                    resetOpacity(fabric, circle);
+                    stopLine(fabric);
+                    stopDraw(fabric);
+
+                    if (mode !== 'text') {
+                        mode = 'text';
+                    } else {
+                        mode = 'select';
+                    }
+                }
+
+                if (e.key == 'q') {
+                    resetOpacity(fabric, circle);
+                    stopLine(fabric);
+                    stopDraw(fabric);
+
+                    if (mode !== 'rect') {
+                        mode = 'rect';
+                    } else {
+                        mode = 'select';
+                        resetOpacity(fabric, rect);
+                    }
+                }
+
+                if (e.key == 'c') {
+                    resetOpacity(fabric, rect);
+                    stopLine(fabric);
+                    stopDraw(fabric);
+
+                    if (mode !== 'circle') {
+                        mode = 'circle';
+                    } else {
+                        mode = 'select';
+                        resetOpacity(fabric, circle);
+                    }
+                }
+
+                if (e.key == 'l') {
+                    resetOpacity(fabric, circle);
+                    resetOpacity(fabric, rect);
+                    stopDraw(fabric);
+
+                    if (mode !== 'line') {
+                        mode = 'line';
+                    } else {
+                        mode = 'select';
+                    }
+                }
+
+                if (mode === 'line') {
+                    if (e.key == 'd') {
+                        addLine(fabric);
+                        stopLine(fabric);
+
+                        mode = 'select';
+                    }
+
+                    fabric.renderAll();
+                }
             }
         });
     });
@@ -414,7 +422,7 @@
                     <Icon icon="fe:bar" font-size="42px" />
                 </div>
                 <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a href="/home/">Voltar para o início</a></li>
+                    <li on:click={() => saveCanvas(fabric)}><a href="/home/">Voltar para o início</a></li>
                 </ul>
             </div>
             <div class="flex gap-4">
@@ -531,7 +539,7 @@
                     on:click={() => stopDraw(fabric)}
                     on:click={() => stopLine(fabric)}
                     on:click={() => {
-                        mode = 'line';  
+                        mode = 'line';
 
                         resetOpacity(fabric, rect);
                         resetOpacity(fabric, circle);
@@ -563,10 +571,10 @@
                 <Icon icon="ph:moon" class="swap-on" font-size="25px" />
                 <Icon icon="ph:sun" class="swap-off" font-size="25px" />
             </label>
-            <button on:click={() => toJSON(fabric)}>
-                <Icon icon="si:json-duotone" font-size="25px" />
+            <button on:click={() => saveCanvas(fabric)}>
+                <Icon icon="material-symbols:save"  font-size="25px" />
             </button>
-            <button on:click={() => toPNG(fabric)}>
+            <button on:click={() => toPNG(fabric, quadSize.w, quadSize.h, fabric.viewportTransform.slice()[4], fabric.viewportTransform.slice()[5])}>
                 <Icon icon="material-symbols:download" font-size="25px" />
             </button>
         </div>

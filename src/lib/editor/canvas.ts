@@ -5,7 +5,7 @@ export function centerView(canvas: Canvas, width: number, height: number): void 
     canvas.setZoom(1);
 
     canvas.absolutePan(
-        new Point(-canvas.width / 2 + width / 2 + 200, -canvas.height / 2 + height / 2)
+        new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2)
     );
 }
 
@@ -56,6 +56,8 @@ export function drawGrid(canvas: Canvas, grid: number, width: number, height: nu
 
     add(canvas, path);
     path.setCoords();
+    canvas.moveObjectTo(path, 0);
+    path.excludeFromExport = true;
 }
 
 export function resize(canvas: Canvas, width: number, height: number) {
@@ -77,19 +79,33 @@ export function resize(canvas: Canvas, width: number, height: number) {
     }
 }
 
-export function toJSON(canvas: Canvas) {
-    console.log(canvas.toJSON());
+export function saveCanvas(canvas: Canvas) {
+    localStorage.setItem('canvasValue', JSON.stringify(canvas));
 }
 
-export function toPNG(canvas: Canvas) {
+export function loadCanvas(canvas: Canvas) {
+    let json = localStorage.getItem('canvasValue');
+
+    if (typeof json === 'string') {
+        let objects = JSON.parse(json);
+        return canvas.loadFromJSON(objects);
+    }
+}
+
+export function toPNG(canvas: Canvas, width: number, height: number, viewportWidth: number, viewportHeight: number) {
+    centerView(canvas, width, height);
+
     let dataURL = canvas.toDataURL({
         multiplier: 1,
-        format: 'png',
-        left: -1000,
-        top: -1000,
-        width: 3000,
-        height: 3000
-    });
+        format: 'png',     
+        top: -height / 2,
+        left: -width / 2, 
+        width: width,
+        height: height
+    });    
+
+    canvas.viewportTransform[4] = viewportWidth;
+    canvas.viewportTransform[5] = viewportHeight;
 
     const link = document.createElement('a');
     link.download = 'canvas.png';
