@@ -91,6 +91,38 @@ export async function getProjectsByUser(
     }
 }
 
+export async function getProjectByID(
+    token: string,
+    id: number
+): Promise<
+    | {
+          data: Project;
+          status: number;
+          error?: undefined;
+      }
+    | {
+          error: string;
+          status: number;
+          data?: undefined;
+      }
+> {
+    try {
+        const res = await axios.get(`/v1/projects/${id}`, { headers: { Authorization: token } });
+
+        return {
+            data: res.data as Project,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string,
+            // @ts-ignore
+            status: e.response.status as number
+        };
+    }
+}
+
 export async function favorite(token: string, projectID: number) {
     try {
         await axios.patch(
