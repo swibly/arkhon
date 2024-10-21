@@ -4,14 +4,14 @@
     import Icon from '@iconify/svelte';
     import type { PageServerData } from './$types';
 
-    export let data: PageServerData & { lookup: User } & User;
+    export let data: PageServerData & { user: User, lookup: User };
 
     $: projects = data.projects!;
     $: favorites = data.favorites!;
 </script>
 
 <div class="space-y-4">
-    {#if data.id === data.lookup.id}
+    {#if data.user.id === data.lookup.id}
         <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Acesso Rápido</h1>
 
@@ -21,7 +21,7 @@
                     Novo projeto
                 </a>
 
-                <a href="/profile/{data.username}/projects" class="btn btn-primary btn-sm">
+                <a href="/profile/{data.user.username}/projects" class="btn btn-primary btn-sm">
                     <Icon icon="eos-icons:project" />
                     Meus projetos
                 </a>
@@ -31,7 +31,7 @@
                     Loja
                 </a>
 
-                <a href="/profile/{data.username}/trash" class="btn btn-error btn-sm">
+                <a href="/profile/{data.user.username}/trash" class="btn btn-error btn-sm">
                     <Icon icon="mdi:trash" />
                     Lixeira
                 </a>
@@ -41,7 +41,7 @@
         <div class="divider py-8" />
     {/if}
 
-    {#if data.username !== data.lookup.username && !data.lookup.show.projects}
+    {#if data.user.username !== data.lookup.username && !data.lookup.show.projects}
         <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Projetos Criados</h1>
 
@@ -66,7 +66,7 @@
             {#if projects.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não criou nenhum projeto.</p>
 
-                {#if data.id === data.lookup.id}
+                {#if data.user.id === data.lookup.id}
                     <a href="/community/new" class="btn btn-primary btn-sm">
                         <Icon icon="mdi:plus" />
                         Começe a projetar agora mesmo!
@@ -77,8 +77,8 @@
                     {#each projects.data as project}
                         <ProjectCard
                             options={project}
-                            currentUserID={data.id}
-                            lang={data.language}
+                            currentUser={data.user}
+                            lang={data.user.language}
                         />
                     {/each}
                     {#if projects.total_records > projects.data.length}
@@ -98,7 +98,7 @@
         <div class="divider py-8" />
     {/if}
 
-    {#if data.username !== data.lookup.username && !data.lookup.show.favorites}
+    {#if data.user.username !== data.lookup.username && !data.lookup.show.favorites}
         <section>
             <h1 class="text-3xl font-bold mb-4 text-primary">Projetos Favoritados</h1>
 
@@ -127,8 +127,8 @@
                     {#each favorites.data as favorite}
                         <ProjectCard
                             options={favorite}
-                            currentUserID={data.id}
-                            lang={data.language}
+                            currentUser={data.user}
+                            lang={data.user.language}
                         />
                     {/each}
                     {#if favorites.total_records > favorites.data.length}

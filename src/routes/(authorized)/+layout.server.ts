@@ -12,5 +12,7 @@ export const load: LayoutServerLoad = async function ({ cookies }) {
         throw redirect(302, '/logout');
     }
 
-    return user!;
+    return {
+        user: user
+    };
 };

@@ -9,7 +9,7 @@
     <header class="sticky top-0 z-50 flex items-center gap-2 p-4 shadow bg-base-100">
         <div>
             <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
-            <p class="text-sm opacity-50">Bem-vindo, {data.firstname}!</p>
+            <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>
         </div>
 
         <div class="grow" />
@@ -23,7 +23,7 @@
 
         <div class="size-8 dropdown dropdown-end">
             <button tabindex="0">
-                <img src={data.pfp} alt="" class="rounded-full size-8" />
+                <img src={data.user.pfp} alt="" class="rounded-full size-8" />
             </button>
 
             <ul
@@ -31,13 +31,13 @@
                 class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
             >
                 <li>
-                    <a href="/profile/{data.username}" class="text-primary">
+                    <a href="/profile/{data.user.username}" class="text-primary">
                         <Icon icon="iconamoon:profile-fill" />
                         Perfil
                     </a>
                 </li>
 
-                {#if data.notification.inapp}
+                {#if data.user.notification.inapp}
                     <li>
                         <a href="/notifications">
                             <Icon icon="mdi:bell" />
@@ -63,21 +63,21 @@
                 </li>
 
                 <li>
-                    <a href="/profile/{data.username}/projects">
+                    <a href="/profile/{data.user.username}/projects">
                         <Icon icon="eos-icons:project" />
                         Meus projetos
                     </a>
                 </li>
 
                 <li>
-                    <a href="/profile/{data.username}/favorites">
+                    <a href="/profile/{data.user.username}/favorites">
                         <Icon icon="mdi:heart" />
                         Meus favoritos
                     </a>
                 </li>
 
                 <li>
-                    <a href="/profile/{data.username}/trash" class="text-error">
+                    <a href="/profile/{data.user.username}/trash" class="text-error">
                         <Icon icon="mdi:trash" />
                         Lixeira
                     </a>
