@@ -60,6 +60,32 @@ export type Follower = {
     following_since: Date;
 };
 
+export async function searchUsersByName(token: string, search: string, options: PaginationOptions) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.get(
+            `/v1/search/user?name=${search}&page=${page}&perpage=${limit}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        return {
+            search: res.data as User[],
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
+    }
+}
+
 export async function getUserByToken(token: string): Promise<User | null> {
     try {
         const res = await axios.get('/v1/auth/validate', { headers: { Authorization: token } });
