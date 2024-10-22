@@ -4,6 +4,8 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import Input from '../Input.svelte';
+    import { goto, invalidateAll } from '$app/navigation';
+    import { page } from '$app/stores';
 
     type ActionResult =
         | {
@@ -44,14 +46,14 @@
 
     $: errorField = '';
 
-    // Image handling
-
     let imageForm: HTMLFormElement;
     let imagePreview: HTMLImageElement;
     let imageInput: HTMLInputElement;
 
     let image: File | null = null;
     let imageError: string | null = null;
+    let loadingImage = false;
+    let hasImageChanged = false;
 
     function handleImageChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -69,6 +71,7 @@
             } else {
                 imageError = null;
                 image = selectedFile;
+                hasImageChanged = true;
 
                 var reader = new FileReader();
                 reader.readAsDataURL(image);
@@ -90,12 +93,22 @@
 
     function handleImageLoad() {
         if (image === null) return;
+    }
 
-        spawn({ message: 'Imagem adicionada ao seu usuário.' });
-
-        imageForm.requestSubmit();
+    function handleFormSubmission() {
+        loadingImage = true;
+        return function () {
+            loadingImage = false;
+            spawn({ message: 'Imagem alterada com sucesso!' });
+            location.reload();
+        };
     }
 </script>
+
+<div class="mb-4">
+    <h1 class="text-2xl font-bold">Foto de Perfil</h1>
+    <p>Aperte na sua imagem para trocar e depois em salvar</p>
+</div>
 
 <form
     bind:this={imageForm}
@@ -103,42 +116,66 @@
     action="/home?/changeImage"
     enctype="multipart/form-data"
     class="w-fit mx-auto"
-    use:enhance={() => {
-        return ({ update }) => {
-            return update({ reset: false });
-        };
-    }}
+    use:enhance={handleFormSubmission}
 >
-    <div class="relative overflow-hidden rounded-full group">
-        <img
-            bind:this={imagePreview}
-            src={user.pfp}
-            alt=""
-            class="object-cover size-48"
-            on:error={handleImageError}
-            on:load={handleImageLoad}
+    {#if loadingImage}
+        <div class="relative">
+            <img
+                src={user.pfp}
+                alt=""
+                class="object-cover size-48 rounded-full mx-auto opacity-40"
+            />
+
+            <span
+                class="loading loading-spinner loading-lg absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            />
+        </div>
+
+        <button type="button" class="mt-4 btn btn-sm btn-primary w-full" disabled>
+            <Icon icon="mdi:feather" />
+            Salvar
+        </button>
+    {:else}
+        <div class="relative overflow-hidden rounded-full group">
+            <img
+                bind:this={imagePreview}
+                src={user.pfp}
+                alt=""
+                class="object-cover size-48"
+                on:error={handleImageError}
+                on:load={handleImageLoad}
+            />
+
+            <button
+                type="button"
+                class="absolute inset-0 transition opacity-0 bg-black/50 group-hover:opacity-100"
+                on:click={() => imageInput.click()}
+            >
+                <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
+            </button>
+        </div>
+
+        <input
+            bind:this={imageInput}
+            type="file"
+            name="image"
+            accept="image/png,image/jpg,image/jpeg"
+            class="hidden"
+            on:change={handleImageChange}
         />
 
-        <button
-            type="button"
-            class="absolute inset-0 transition opacity-0 bg-black/50 group-hover:opacity-100"
-            on:click={() => imageInput.click()}
-        >
-            <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
-        </button>
-    </div>
+        {#if imageError}
+            <p class="mt-1 text-sm text-red-600">{imageError}</p>
+        {/if}
 
-    <input
-        bind:this={imageInput}
-        type="file"
-        name="image"
-        accept="image/png,image/jpg,image/jpeg"
-        class="hidden"
-        on:change={handleImageChange}
-    />
+        <p />
 
-    {#if imageError}
-        <p class="mt-1 text-sm text-red-600">{imageError}</p>
+        {#if hasImageChanged}
+            <button type="submit" class="mt-4 btn btn-sm btn-primary w-full">
+                <Icon icon="mdi:feather" />
+                Salvar
+            </button>
+        {/if}
     {/if}
 </form>
 
@@ -159,7 +196,10 @@
         };
     }}
 >
-    <h1 class="text-2xl font-bold mb-4">Informações Básicas</h1>
+    <div class="mb-4">
+        <h1 class="text-2xl font-bold">Informações Básicas</h1>
+        <p>Informações que outras pessoas podem ver</p>
+    </div>
 
     <section class="flex gap-2 max-md:flex-col">
         <Input
