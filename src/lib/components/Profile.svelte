@@ -31,7 +31,7 @@
 
 <div class="w-full max-w-screen min-h-[calc(100vh-84px)] flex relative">
     <aside
-        class="flex flex-col w-full gap-4 p-4 border-r-2 border-r-base-200 max-w-64 max-md:hidden fixed min-h-[calc(100vh-84px)]"
+        class="flex flex-col w-full gap-4 p-4 border-r border-r-base-200 max-w-64 max-md:hidden fixed min-h-[calc(100vh-84px)]"
     >
         <section class="space-y-4">
             <div class="relative w-fit mx-auto">
@@ -54,7 +54,9 @@
             </div>
 
             <div>
-                <h2 class="flex items-center justify-center gap-1 text-xl text-center break-phrase">
+                <h2
+                    class="flex items-center justify-center gap-1 text-xl text-center text-primary break-phrase"
+                >
                     {lookup.firstname}
                     {lookup.lastname}
                 </h2>
@@ -62,7 +64,7 @@
             </div>
 
             {#if lookup.bio && lookup.bio.trim() !== ''}
-                <p class="break-phrase">{lookup.bio}</p>
+                <p class="break-phrase text-justify">{lookup.bio}</p>
             {/if}
 
             <div>
@@ -210,6 +212,10 @@
                     <br />
                     <span class="text-sm opacity-50 text-base-content">@{lookup.username}</span>
                 </div>
+
+                {#if lookup.bio && lookup.bio.trim() !== ''}
+                    <p class="break-phrase w-fit mx-auto max-w-80">{lookup.bio}</p>
+                {/if}
 
                 <div class="flex justify-center">
                     <div class="flex items-center gap-1">

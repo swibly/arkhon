@@ -180,7 +180,15 @@
             {#if userSearch.total_records !== 0}
                 <div class="border border-base-200 p-4 mt-4 rounded-md space-y-4">
                     {#each userSearch.data as user}
-                        <UserProfileCard {user} selfID={data.user.id}>
+                        <UserProfileCard
+                            id={user.id}
+                            pfp={user.pfp}
+                            lastname={user.lastname}
+                            username={user.username}
+                            verified={user.verified}
+                            firstname={user.firstname}
+                            selfID={data.user.id}
+                        >
                             <form
                                 method="POST"
                                 action="?/initialAssign"
@@ -235,58 +243,31 @@
     {/if}
 
     <section class="space-y-4">
-        <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
-            <div class="flex items-center gap-2">
-                <img src={project.owner_pfp} alt="" class="rounded-full object-cover size-16" />
-
-                <div>
-                    <h2 class="flex items-center justify-center gap-1 text-xl">
-                        <a href="/profile/{project.owner_username}" class="link link-primary">
-                            {project.owner_firstname}
-                            {project.owner_lastname}
-                        </a>
-
-                        {#if project.owner_id === data.user.id}
-                            <span class="text-sm text-primary">(você)</span>
-                        {/if}
-
-                        {#if project.owner_verified}
-                            <div class="tooltip" data-tip="Verificado">
-                                <Icon icon="material-symbols:verified" class="text-primary" />
-                            </div>
-                        {/if}
-                    </h2>
-                    <p class="text-sm opacity-70">@{project.owner_username}</p>
-                </div>
+        <UserProfileCard
+            username={project.owner_username}
+            id={project.owner_id}
+            firstname={project.owner_firstname}
+            verified={project.owner_verified}
+            lastname={project.owner_lastname}
+            pfp={project.owner_pfp}
+            selfID={data.user.id}
+        >
+            <div class="flex items-center gap-1 text-primary">
+                <Icon icon="mdi:crown" />
+                <p>Dono do projeto</p>
             </div>
-        </div>
+        </UserProfileCard>
 
         {#each project.allowed_users as allowed_user}
-            <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
-                <div class="flex items-center gap-2">
-                    <img src={allowed_user.pfp} alt="" class="rounded-full object-cover size-16" />
-
-                    <div>
-                        <h2 class="flex items-center justify-center gap-1 text-xl">
-                            <a href="/profile/{allowed_user.username}" class="link link-primary">
-                                {allowed_user.firstname}
-                                {allowed_user.lastname}
-                            </a>
-
-                            {#if allowed_user.id === data.user.id}
-                                <span class="text-sm text-primary">(você)</span>
-                            {/if}
-
-                            {#if allowed_user.verified}
-                                <div class="tooltip" data-tip="Verificado">
-                                    <Icon icon="material-symbols:verified" class="text-primary" />
-                                </div>
-                            {/if}
-                        </h2>
-                        <p class="text-sm opacity-70">@{allowed_user.username}</p>
-                    </div>
-                </div>
-
+            <UserProfileCard
+                username={allowed_user.username}
+                id={allowed_user.id}
+                firstname={allowed_user.firstname}
+                verified={allowed_user.verified}
+                lastname={allowed_user.lastname}
+                pfp={allowed_user.pfp}
+                selfID={data.user.id}
+            >
                 {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_users === true).length > 0}
                     <form
                         class="userperm"
@@ -392,7 +373,7 @@
                         </div>
                     </form>
                 {/if}
-            </div>
+            </UserProfileCard>
         {/each}
     </section>
 </div>

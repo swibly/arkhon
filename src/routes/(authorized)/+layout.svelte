@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full min-h-screen">
-    <header class="sticky top-0 z-50 flex items-center gap-2 p-4 shadow bg-base-100">
+    <header class="sticky top-0 z-50 flex items-center gap-2 p-4 bg-base-100 border-b border-base-200">
         <div>
             <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
             <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>

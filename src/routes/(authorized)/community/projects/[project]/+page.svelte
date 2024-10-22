@@ -90,6 +90,10 @@
         <a href="/community/projects/{project.id}/allowed" class="link link-primary">
             {users.length}
             {users.length > 1 ? 'pessoas estão' : 'pessoa está'} no projeto
+
+            {#if project.owner_id === data.user.id || project.allowed_users.filter((x) => x.id === data.user.id).length > 0}
+                (incluindo você)
+            {/if}
         </a>
     </div>
 
@@ -208,6 +212,38 @@
                 <Icon icon="mdi:pencil" />
                 Editar informações do projeto
             </a>
+        {/if}
+
+        {#if project.allowed_users.filter((x) => x.id === data.user.id).length > 0}
+            <form
+                method="POST"
+                action="/community/projects/{project.id}/allowed?/leave"
+                use:enhance={() => {
+                    return ({ update, result }) => {
+                        // @ts-ignore
+                        if (result.data && result.data.error !== undefined) {
+                            spawn({
+                                // @ts-ignore
+                                message: result.data.error,
+                                status: 'error'
+                            });
+
+                            return update({ reset: false });
+                        }
+
+                        spawn({
+                            message: 'Você saiu deste projeto.'
+                        });
+
+                        return update({ reset: false });
+                    };
+                }}
+            >
+                <button type="submit" class="btn btn-error btn-sm w-full">
+                    <Icon icon="pepicons-pop:leave" />
+                    Sair do projeto
+                </button>
+            </form>
         {/if}
     </div>
 

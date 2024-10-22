@@ -31,35 +31,34 @@ export default {
                 light: {
                     primary: '#0175AF',
                     secondary: '#FFA333',
-                    neutral: '#D9D9D9',
-                    accent: '#0175AF',
-                    'base-100': '#F8F8F8',
-                    success: '#4FD35C',
-                    warning: '#EAD45F',
-                    error: '#DA3030'
+                    neutral: '#E0E0E0',
+                    accent: '#FF4081',
+                    'base-100': '#F4F4F4',
+                    success: '#4CAF50',
+                    warning: '#FFC107',
+                    error: '#F44336'
                 },
                 dark: {
                     primary: '#FFA333',
                     secondary: '#0175AF',
-                    neutral: '#38414A',
-                    accent: '#252627',
-                    'base-100': '#252627',
-                    success: '#4FD35C',
-                    warning: '#EAD45F',
-                    error: '#DA3030'
+                    accent: '#FF4081',
+                    neutral: '#2D2D2D',
+                    'base-100': '#121212',
+                    info: '#2196F3',
+                    success: '#4CAF50',
+                    warning: '#FFC107',
+                    error: '#F44336'
                 },
-                night: {
+                contrast: {
                     primary: '#FAE931',
                     secondary: '#5C5CB8',
-                    accent: '#FDFEFF',
-                    neutral: '#FAE931',
-                    'base-100': '#000000',
-                    'base-200': '#070707',
-                    'base-300': '#0E0E0E',
-                    info: '#00FFFF',
-                    success: '#00FF00',
-                    warning: '#FFFF00',
-                    error: '#FF0000'
+                    accent: '#FF4081',
+                    neutral: '#000000',
+                    'base-100': '#FFFFFF',
+                    info: '#29B6F6',
+                    success: '#66BB6A',
+                    warning: '#FFA726',
+                    error: '#EF5350'
                 }
             }
         ]
