@@ -189,14 +189,14 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-2 max-md:grid-cols-1 gap-2 mt-4">
-        <a href="/edit" class="btn btn-sm btn-primary">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2 mt-4">
+        <a href="/community/projects/{project.id}/edit" class="btn btn-sm btn-primary">
             <Icon icon="mdi:eye" />
             Ir para o editor
         </a>
 
         {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0}
-            <a href="/meta" class="btn btn-sm btn-secondary">
+            <a href="/community/projects/{project.id}/meta" class="btn btn-sm btn-secondary">
                 <Icon icon="mdi:pencil" />
                 Editar informações do projeto
             </a>
