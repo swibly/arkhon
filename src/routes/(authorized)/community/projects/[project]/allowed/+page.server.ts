@@ -46,6 +46,7 @@ export const actions: Actions = {
             !getParam('manage_metadata')
         ) {
             unassignUserFromProject(jwt, id, username);
+            return;
         }
 
         return await assignUserToProject(jwt, id, username, {
