@@ -12,7 +12,7 @@
 
     $: project = data.project;
 
-    const limit = 5;
+    const limit = 3;
     $: users = [
         ...project.allowed_users.map((user) => ({
             name: user.username,
@@ -75,11 +75,13 @@
     />
 
     <div class="flex items-center gap-2 my-4">
-        <UserIcon {users} {limit} />
+        <div class="shrink-0">
+            <UserIcon {users} {limit} />
+        </div>
 
         <a href="/community/projects/{project.id}/allowed" class="link link-primary">
             {users.length}
-            {users.length > 1 ? 'pessoas fizeram' : 'pessoa fez'} este projeto
+            {users.length > 1 ? 'pessoas estão' : 'pessoa está'} no projeto
         </a>
     </div>
 
@@ -187,14 +189,14 @@
         </div>
     </div>
 
-    <div class="flex gap-2 mt-4">
-        <a href="/edit" class="btn btn-sm btn-primary grow shrink-0">
+    <div class="grid grid-cols-2 max-md:grid-cols-1 gap-2 mt-4">
+        <a href="/edit" class="btn btn-sm btn-primary">
             <Icon icon="mdi:eye" />
             Ir para o editor
         </a>
 
         {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0}
-            <a href="/meta" class="btn btn-sm btn-secondary grow shrink-0">
+            <a href="/meta" class="btn btn-sm btn-secondary">
                 <Icon icon="mdi:pencil" />
                 Editar informações do projeto
             </a>
