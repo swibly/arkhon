@@ -243,3 +243,23 @@ export async function deleteAccount(token: string) {
         console.error(error);
     }
 }
+
+export async function changeUserImage(token: string, data: FormData) {
+    try {
+        await axios.patch('/v1/auth/image', data, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function deleteUserImage(token: string) {
+    try {
+        await axios.delete('/v1/auth/image', {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}

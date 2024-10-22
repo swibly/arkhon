@@ -4,6 +4,8 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import Input from '../Input.svelte';
+    import { goto, invalidateAll } from '$app/navigation';
+    import { page } from '$app/stores';
 
     type ActionResult =
         | {
@@ -43,23 +45,139 @@
     }
 
     $: errorField = '';
+
+    let imageForm: HTMLFormElement;
+    let imagePreview: HTMLImageElement;
+    let imageInput: HTMLInputElement;
+
+    let image: File | null = null;
+    let imageError: string | null = null;
+    let loadingImage = false;
+    let hasImageChanged = false;
+
+    function handleImageChange(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const selectedFile = input.files[0];
+            const fileSizeLimit = 5 * 1024 * 1024;
+
+            if (selectedFile.size > fileSizeLimit) {
+                imageError = 'Tamanho do arquivo não pode ser maior que 5MB';
+                image = null;
+
+                imagePreview.src = user.pfp;
+
+                spawn({ message: imageError, status: 'error' });
+            } else {
+                imageError = null;
+                image = selectedFile;
+                hasImageChanged = true;
+
+                var reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onload = function (e) {
+                    imagePreview.src = e.target!.result as string;
+                };
+            }
+        }
+    }
+
+    function handleImageError() {
+        imageError = 'Imagem inválida ou corrompida.';
+        image = null;
+
+        imagePreview.src = user.pfp;
+
+        spawn({ message: imageError, status: 'error' });
+    }
+
+    function handleImageLoad() {
+        if (image === null) return;
+    }
+
+    function handleFormSubmission() {
+        loadingImage = true;
+        return function () {
+            loadingImage = false;
+            spawn({ message: 'Imagem alterada com sucesso!' });
+            location.reload();
+        };
+    }
 </script>
 
-<img src={user.pfp} alt="" class="mx-auto rounded-full size-48" />
-
-<div class="text-center space-y-4">
-    <p>
-        Atualmente, nós usamos o serviço <span class="text-primary">Gravatar</span>. Para mudar sua
-        foto de perfil faça um cadastro no Gravatar
-        <span class="text-error font-bold tooltip" data-tip="O email é vinculado à foto de perfil!">
-            utilizando o mesmo email
-        </span> e atualize por lá.
-    </p>
-    <a href="https://gravatar.com/profile/avatars" target="_blank" class="btn btn-sm btn-primary">
-        <Icon icon="simple-icons:gravatar" />
-        Ir para o Gravatar
-    </a>
+<div class="mb-4">
+    <h1 class="text-2xl font-bold">Foto de Perfil</h1>
+    <p>Aperte na sua imagem para trocar e depois em salvar</p>
 </div>
+
+<form
+    bind:this={imageForm}
+    method="POST"
+    action="/home?/changeImage"
+    enctype="multipart/form-data"
+    class="w-fit mx-auto"
+    use:enhance={handleFormSubmission}
+>
+    {#if loadingImage}
+        <div class="relative">
+            <img
+                src={user.pfp}
+                alt=""
+                class="object-cover size-48 rounded-full mx-auto opacity-40"
+            />
+
+            <span
+                class="loading loading-spinner loading-lg absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            />
+        </div>
+
+        <button type="button" class="mt-4 btn btn-sm btn-primary w-full" disabled>
+            <Icon icon="mdi:feather" />
+            Salvar
+        </button>
+    {:else}
+        <div class="relative overflow-hidden rounded-full group">
+            <img
+                bind:this={imagePreview}
+                src={user.pfp}
+                alt=""
+                class="object-cover size-48"
+                on:error={handleImageError}
+                on:load={handleImageLoad}
+            />
+
+            <button
+                type="button"
+                class="absolute inset-0 transition opacity-0 bg-black/50 group-hover:opacity-100"
+                on:click={() => imageInput.click()}
+            >
+                <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
+            </button>
+        </div>
+
+        <input
+            bind:this={imageInput}
+            type="file"
+            name="image"
+            accept="image/png,image/jpg,image/jpeg"
+            class="hidden"
+            on:change={handleImageChange}
+        />
+
+        {#if imageError}
+            <p class="mt-1 text-sm text-red-600">{imageError}</p>
+        {/if}
+
+        <p />
+
+        {#if hasImageChanged}
+            <button type="submit" class="mt-4 btn btn-sm btn-primary w-full">
+                <Icon icon="mdi:feather" />
+                Salvar
+            </button>
+        {/if}
+    {/if}
+</form>
 
 <div class="divider" />
 
@@ -78,7 +196,10 @@
         };
     }}
 >
-    <h1 class="text-2xl font-bold mb-4">Informações Básicas</h1>
+    <div class="mb-4">
+        <h1 class="text-2xl font-bold">Informações Básicas</h1>
+        <p>Informações que outras pessoas podem ver</p>
+    </div>
 
     <section class="flex gap-2 max-md:flex-col">
         <Input

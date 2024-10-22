@@ -9,7 +9,7 @@
 
 <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
     <div class="flex items-center gap-2">
-        <img src={user.pfp} alt="" class="rounded-full size-16" />
+        <img src={user.pfp} alt="" class="rounded-full object-cover size-16" />
 
         <div>
             <h2 class="flex items-center justify-center gap-1 text-xl">

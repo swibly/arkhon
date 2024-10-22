@@ -10,6 +10,8 @@
     $: tab = $page.url.searchParams.get('tab')!;
 
     export let data: LayoutServerData;
+
+    $: user = data.user;
 </script>
 
 <svelte:head>
@@ -17,13 +19,13 @@
 </svelte:head>
 
 {#if tab === 'profile'}
-    <ProfileTab user={data.user} />
+    <ProfileTab {user} />
 {:else if tab === 'account'}
-    <AccountTab user={data.user} />
+    <AccountTab {user} />
 {:else if tab === 'privacy'}
-    <PrivacyTab user={data.user} />
+    <PrivacyTab {user} />
 {:else if tab === 'notifications'}
-    <NotificationsTab user={data.user} />
+    <NotificationsTab {user} />
 {:else if tab === 'security'}
-    <SecurityTab user={data.user} />
+    <SecurityTab {user} />
 {/if}
