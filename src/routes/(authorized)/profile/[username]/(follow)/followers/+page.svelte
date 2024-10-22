@@ -7,7 +7,7 @@
     import { spawn } from '$lib/toast';
     import Pagination from '$lib/components/Pagination.svelte';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: pagination = data.followers;
     $: followers = pagination.data;
@@ -47,7 +47,29 @@
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         {#each followers as follower}
             <li>
-                <UserProfileCard user={follower} selfID={data.user.id} />
+                <UserProfileCard
+                    id={follower.id}
+                    pfp={follower.pfp}
+                    lastname={follower.lastname}
+                    username={follower.username}
+                    verified={follower.verified}
+                    firstname={follower.firstname}
+                    selfID={data.user.id}
+                >
+                    <p>
+                        <Icon icon="mdi:calendar" class="inline" />
+                        Seguindo desde:
+                        <span class="font-bold">
+                            {new Date(follower.following_since).toLocaleDateString(
+                                data.user.language,
+                                {
+                                    day: '2-digit',
+                                    month: '2-digit'
+                                }
+                            )}
+                        </span>
+                    </p>
+                </UserProfileCard>
             </li>
         {/each}
     </ul>

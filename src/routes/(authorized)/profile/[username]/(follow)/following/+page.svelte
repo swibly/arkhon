@@ -3,8 +3,11 @@
     import type { PageServerData } from './$types';
     import UserProfileCard from '$lib/components/UserProfileCard.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
+    import Icon from '@iconify/svelte';
+    import { enhance } from '$app/forms';
+    import { spawn } from '$lib/toast';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: pagination = data.following;
     $: following = pagination.data;
@@ -27,7 +30,46 @@
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-2xl:grid-cols-2">
         {#each following as following}
             <li>
-                <UserProfileCard user={following} selfID={data.user.id} />
+                <UserProfileCard
+                    id={following.id}
+                    pfp={following.pfp}
+                    lastname={following.lastname}
+                    username={following.username}
+                    verified={following.verified}
+                    firstname={following.firstname}
+                    selfID={data.user.id}
+                >
+                    <div class="space-y-4">
+                        <p>
+                            <Icon icon="mdi:calendar" class="inline" />
+                            Seguindo desde:
+                            <span class="font-bold">
+                                {new Date(following.following_since).toLocaleDateString(
+                                    data.user.language,
+                                    {
+                                        day: '2-digit',
+                                        month: '2-digit'
+                                    }
+                                )}
+                            </span>
+                        </p>
+                        {#if data.user.id === data.lookup.id}
+                            <form
+                                action="/profile/{following.username}?/unfollow"
+                                method="POST"
+                                use:enhance={() =>
+                                    spawn({
+                                        message: `Você parou de seguir ${following.username}`
+                                    })}
+                            >
+                                <button type="submit" class="w-full btn btn-sm btn-error">
+                                    <Icon icon="ri:user-unfollow-fill" />
+                                    Parar de seguir
+                                </button>
+                            </form>
+                        {/if}
+                    </div>
+                </UserProfileCard>
             </li>
         {/each}
     </ul>
