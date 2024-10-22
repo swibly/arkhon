@@ -16,7 +16,7 @@
         </article>
     {:else if type === 'danger'}
         <article
-            class="border-l-2 border-l-error p-2 flex items-center gap-2 text-error bg-error-content rounded-r-md"
+            class="border-l-2 border-l-error-content p-2 flex items-center gap-2 text-error-content bg-error rounded-r-md"
         >
             <Icon icon="akar-icons:stop-fill" class="shrink-0" />
             <p>
