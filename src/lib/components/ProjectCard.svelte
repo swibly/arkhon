@@ -14,7 +14,7 @@
     let loadingFavorite = false;
 
     const limit = 3;
-    const users = [
+    $: users = [
         ...options.allowed_users.map((user) => ({
             name: user.username,
             pfp: user.pfp
