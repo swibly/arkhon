@@ -3,7 +3,7 @@
     import { toggle } from '$lib/stores/theme';
     import Component from '$lib/components/Component.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
-    import { get, writable } from 'svelte/store';
+    import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { lightMode } from '$lib/stores/theme';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
@@ -27,10 +27,11 @@
         addPoints,
         addLine,
         stopLine,
-        resetOpacity,        
+        resetOpacity
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
+    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
 
     // Váriaveis e funções do aside
 
@@ -76,8 +77,8 @@
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
-        });     
-        
+        });
+
         loadCanvas(fabric);
 
         rect = new Rect({
@@ -111,7 +112,7 @@
                 fabric.add(rect);
                 fabric.add(circle);
                 rect.excludeFromExport = true;
-                circle.excludeFromExport = true;                
+                circle.excludeFromExport = true;
             }
         });
 
@@ -121,7 +122,7 @@
 
                 resetOpacity(fabric, rect);
                 resetOpacity(fabric, circle);
-            }            
+            }
 
             if (e.altKey) {
                 fabric.isDrawingMode = false;
@@ -140,7 +141,7 @@
             }
 
             if (mode === 'text') {
-                addText(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }]);
+                addText(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }], "Toque aqui para digitar");
 
                 fabric.set({ selection: false });
             }
@@ -261,7 +262,7 @@
             }
 
             if (e.ctrlKey && e.key == 'x') {
-                e.preventDefault();                
+                e.preventDefault();
 
                 if (fabric.getActiveObject()) {
                     fabric
@@ -272,7 +273,7 @@
                         });
                 }
                 remove(fabric, ...getActive(fabric));
-                renderAll(fabric);                
+                renderAll(fabric);
             }
 
             if (e.ctrlKey && e.key == 'a') {
@@ -321,6 +322,42 @@
                 _clipboard.left += 10;
                 fabric.setActiveObject(clonedObj);
                 fabric.requestRenderAll();
+            }
+
+            if (e.ctrlKey && e.key == 'd') {
+                e.preventDefault();
+
+                console.log(fabric.getActiveObject());
+
+                if (fabric.getActiveObject()) {
+                    fabric
+                        .getActiveObject()!
+                        .clone()
+                        .then((cloned) => {
+                            _clipboard = cloned;
+                        });
+                }
+
+                const clonedObj = await _clipboard.clone();
+                fabric.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true
+                });
+                if (clonedObj instanceof ActiveSelection) {
+                    clonedObj.canvas = fabric;
+                    clonedObj.forEachObject((obj) => {
+                        fabric.add(obj);
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    fabric.add(clonedObj);
+                }
+                _clipboard.top += 10;
+                _clipboard.left += 10;
+                fabric.setActiveObject(clonedObj);
+                fabric.requestRenderAll();                
             }
 
             if (
@@ -425,7 +462,9 @@
                     <Icon icon="fe:bar" font-size="42px" />
                 </div>
                 <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li on:click={() => saveCanvas(fabric)}><a href="/home/">Voltar para o início</a></li>
+                    <li on:click={() => saveCanvas(fabric)}>
+                        <a href="/home/">Voltar para o início</a>
+                    </li>
                 </ul>
             </div>
             <div class="flex gap-4">
@@ -575,9 +614,18 @@
                 <Icon icon="ph:sun" class="swap-off" font-size="25px" />
             </label>
             <button on:click={() => saveCanvas(fabric)}>
-                <Icon icon="material-symbols:save"  font-size="25px" />
+                <Icon icon="material-symbols:save" font-size="25px" />
             </button>
-            <button on:click={() => toPNG(fabric, quadSize.w, quadSize.h, fabric.viewportTransform.slice()[4], fabric.viewportTransform.slice()[5])}>
+            <button
+                on:click={() =>
+                    toPNG(
+                        fabric,
+                        quadSize.w,
+                        quadSize.h,
+                        fabric.viewportTransform.slice()[4],
+                        fabric.viewportTransform.slice()[5]
+                    )}
+            >
                 <Icon icon="material-symbols:download" font-size="25px" />
             </button>
         </div>
@@ -658,8 +706,10 @@
 
         <main class="w-full xl:w-3/4 2xl:w-4/5">
             <ObjectMenu canvas={fabric} />
+            <ObjectInfo canvas={fabric} />
             <RightMenu canvas={fabric} />
             <canvas bind:this={canvas} />
         </main>
     </main>
 </main>
+

@@ -86,8 +86,8 @@ export function unlock(canvas: Canvas) {
     renderAll(canvas);
 }
 
-export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>) {
-    const text = new IText('Toque para digitar', {
+export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>, text: string) {
+    const itext = new IText(text, {
         width: 100,
         height: 100,
         top: points[0].y - 25,
@@ -101,7 +101,7 @@ export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>)
         fontFamily: 'sans-serif'
     });
 
-    add(canvas, text);
+    add(canvas, itext);
 
     renderAll(canvas);
 }
