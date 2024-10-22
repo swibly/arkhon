@@ -59,12 +59,14 @@
             })}
         </span>
         {#if loadingFavorite}
-            <div class="flex items-center gap-1">
+            {#if options.is_favorited}
+                <Icon icon="material-symbols:favorite" class="transition text-neutral size-6" />
+            {:else}
                 <Icon
                     icon="material-symbols:favorite-outline"
                     class="transition text-neutral size-6"
                 />
-            </div>
+            {/if}
         {:else if options.is_favorited}
             <form
                 action="/community/projects/{options.id}?/unfavorite"
