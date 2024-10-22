@@ -11,7 +11,7 @@
     export let verified: boolean;
 </script>
 
-<div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
+<div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-xl border border-base-200">
     <div class="flex items-center gap-2">
         <img src={pfp} alt="" class="rounded-full object-cover size-16" />
 

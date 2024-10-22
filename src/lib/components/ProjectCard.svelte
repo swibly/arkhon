@@ -23,7 +23,7 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg shadow-md w-full max-w-96 shrink-0 overflow-hidden">
+<article class="p-4 rounded-lg w-full max-w-96 shrink-0 overflow-hidden border border-base-200">
     <article class="min-h-6 flex gap-1">
         {#if options.is_public}
             <p class="badge badge-primary badge-outline gap-1">
