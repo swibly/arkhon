@@ -189,7 +189,7 @@
 
                                     return ({ update, result }) => {
                                         // @ts-ignore
-                                        if (result.data.status !== 200) {
+                                        if (result.data && result.data.error !== undefined) {
                                             spawn({
                                                 // @ts-ignore
                                                 message: result.data.error,
@@ -295,7 +295,18 @@
                         use:enhance={() => {
                             clearUnsaved();
 
-                            return ({ update }) => {
+                            return ({ update, result }) => {
+                                // @ts-ignore
+                                if (result.data && result.data.error !== undefined) {
+                                    spawn({
+                                        // @ts-ignore
+                                        message: result.data.error,
+                                        status: 'error'
+                                    });
+
+                                    return update({ reset: false });
+                                }
+
                                 spawn({
                                     message: 'Usuário atualizado.'
                                 });
