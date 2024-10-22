@@ -1,5 +1,5 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { assignUserToProject, unassignUserFromProject } from '$lib/projects';
+import { assignUserToProject, leaveProject, unassignUserFromProject } from '$lib/projects';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
@@ -58,5 +58,18 @@ export const actions: Actions = {
             manage_users: getParam('manage_users'),
             manage_metadata: getParam('manage_metadata')
         });
+    },
+    leave: async function ({ cookies, params }) {
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+
+        let id = parseInt(params.project);
+
+        if (isNaN(id)) {
+            return fail(400, {
+                error: 'Código de projeto inválido'
+            });
+        }
+
+        return await leaveProject(jwt, id);
     }
 };

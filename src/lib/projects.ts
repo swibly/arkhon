@@ -165,6 +165,21 @@ export async function unassignUserFromProject(token: string, id: number, usernam
     }
 }
 
+export async function leaveProject(token: string, id: number) {
+    try {
+        await axios.delete(`/v1/projects/${id}/leave`, {
+            headers: { Authorization: token }
+        });
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string,
+            // @ts-ignore
+            status: e.response.status as number
+        };
+    }
+}
+
 export async function favorite(token: string, projectID: number) {
     try {
         await axios.patch(
