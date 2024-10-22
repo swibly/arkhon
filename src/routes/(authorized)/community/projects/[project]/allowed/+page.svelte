@@ -237,7 +237,7 @@
     <section class="space-y-4">
         <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
             <div class="flex items-center gap-2">
-                <img src={project.owner_pfp} alt="" class="rounded-full size-16" />
+                <img src={project.owner_pfp} alt="" class="rounded-full object-cover size-16" />
 
                 <div>
                     <h2 class="flex items-center justify-center gap-1 text-xl">
@@ -264,7 +264,7 @@
         {#each project.allowed_users as allowed_user}
             <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
                 <div class="flex items-center gap-2">
-                    <img src={allowed_user.pfp} alt="" class="rounded-full size-16" />
+                    <img src={allowed_user.pfp} alt="" class="rounded-full object-cover size-16" />
 
                     <div>
                         <h2 class="flex items-center justify-center gap-1 text-xl">

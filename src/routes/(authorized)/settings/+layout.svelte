@@ -10,7 +10,7 @@
 
 <div class="w-full max-w-7xl mx-auto p-4">
     <header class="flex gap-4 items-center max-md:hidden">
-        <img src={data.user.pfp} alt="" class="size-28 rounded-full" />
+        <img src={data.user.pfp} alt="" class="size-28 object-cover rounded-full" />
 
         <div>
             <h2 class="font-bold text-4xl">
