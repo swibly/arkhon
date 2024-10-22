@@ -1,5 +1,5 @@
 import axios from './server/axios';
-import { UserProjectPermissions } from './user';
+import { UserProjectAllowList, UserProjectPermissions } from './user';
 import { Pagination, PaginationOptions } from './utils';
 
 export type Project = {
@@ -16,8 +16,11 @@ export type Project = {
     is_public: boolean;
     fork: number | null;
     owner_id: number;
+    owner_firstname: string;
+    owner_lastname: string;
     owner_username: string;
-    owner_profile_picture: string;
+    owner_pfp: string;
+    owner_verified: boolean;
     allowed_users: UserProjectPermissions[];
     is_favorited: boolean;
     total_favorites: number;
@@ -88,6 +91,77 @@ export async function getProjectsByUser(
             previous_page: -1,
             total_records: 0
         } as Pagination<Project>;
+    }
+}
+
+export async function getProjectByID(
+    token: string,
+    id: number
+): Promise<
+    | {
+          data: Project;
+          status: number;
+          error?: undefined;
+      }
+    | {
+          error: string;
+          status: number;
+          data?: undefined;
+      }
+> {
+    try {
+        const res = await axios.get(`/v1/projects/${id}`, { headers: { Authorization: token } });
+
+        return {
+            data: res.data as Project,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string,
+            // @ts-ignore
+            status: e.response.status as number
+        };
+    }
+}
+
+export async function assignUserToProject(
+    token: string,
+    id: number,
+    username: string,
+    allowList: UserProjectAllowList
+) {
+    try {
+        await axios.put(
+            `/v1/projects/${id}/assign/${username}`,
+            {
+                ...allowList
+            },
+            { headers: { Authorization: token } }
+        );
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string,
+            // @ts-ignore
+            status: e.response.status as number
+        };
+    }
+}
+
+export async function unassignUserFromProject(token: string, id: number, username: string) {
+    try {
+        await axios.delete(`/v1/projects/${id}/assign/${username}`, {
+            headers: { Authorization: token }
+        });
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string,
+            // @ts-ignore
+            status: e.response.status as number
+        };
     }
 }
 

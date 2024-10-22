@@ -4,7 +4,7 @@
     import ProjectCard from '$lib/components/ProjectCard.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
 
-    export let data: PageServerData & User & { lookup: User };
+    export let data: PageServerData & { user: User, lookup: User };
 
     $: pagination = data.trashed;
     $: trashed = pagination.data;
@@ -15,7 +15,7 @@
 
 <div class="divider" />
 
-{#if data.username !== data.lookup.username}
+{#if data.user.username !== data.lookup.username}
     <p class="text-error">Você não pode ver a lixeira de outras pessoas.</p>
 {:else if trashed.length === 0}
     <p class="mb-4 opacity-70 italic">Você ainda não colocou nenhum projeto na lixeira.</p>
@@ -28,8 +28,8 @@
         {#each trashed as trash}
             <ProjectCard
                 options={trash}
-                currentUserID={data.id}
-                lang={data.language}
+                currentUser={data.user}
+                lang={data.user.language}
                 showDeleteOperations
             />
         {/each}

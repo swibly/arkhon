@@ -1,42 +1,38 @@
 <script lang="ts">
+    import type { Follower, User } from '$lib/user';
     import Icon from '@iconify/svelte';
 
-    export let id: number;
     export let selfID: number;
-    export let firstname: string;
-    export let lastname: string;
-    export let username: string;
-    export let pfp: string;
-    export let verified: boolean;
+
+    export let user: User | Follower;
 </script>
 
 <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-2xl shadow">
     <div class="flex items-center gap-2">
-        <img src={pfp} alt="" class="rounded-full size-16" />
+        <img src={user.pfp} alt="" class="rounded-full size-16" />
 
         <div>
             <h2 class="flex items-center justify-center gap-1 text-xl">
-                {firstname}
-                {lastname}
+                <a href="/profile/{user.username}" class="link link-primary">
+                    {user.firstname}
+                    {user.lastname}
+                </a>
 
-                {#if id === selfID}
+                {#if user.id === selfID}
                     <span class="text-sm text-primary">(você)</span>
                 {/if}
 
-                {#if verified}
+                {#if user.verified}
                     <div class="tooltip" data-tip="Verificado">
                         <Icon icon="material-symbols:verified" class="text-primary" />
                     </div>
                 {/if}
             </h2>
-            <p class="text-sm opacity-70">@{username}</p>
+            <p class="text-sm opacity-70">@{user.username}</p>
         </div>
     </div>
 
-    <section class="flex gap-2">
-        <a href="/profile/{username}" class="btn btn-sm btn-primary grow">
-            <Icon icon="mdi:user" />
-            Ver perfil
-        </a>
-    </section>
+    <div>
+        <slot />
+    </div>
 </div>

@@ -39,8 +39,11 @@ export type User = {
 
 export type UserProjectPermissions = {
     id: number;
+    firstname: string;
+    lastname: string;
     username: string;
-    profile_picture: string;
+    pfp: string;
+    verified: boolean;
     allow_view: boolean;
     allow_edit: boolean;
     allow_delete: boolean;
@@ -49,6 +52,16 @@ export type UserProjectPermissions = {
     allow_manage_users: boolean;
     allow_manage_metadata: boolean;
 };
+
+export type UserProjectAllowList = Partial<{
+    view: boolean;
+    edit: boolean;
+    delete: boolean;
+    publish: boolean;
+    share: boolean;
+    manage_users: boolean;
+    manage_metadata: boolean;
+}>;
 
 export type Follower = {
     id: number;
@@ -59,6 +72,32 @@ export type Follower = {
     verified: boolean;
     following_since: Date;
 };
+
+export async function searchUsersByName(token: string, search: string, options: PaginationOptions) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.get(
+            `/v1/search/user?name=${search}&page=${page}&perpage=${limit}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        return {
+            search: res.data as User[],
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
+    }
+}
 
 export async function getUserByToken(token: string): Promise<User | null> {
     try {

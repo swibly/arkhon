@@ -4,7 +4,7 @@
     import UserProfileCard from '$lib/components/UserProfileCard.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
 
-    export let data: PageServerData & User & { lookup: User };
+    export let data: PageServerData & { user: User, lookup: User };
 
     $: pagination = data.following;
     $: following = pagination.data;
@@ -15,7 +15,7 @@
 
 <div class="divider" />
 
-{#if data.username !== data.lookup.username && !data.lookup.show.following}
+{#if data.user.username !== data.lookup.username && !data.lookup.show.following}
     <p class="text-error">Este usuário não permite que outros visualizem quem ele segue.</p>
 {:else if following.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não está seguindo ninguém.</p>
@@ -27,7 +27,7 @@
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1 max-2xl:grid-cols-2">
         {#each following as following}
             <li>
-                <UserProfileCard {...following} selfID={data.id} />
+                <UserProfileCard user={following} selfID={data.user.id} />
             </li>
         {/each}
     </ul>

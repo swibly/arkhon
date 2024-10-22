@@ -7,7 +7,7 @@
     import Icon from '@iconify/svelte';
     import Profile from '$lib/components/Profile.svelte';
 
-    export let data: LayoutServerData & User;
+    export let data: LayoutServerData & { user: User };
 
     $: paths = $page.url.pathname.split('/').slice(1);
     $: ghostPath = '';
@@ -22,7 +22,7 @@
     });
 
     $: lookup = data.lookup! as User;
-    $: logged = data as User;
+    $: logged = data.user;
     $: isFollowing = data.isFollowing!;
 </script>
 

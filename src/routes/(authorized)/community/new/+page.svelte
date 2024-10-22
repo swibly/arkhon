@@ -127,6 +127,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Novo projeto - Swibly Arkhon</title>
+</svelte:head>
+
 <div class="w-full max-w-3xl p-4 mx-auto">
     <a href="/profile/{data.username}" class="mb-4 btn btn-ghost btn-sm">
         <Icon icon="streamline:return-2-solid" />

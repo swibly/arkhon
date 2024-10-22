@@ -7,7 +7,7 @@
     import { spawn } from '$lib/toast';
     import Pagination from '$lib/components/Pagination.svelte';
 
-    export let data: PageServerData & User & { lookup: User };
+    export let data: PageServerData & { user: User, lookup: User };
 
     $: pagination = data.followers;
     $: followers = pagination.data;
@@ -18,12 +18,12 @@
 
 <div class="divider" />
 
-{#if data.username !== data.lookup.username && !data.lookup.show.followers}
+{#if data.user.username !== data.lookup.username && !data.lookup.show.followers}
     <p class="text-error">Este usuário não permite que outros visualizem quem o segue.</p>
 {:else if followers.length === 0}
     <p class="mb-4 opacity-70 italic">Este usuário ainda não tem nenhum seguidor.</p>
 
-    {#if data.username !== data.lookup.username && data.lookup.show.followers}
+    {#if data.user.username !== data.lookup.username && data.lookup.show.followers}
         <form
             action="/profile/{data.lookup.username}?/follow"
             method="POST"
@@ -47,7 +47,7 @@
     <ul class="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         {#each followers as follower}
             <li>
-                <UserProfileCard {...follower} selfID={data.id} />
+                <UserProfileCard user={follower} selfID={data.user.id} />
             </li>
         {/each}
     </ul>
