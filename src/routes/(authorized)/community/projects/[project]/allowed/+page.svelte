@@ -92,6 +92,15 @@
                     // @ts-ignore
                     userSearch = result.data.search;
 
+                    // @ts-ignore
+                    if (result.data.search.total_records === 0) {
+                        spawn({
+                            // @ts-ignore
+                            message: 'Nenhum usuário encontrado com essa pesquisa',
+                            status: 'error'
+                        });
+                    }
+
                     return update({ reset: false });
                 };
             }}
@@ -178,7 +187,16 @@
                                 use:enhance={() => {
                                     clearUnsaved();
 
-                                    return ({ update }) => {
+                                    return ({ update, result }) => {
+                                        // @ts-ignore
+                                        if (result.data.status !== 200) {
+                                            spawn({
+                                                // @ts-ignore
+                                                message: result.data.error,
+                                                status: 'error'
+                                            });
+                                        }
+
                                         return update({ reset: false });
                                     };
                                 }}
