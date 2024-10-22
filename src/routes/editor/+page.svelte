@@ -68,8 +68,8 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     const quadSize = {
-        w: 10000,
-        h: 10000
+        w: 3000,
+        h: 3000
     };
 
     onMount(function () {
@@ -118,6 +118,9 @@
         fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
                 mode = 'select';
+
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
             }            
 
             if (e.altKey) {
@@ -258,7 +261,7 @@
             }
 
             if (e.ctrlKey && e.key == 'x') {
-                e.preventDefault();
+                e.preventDefault();                
 
                 if (fabric.getActiveObject()) {
                     fabric
@@ -269,7 +272,7 @@
                         });
                 }
                 remove(fabric, ...getActive(fabric));
-                renderAll(fabric);
+                renderAll(fabric);                
             }
 
             if (e.ctrlKey && e.key == 'a') {

@@ -5,7 +5,7 @@ let capturedPoints: Array<{ x: number; y: number }> = [];
 let visiblePoints: FabricObject[] = [];
 let count: number = 0;
 
-export function getActive(canvas: Canvas): Array<FabricObject> {    
+export function getActive(canvas: Canvas): Array<FabricObject> {
     return canvas.getActiveObjects();
 }
 
@@ -15,6 +15,19 @@ export function add(canvas: Canvas, ...objects: FabricObject[]): void {
 
 export function remove(canvas: Canvas, ...objects: FabricObject[]): FabricObject[] {
     canvas.discardActiveObject();
+
+    const groups = objects.filter((x) => x.type === 'group') as Group[];    
+
+    if (groups.length > 0) {
+        for (const objs of groups) {
+            canvas.remove(objs);
+
+            for (const item of objs.removeAll()) {
+                canvas.remove(item);
+            }
+        }
+    }
+
     return canvas.remove(...objects);
 }
 
@@ -104,7 +117,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
         strokeWidth: 3,
         strokeUniform: true,
         lockSkewingX: true,
-        lockSkewingY: true
+        lockSkewingY: true,
+        lockScalingFlip: true
     });
 
     add(canvas, rect);
@@ -224,29 +238,28 @@ export function changeFill(canvas: Canvas, color: string, ...objects: FabricObje
 }
 
 export function changeOpacity(canvas: Canvas, valueSlider: HTMLInputElement) {
-    if (getActive(canvas).length > 1) {        
+    if (getActive(canvas).length > 1) {
         canvas.getActiveObject()?.set('opacity', parseInt(valueSlider.value) / 10);
         for (const objs of getActive(canvas)) {
             objs.set('opacity', parseInt(valueSlider.value) / 10);
         }
-    } else {              
+    } else {
         getActive(canvas)[0]?.set('opacity', parseInt(valueSlider.value) / 10);
     }
 
-    renderAll(canvas);   
+    renderAll(canvas);
 
     return takeOpacity(canvas);
 }
 
-
-export function takeOpacity(canvas: Canvas){
+export function takeOpacity(canvas: Canvas) {
     return getActive(canvas)[0].opacity * 10;
 }
 
-export function resetOpacity(canvas: Canvas, obj: FabricObject){
+export function resetOpacity(canvas: Canvas, obj: FabricObject) {
     obj.set({
         opacity: 0
-    })
+    });
 
     canvas.requestRenderAll();
 }
