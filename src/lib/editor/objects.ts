@@ -30,7 +30,7 @@ export function removeGroup(canvas: Canvas, ...objects: FabricObject[]) {
                 remove(canvas, item);
             }
         }
-    }    
+    }
 }
 
 export function group(canvas: Canvas): FabricObject {
@@ -264,4 +264,8 @@ export function resetOpacity(canvas: Canvas, obj: FabricObject) {
     });
 
     canvas.requestRenderAll();
+}
+
+export function verifyText(x: any): any {
+    return x;
 }

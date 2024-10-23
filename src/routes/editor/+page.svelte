@@ -28,7 +28,8 @@
         addPoints,
         addLine,
         stopLine,
-        resetOpacity
+        resetOpacity,
+        verifyText
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
@@ -752,8 +753,8 @@
                                                 />
                                                 <p
                                                     class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                                                >
-                                                    {object.text}
+                                                >                                                    
+                                                    {verifyText(object).text}
                                                 </p>
                                             </article>
                                         {:else if object.type === 'polygon'}

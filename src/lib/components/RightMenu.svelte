@@ -22,8 +22,11 @@
 
             if (rightMenu) {
                 rightMenu.style.display = 'block';
-                rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > window.innerWidth - 200) + 'px';
-                rightMenu.style.top = e.pageY - 470 * ~~(e.pageY > window.innerHeight - 470) + 'px';
+                rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > canvas.width - 200) + 'px';
+                rightMenu.style.top = e.pageY - 500 * ~~(e.pageY > canvas.height - 375) + 'px';
+
+                console.log(e.pageX, e.pageY);
+                console.log(canvas.width, canvas.height);
             }
         });
 
