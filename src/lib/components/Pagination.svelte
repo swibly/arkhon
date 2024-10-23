@@ -1,73 +1,51 @@
 <script lang="ts">
-    import { writable } from 'svelte/store';
+    import { page } from '$app/stores';
+    import type { Pagination } from '$lib/utils';
 
-    export const currentPageStore = writable(1);
+    export let pagination: Pagination<any>;
 
-    export let qtd: number;
+    function setupURL(i: number) {
+        let limit = 15;
+        let urlLimit = $page.url.searchParams.get('limit');
 
-    $: page = Math.ceil(qtd / 8);
+        if (urlLimit) {
+            try {
+                limit = parseInt(urlLimit);
+            } catch (e) {
+                limit = 15;
+            }
+        }
 
-    function handlePageClick(page: number) {
-        currentPageStore.set(page);
+        return `?page=${i}&limit=${limit}`;
     }
 </script>
 
-<div class="grid grid-cols-1 place-items-center mb-8">
-    <div class="join gap-1">
-        {#if $currentPageStore !== 1}
-            <button class="join-item btn btn-secondary w-4" on:click={() => handlePageClick(1)}>1</button>
+{#if pagination.total_pages !== 1}
+    <div class="mb-4 join">
+        {#if pagination.current_page > 2}
+            <a href={setupURL(1)} class="join-item btn btn-sm">1</a>
+            <button class="join-item btn btn-sm btn-disabled">...</button>
         {/if}
 
-        {#if $currentPageStore > 3 && page > 4}
-            <button class="join-item btn btn-secondary w-4">...</button>
+        {#if pagination.previous_page !== -1}
+            <a href={setupURL(pagination.previous_page)} class="join-item btn btn-sm">
+                {pagination.previous_page}
+            </a>
         {/if}
 
-        {#if $currentPageStore > 3 && page < 5}
-            <button
-                class="join-item btn btn-secondary w-4"
-                on:click={() => handlePageClick($currentPageStore - 2)}
-                >{$currentPageStore - 2}</button
-            >
+        <button class="join-item btn btn-sm btn-primary">{pagination.current_page}</button>
+
+        {#if pagination.next_page !== -1}
+            <a href={setupURL(pagination.next_page)} class="join-item btn btn-sm">
+                {pagination.next_page}
+            </a>
         {/if}
 
-        {#if $currentPageStore > 2}
-            <button
-                class="join-item btn btn-secondary w-4"
-                on:click={() => handlePageClick($currentPageStore - 1)}
-                >{$currentPageStore - 1}</button
-            >
-        {/if}
-
-        <button
-            class="join-item btn btn-primary w-4"
-            on:click={() => handlePageClick($currentPageStore)}>{$currentPageStore}</button
-        >
-
-        {#if $currentPageStore < page - 1}
-            <button
-                class="join-item btn btn-secondary w-4"
-                on:click={() => handlePageClick($currentPageStore + 1)}
-                >{$currentPageStore + 1}</button
-            >
-        {/if}
-
-        {#if $currentPageStore < page - 2 && page < 5}
-            <button
-                class="join-item btn btn-secondary w-4"
-                on:click={() => handlePageClick($currentPageStore + 2)}
-                >{$currentPageStore + 2}</button
-            >
-        {/if}
-
-        {#if $currentPageStore < page - 2 && page > 4}
-            <button class="join-item btn btn-secondary w-4">...</button>
-        {/if}
-
-        {#if $currentPageStore !== page}
-            <button class="join-item btn btn-secondary w-4" on:click={() => handlePageClick(page)}
-                >{page}</button
-            >
+        {#if pagination.current_page < pagination.total_pages - 1}
+            <button class="join-item btn btn-sm btn-disabled">...</button>
+            <a href={setupURL(pagination.total_pages)} class="join-item btn btn-sm">
+                {pagination.total_pages}
+            </a>
         {/if}
     </div>
-</div>
-<slot />
+{/if}

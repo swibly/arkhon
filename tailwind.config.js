@@ -1,58 +1,67 @@
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
-    plugins: [require('daisyui')],
-
     theme: {
-        screens: {
-            sm: '640px',
-            md: '768px',
-            lg: '1024px',
-            mlg: '1120px',
-            xl: '1280px',            
-            '2xl': '1536px',
-            '3xl': '1800px'
-        },
+        extend: {
+            keyframes: {
+                shake: {
+                    '0%, 100%': { transform: 'translate(0, 0)' },
+                    '10%': { transform: 'translate(-1px, -1px)' },
+                    '20%': { transform: 'translate(1px, -1px)' },
+                    '30%': { transform: 'translate(-1px, 1px)' },
+                    '40%': { transform: 'translate(1px, 1px)' },
+                    '50%': { transform: 'translate(-1px, 0)' },
+                    '60%': { transform: 'translate(1px, 1px)' },
+                    '70%': { transform: 'translate(1px, -1px)' },
+                    '80%': { transform: 'translate(-1px, 1px)' },
+                    '90%': { transform: 'translate(1px, -1px)' }
+                }
+            },
+            animation: {
+                shake: 'shake 0.5s ease-in-out infinite'
+            }
+        }
     },
-
+    plugins: [require('daisyui')],
     daisyui: {
+        logs: false,
+        darkTheme: 'dark',
         themes: [
             {
                 light: {
                     primary: '#0175AF',
                     secondary: '#FFA333',
-                    neutral: '#D9D9D9',
-                    accent: '#0175AF',
-                    'base-100': '#F8F8F8',
-                    success: '#4fd35c',
-                    warning: '#ead45f',
-                    error: '#da3030',
+                    neutral: '#E0E0E0',
+                    accent: '#FF4081',
+                    'base-100': '#F4F4F4',
+                    success: '#4CAF50',
+                    warning: '#FFC107',
+                    error: '#F44336'
                 },
                 dark: {
                     primary: '#FFA333',
                     secondary: '#0175AF',
-                    neutral: '#38414A',
-                    accent: '#252627',
-                    'base-100': '#252627',
-                    success: '#4fd35c',
-                    warning: '#ead45f',
-                    error: '#da3030',                    
+                    accent: '#FF4081',
+                    neutral: '#2D2D2D',
+                    'base-100': '#121212',
+                    info: '#2196F3',
+                    success: '#4CAF50',
+                    warning: '#FFC107',
+                    error: '#F44336'
                 },
-                night: {
-                    "primary": "#FAE931",   
-                    "secondary": "#5C5CB8",    
-                    "accent": "#FDFEFF",       
-                    "neutral": "#FAE931",      
-                    "base-100": "#000000",     
-                    "base-200": "#070707",
-                    "base-300": "#0E0E0E",
-                    "info": "#00ffff",         
-                    "success": "#00ff00",      
-                    "warning": "#ffff00",      
-                    "error": "#ff0000",
-                  },
-                  
+                contrast: {
+                    primary: '#FAE931',
+                    secondary: '#5C5CB8',
+                    accent: '#FF4081',
+                    neutral: '#000000',
+                    'base-100': '#FFFFFF',
+                    info: '#29B6F6',
+                    success: '#66BB6A',
+                    warning: '#FFA726',
+                    error: '#EF5350'
+                }
             }
         ]
-    },    
+    },
+    darkMode: ['class', '[data-theme="dark"]']
 };
