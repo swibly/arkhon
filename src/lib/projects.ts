@@ -262,3 +262,15 @@ export async function getTrashed(token: string, options: PaginationOptions = {})
         } as Pagination<Project>;
     }
 }
+
+export async function getContentByProjectId(token: string, id: number){
+    try{
+        const res = await axios.get(`/v1/projects/${id}/content`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data;
+    } catch (error) {
+        return console.error(error);
+    }
+}
