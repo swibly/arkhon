@@ -2,7 +2,7 @@ import { PencilBrush, Point, Path, type Canvas } from 'fabric';
 import { add } from './objects';
 
 export function centerView(canvas: Canvas, width: number, height: number): void {
-    canvas.setZoom(1);
+    canvas.setZoom(0.7);
 
     canvas.absolutePan(
         new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2)

@@ -1,5 +1,5 @@
 <script lang="ts" type="module">
-    import Icon from '@iconify/svelte';    
+    import Icon from '@iconify/svelte';
     import { onMount } from 'svelte';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
@@ -29,12 +29,13 @@
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import ObjectInfo from '$lib/components/ObjectInfo.svelte';
+    import ProjectTab from '$lib/components/ProjectTab.svelte';
+    import changeMode from '$lib/components/ProjectTab.svelte';
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
-    
 
-    export let data: PageServerData & {user: User, project: Project};
+    export let data: PageServerData & { user: User; project: Project };
 
     // Váriaveis e todo o funcionamento do canvas
 
@@ -50,6 +51,7 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
+    let projectTab: any;
     const quadSize = {
         w: 3000,
         h: 3000
@@ -59,13 +61,13 @@
         activeButton = value;
     }
 
-    $: console.log(data.content);
+    $: console.log(data.project.name);
 
     onMount(function () {
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
-        });
+        });        
 
         loadCanvas(fabric);
 
@@ -92,7 +94,7 @@
         centerView(fabric, quadSize.w, quadSize.h);
 
         fabric.on('after:render', () => {
-            loadCount++;
+            loadCount++;            
 
             if (fabric.getObjects().length !== asideObjects.length) {
                 asideObjects = [];
@@ -461,138 +463,6 @@
 </script>
 
 <main class="w-full min-h-screen overflow-hidden">
-    <nav class="w-full bg-base-300 flex items-center justify-between shadow-lg">
-        <div class="flex ml-4">
-            <div class="dropdown">
-                <div tabindex="0" role="button" class="btn bg-base-300 border-0 pt-1">
-                    <Icon icon="fe:bar" font-size="42px" />
-                </div>
-                <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li on:click={() => saveCanvas(fabric)}>
-                        <a href="/home/">Voltar para o início</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="flex gap-4">
-                <button
-                    class="hidden xl:block"
-                    on:click={() => stopDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'select';
-
-                        resetOpacity(fabric, rect);
-                        resetOpacity(fabric, circle);
-                    }}
-                    ><Icon
-                        icon="fluent:cursor-16-filled"
-                        font-size="35px"
-                        class={`${mode === 'select' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-                <button
-                    class="hidden xl:block"
-                    on:click={() => startDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'paint';
-
-                        resetOpacity(fabric, rect);
-                        resetOpacity(fabric, circle);
-                    }}
-                    ><Icon
-                        icon="ri:brush-fill"
-                        font-size="35px"
-                        class={`${mode === 'paint' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-                <button
-                    class="hidden xl:block"
-                    on:click={() => stopDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'text';
-
-                        resetOpacity(fabric, rect);
-                        resetOpacity(fabric, circle);
-                    }}
-                    ><Icon
-                        icon="solar:text-bold"
-                        font-size="35px"
-                        class={`${mode === 'text' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-                <button
-                    class="hidden xl:block"
-                    on:click={() => stopDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'rect';
-
-                        resetOpacity(fabric, circle);
-                    }}
-                    ><Icon
-                        icon="bi:square-fill"
-                        font-size="35px"
-                        class={`${mode === 'rect' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-                <button
-                    class="hidden xl:block"
-                    on:click={() => stopDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'circle';
-
-                        resetOpacity(fabric, rect);
-                    }}
-                    ><Icon
-                        icon="material-symbols:circle"
-                        font-size="35px"
-                        class={`${mode === 'circle' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-                <button
-                    class="hidden xl:block"
-                    on:click={() => stopDraw(fabric)}
-                    on:click={() => stopLine(fabric)}
-                    on:click={() => {
-                        mode = 'line';
-
-                        resetOpacity(fabric, rect);
-                        resetOpacity(fabric, circle);
-                    }}
-                    ><Icon
-                        icon="vaadin:line-h"
-                        font-size="35px"
-                        class={`${mode === 'line' ? 'text-secondary' : 'text-white'}`}
-                    /></button
-                >
-            </div>
-        </div>
-        <h1 class="text-2xl font-bold">Título</h1>
-        <div class="flex items-center gap-4 mr-4">
-            <Icon icon="ph:play-fill" font-size="25px" />
-            <button on:click={() => centerView(fabric, quadSize.w, quadSize.h)}
-                ><Icon icon="mingcute:align-center-fill" font-size="25px" /></button
-            >
-            <button on:click={() => saveCanvas(fabric)}>
-                <Icon icon="material-symbols:save" font-size="25px" />
-            </button>
-            <button
-                on:click={() =>
-                    toPNG(
-                        fabric,
-                        quadSize.w,
-                        quadSize.h,
-                        fabric.viewportTransform.slice()[4],
-                        fabric.viewportTransform.slice()[5]
-                    )}
-            >
-                <Icon icon="material-symbols:download" font-size="25px" />
-            </button>
-        </div>
-    </nav>
     <main class="flex h-[calc(100vh-5.5vh)]">
         <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
@@ -705,6 +575,14 @@
             <ObjectMenu canvas={fabric} />
             <ObjectInfo canvas={fabric} />
             <RightMenu canvas={fabric} />
+            <ProjectTab
+                bind:mode
+                canvas={fabric}
+                width={quadSize.w}
+                height={quadSize.h}
+                cursors={[rect, circle]}                
+                name={data.project.name}
+            />
             <canvas bind:this={canvas} />
         </main>
     </main>
