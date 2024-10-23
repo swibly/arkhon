@@ -16,19 +16,21 @@ export function add(canvas: Canvas, ...objects: FabricObject[]): void {
 export function remove(canvas: Canvas, ...objects: FabricObject[]): FabricObject[] {
     canvas.discardActiveObject();
 
-    const groups = objects.filter((x) => x.type === 'group') as Group[];    
+    return canvas.remove(...objects);
+}
+
+export function removeGroup(canvas: Canvas, ...objects: FabricObject[]) {
+    const groups = getActive(canvas).filter((x) => x.type === 'group') as Group[];
 
     if (groups.length > 0) {
         for (const objs of groups) {
-            canvas.remove(objs);
+            remove(canvas, objs);
 
             for (const item of objs.removeAll()) {
-                canvas.remove(item);
+                remove(canvas, item);
             }
         }
-    }
-
-    return canvas.remove(...objects);
+    }    
 }
 
 export function group(canvas: Canvas): FabricObject {

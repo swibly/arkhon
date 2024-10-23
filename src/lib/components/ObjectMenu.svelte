@@ -20,7 +20,7 @@
     let mixed: boolean = false;
 
     onMount(() => {
-        addEventListener('mousedown', () => {
+        addEventListener('load', () => {
             canvas.on('selection:created', () => {
                 if (getActive(canvas).length > 1) {
                     mixed = true;

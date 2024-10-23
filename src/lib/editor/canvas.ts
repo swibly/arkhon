@@ -88,7 +88,7 @@ export function loadCanvas(canvas: Canvas) {
 
     if (typeof json === 'string') {
         let objects = JSON.parse(json);
-        return canvas.loadFromJSON(objects);
+        canvas.loadFromJSON(objects);
     }
 }
 

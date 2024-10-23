@@ -20,6 +20,7 @@
     } from '$lib/editor/canvas';
     import {
         remove,
+        removeGroup,
         getActive,
         addRect,
         addText,
@@ -68,6 +69,7 @@
     let rect: FabricObject;
     let circle: FabricObject;
     let loadCount: number = 0;
+    let asideObjects: Array<FabricObject> = [];
     const quadSize = {
         w: 3000,
         h: 3000
@@ -106,11 +108,25 @@
         fabric.on('after:render', () => {
             loadCount++;
 
+            if (fabric.getObjects().length !== asideObjects.length) {
+                asideObjects = [];
+
+                let items = fabric.getObjects();
+
+                for (const obj of items) {
+                    asideObjects.push(obj);
+                }
+            }
+
             if (loadCount === 1) {
                 drawGrid(fabric, 100, quadSize.w, quadSize.h);
 
                 fabric.add(rect);
                 fabric.add(circle);
+                fabric.moveObjectTo(rect, 1);
+                fabric.moveObjectTo(circle, 2);
+                fabric.moveObjectTo(fabric.getObjects()[3], 4);
+
                 rect.excludeFromExport = true;
                 circle.excludeFromExport = true;
             }
@@ -141,7 +157,11 @@
             }
 
             if (mode === 'text') {
-                addText(fabric, [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }], "Toque aqui para digitar");
+                addText(
+                    fabric,
+                    [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }],
+                    'Toque aqui para digitar'
+                );
 
                 fabric.set({ selection: false });
             }
@@ -241,6 +261,18 @@
             }
         });
 
+        fabric.on('object:modified', () => {
+            if (fabric.getActiveObject()!.type === 'i-text') {
+                asideObjects = [];
+
+                let items = fabric.getObjects();
+
+                for (const obj of items) {
+                    asideObjects.push(obj);
+                }
+            }
+        });
+
         addEventListener('resize', function () {
             resize(fabric, innerWidth, innerHeight);
         });
@@ -257,6 +289,7 @@
             }
 
             if (e.key == 'Delete') {
+                removeGroup(fabric, ...getActive(fabric));
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
             }
@@ -272,6 +305,8 @@
                             _clipboard = cloned;
                         });
                 }
+
+                removeGroup(fabric, ...getActive(fabric));
                 remove(fabric, ...getActive(fabric));
                 renderAll(fabric);
             }
@@ -327,37 +362,21 @@
             if (e.ctrlKey && e.key == 'd') {
                 e.preventDefault();
 
-                console.log(fabric.getActiveObject());
+                let objs = fabric.getActiveObjects();
 
-                if (fabric.getActiveObject()) {
-                    fabric
-                        .getActiveObject()!
-                        .clone()
-                        .then((cloned) => {
-                            _clipboard = cloned;
-                        });
-                }
+                for (const obj of objs) {
+                    let clonedObj = await obj.clone();
 
-                const clonedObj = await _clipboard.clone();
-                fabric.discardActiveObject();
-                clonedObj.set({
-                    left: clonedObj.left + 10,
-                    top: clonedObj.top + 10,
-                    evented: true
-                });
-                if (clonedObj instanceof ActiveSelection) {
-                    clonedObj.canvas = fabric;
-                    clonedObj.forEachObject((obj) => {
-                        fabric.add(obj);
+                    fabric.discardActiveObject();
+                    clonedObj.set({
+                        left: obj.left + 10,
+                        top: obj.top + 10
                     });
-                    clonedObj.setCoords();
-                } else {
+
                     fabric.add(clonedObj);
+                    fabric.setActiveObject(clonedObj);
+                    fabric.requestRenderAll();
                 }
-                _clipboard.top += 10;
-                _clipboard.left += 10;
-                fabric.setActiveObject(clonedObj);
-                fabric.requestRenderAll();                
             }
 
             if (
@@ -414,7 +433,7 @@
                     }
                 }
 
-                if (e.key == 'c') {
+                if (!e.ctrlKey && e.key == 'c') {
                     resetOpacity(fabric, rect);
                     stopLine(fabric);
                     stopDraw(fabric);
@@ -436,6 +455,7 @@
                         mode = 'line';
                     } else {
                         mode = 'select';
+                        stopLine(fabric);
                     }
                 }
 
@@ -631,7 +651,7 @@
         </div>
     </nav>
     <main class="flex h-[calc(100vh-5.5vh)]">
-        <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 overflow-y-hidden scrollbar-thin">
+        <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 scrollbar-thin">
             <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
                 <button
                     class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -669,7 +689,7 @@
             <div class="divider" />
             <main>
                 {#if activeButton == 'project'}
-                    <details class="dropdown w-full mt-4">
+                    <details class="dropdown w-full">
                         <summary
                             class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
                             >Andar 1</summary
@@ -682,6 +702,80 @@
                             >
                         </div>
                     </details>
+
+                    <div class="divider" />
+
+                    <main class="flex flex-col justify-center mx-8 mt-4">
+                        <h1 class="text-xl font-bold text-center">Objetos</h1>
+                        <section class="mt-4 mx-4 w-5/6">
+                            {#if asideObjects.length > 4}
+                                {#each asideObjects as object, index (object)}
+                                    {#if index > 3}
+                                        {#if object.type === 'rect'}
+                                            <p class="flex items-center gap-4">
+                                                <Icon
+                                                    icon="bi:square-fill"
+                                                    font-size="15px"
+                                                    class={`${
+                                                        $lightMode ? 'text-black' : 'text-white'
+                                                    }`}
+                                                /> Retângulo
+                                            </p>
+                                        {:else if object.type === 'circle'}
+                                            <p class="flex items-center gap-4">
+                                                <Icon
+                                                    icon="material-symbols:circle"
+                                                    font-size="15px"
+                                                    class={`${
+                                                        $lightMode ? 'text-black' : 'text-white'
+                                                    }`}
+                                                />Círculo
+                                            </p>
+                                        {:else if object.type === 'path'}
+                                            <p class="flex items-center gap-4">
+                                                <Icon
+                                                    icon="ri:brush-fill"
+                                                    font-size="15px"
+                                                    class={`${
+                                                        $lightMode ? 'text-black' : 'text-white'
+                                                    }`}
+                                                />Desenho
+                                            </p>
+                                        {:else if object.type === 'i-text'}
+                                            <article class="flex items-center gap-4">
+                                                <Icon
+                                                    icon="solar:text-bold"
+                                                    font-size="15px"
+                                                    class={`${
+                                                        $lightMode ? 'text-black' : 'text-white'
+                                                    }`}
+                                                />
+                                                <p
+                                                    class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                                                >
+                                                    {object.text}
+                                                </p>
+                                            </article>
+                                        {:else if object.type === 'polygon'}
+                                            <p class="flex items-center gap-4">
+                                                <Icon
+                                                    icon="vaadin:line-h"
+                                                    font-size="15px"
+                                                    class={`${
+                                                        $lightMode ? 'text-black' : 'text-white'
+                                                    }`}
+                                                /> Polígono
+                                            </p>
+                                        {/if}
+                                    {/if}
+                                {/each}
+                            {:else}
+                                <p class="text-md text-center font-semibold">
+                                    Nenhum objeto foi adicionado ao canvas
+                                </p>
+                            {/if}
+                        </section>
+                    </main>
                 {/if}
                 {#if activeButton == 'component'}
                     <Pagination bind:currentPageStore qtd={80}>
@@ -712,4 +806,3 @@
         </main>
     </main>
 </main>
-
