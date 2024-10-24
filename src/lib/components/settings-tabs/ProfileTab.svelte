@@ -4,8 +4,6 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import Input from '../Input.svelte';
-    import { goto, invalidateAll } from '$app/navigation';
-    import { page } from '$app/stores';
 
     type ActionResult =
         | {
@@ -46,7 +44,6 @@
 
     $: errorField = '';
 
-    let imageForm: HTMLFormElement;
     let imagePreview: HTMLImageElement;
     let imageInput: HTMLInputElement;
 
@@ -111,7 +108,6 @@
 </div>
 
 <form
-    bind:this={imageForm}
     method="POST"
     action="/home?/changeImage"
     enctype="multipart/form-data"
@@ -136,7 +132,7 @@
             Salvar
         </button>
     {:else}
-        <div class="relative overflow-hidden rounded-full group">
+        <div class="relative overflow-hidden rounded-full group size-48 mx-auto">
             <img
                 bind:this={imagePreview}
                 src={user.pfp}
@@ -170,7 +166,7 @@
 
         <p />
 
-        {#if hasImageChanged}
+        {#if image !== null}
             <button type="submit" class="mt-4 btn btn-sm btn-primary w-full">
                 <Icon icon="mdi:feather" />
                 Salvar
