@@ -163,7 +163,7 @@
                         return ({ update }) => {
                             loadingFavorite = false;
                             spawn({
-                                message: 'Você desfavoritou este projeto.'
+                                message: project.is_favorited  ? 'Você desfavoritou este projeto.' : 'Você favoritou este projeto.'
                             });
 
                             return update({ reset: true });
