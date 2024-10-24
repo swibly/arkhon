@@ -1,5 +1,5 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { changeUserImage, searchUsersByName } from '$lib/user';
+import { changeUserImage, deleteUserImage, searchUsersByName } from '$lib/user';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
@@ -33,5 +33,9 @@ export const actions: Actions = {
 
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         return await changeUserImage(jwt, data);
+    },
+    removeImage: async function ({ cookies }) {
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        return await deleteUserImage(jwt);
     }
 };
