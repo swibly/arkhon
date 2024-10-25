@@ -154,6 +154,7 @@
                 <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
             </button>
 
+            {#if !user.pfp.includes('gravatar')}
             <form method="POST" action="/home?/removeImage" use:enhance>
                 <button
                     class="absolute bottom-0 right-0 bg-error text-error-content rounded-full border-4 border-base-100 p-2 tooltip"
@@ -162,6 +163,7 @@
                     <Icon icon="mdi:trash" class="size-6" />
                 </button>
             </form>
+            {/if}
         </div>
 
         <input
