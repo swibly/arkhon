@@ -374,17 +374,19 @@
                 Privar projeto
             </button>
 
-            <div class="mt-4">
-                <Attention>
-                    Se o projeto for privado, ele será removido dos favoritos de
-                    {data.project.total_favorites.toLocaleString(data.user.language, {
-                        notation: 'compact',
-                        compactDisplay: 'long'
-                    })}
-                    pessoa{data.project.total_favorites > 1 ? 's' : ''}, caso elas não estejam na
-                    lista de usuários autorizados.
-                </Attention>
-            </div>
+            {#if data.project.total_favorites !== 0}
+                <div class="mt-4">
+                    <Attention>
+                        Se o projeto for privado, ele será removido dos favoritos de
+                        {data.project.total_favorites.toLocaleString(data.user.language, {
+                            notation: 'compact',
+                            compactDisplay: 'long'
+                        })}
+                        pessoa{data.project.total_favorites > 1 ? 's' : ''}, caso elas não estejam
+                        na lista de usuários autorizados.
+                    </Attention>
+                </div>
+            {/if}
 
             <dialog bind:this={privateDialog} class="modal">
                 <div class="modal-box max-w-xl shadow-none flex flex-col gap-2">
