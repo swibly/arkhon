@@ -16,7 +16,7 @@
 
     {#each users.slice(0, limit) as user}
         <div class="avatar size-12">
-            <a href={`/profile/${user.name}`} class="hover:z-50">
+            <a href={`/profile/${user.name}`} class="w-full hover:z-50">
                 <img src={user.pfp} alt="" />
             </a>
         </div>
