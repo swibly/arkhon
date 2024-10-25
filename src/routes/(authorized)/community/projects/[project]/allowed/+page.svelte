@@ -58,13 +58,6 @@
     <title>Usuários do projeto {project.name} - Swibly Arkhon</title>
 </svelte:head>
 
-{#if project.deleted_at !== null}
-    <p class="p-2 w-full bg-warning flex justify-center items-center gap-2">
-        <Icon icon="mdi:alert" />
-        Este projeto está na lixeira do dono. Você pode estar vendo uma versão antiga.
-    </p>
-{/if}
-
 <div class="w-full max-w-3xl p-4 mx-auto">
     <button role="link" class="btn btn-ghost btn-sm mb-4" on:click={() => history.back()}>
         <Icon icon="streamline:return-2-solid" />
