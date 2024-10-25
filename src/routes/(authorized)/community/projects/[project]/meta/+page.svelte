@@ -381,7 +381,8 @@
                         notation: 'compact',
                         compactDisplay: 'long'
                     })}
-                    pessoas, caso elas não estejam na lista de usuários autorizados.
+                    pessoa{data.project.total_favorites > 1 ? 's' : ''}, caso elas não estejam na
+                    lista de usuários autorizados.
                 </Attention>
             </div>
 
