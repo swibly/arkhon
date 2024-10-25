@@ -201,7 +201,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2 mt-4">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-2 mt-4">
         <a href="/community/projects/{project.id}/edit" class="btn btn-sm btn-primary">
             <Icon icon="mdi:eye" />
             Ir para o editor
