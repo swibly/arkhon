@@ -51,7 +51,6 @@
     let image: File | null = null;
     let imageError: string | null = null;
     let loadingImage = false;
-    let hasImageChanged = false;
 
     function handleImageChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -69,7 +68,6 @@
             } else {
                 imageError = null;
                 image = selectedFile;
-                hasImageChanged = true;
 
                 var reader = new FileReader();
                 reader.readAsDataURL(image);
@@ -95,10 +93,15 @@
 
     function handleFormSubmission() {
         loadingImage = true;
-        return function () {
+        return function ({
+            update
+        }: {
+            update: (options?: { reset?: boolean; invalidateAll?: boolean }) => Promise<void>;
+        }) {
             loadingImage = false;
-            spawn({ message: 'Imagem alterada com sucesso!' });
-            location.reload();
+            image = null;
+            spawn({ message: 'Imagem alterada com sucesso. A imagem pode demorar alguns minutos para atualizar na plataforma.' });
+            return update({ reset: true });
         };
     }
 </script>
