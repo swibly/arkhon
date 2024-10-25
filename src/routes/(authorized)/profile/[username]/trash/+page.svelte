@@ -5,6 +5,7 @@
     import Pagination from '$lib/components/Pagination.svelte';
     import Icon from '@iconify/svelte';
     import { enhance } from '$app/forms';
+    import Attention from '$lib/components/Attention.svelte';
 
     export let data: PageServerData & { user: User; lookup: User };
 
@@ -12,38 +13,74 @@
     $: trashed = pagination.data;
 
     let loading = false;
+
+    let clearDialog: HTMLDialogElement;
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Lixeira</h1>
 <p>Seus projetos apagados</p>
 
-{#if data.user.username === data.lookup.username && pagination.total_records !== 0}
-    <form
-        method="POST"
-        action="?/clear"
-        class="mt-4"
-        use:enhance={() => {
-            loading = true;
+{#if data.user.username === data.lookup.username && pagination.total_records > 1}
+    <button class="btn btn-sm btn-wide btn-error mt-4" on:click={() => clearDialog.show()}>
+        <Icon icon="mdi:trash" />
+        Limpar lixeira
+    </button>
 
-            return ({ update }) => {
-                loading = false;
+    <div class="mt-4">
+        <Attention>
+            Apenas os projetos que você é dono serão excluídos ao utilizar a opção "Limpar lixeira",
+            garantindo a sua segurança e a integridade dos demais projetos.
+        </Attention>
+    </div>
 
-                return update({ reset: true });
-            };
-        }}
-    >
-        {#if loading}
-            <button type="button" class="btn btn-sm btn-wide btn-disabled">
-                <span class="loading loading-spinner loading-md" />
-                Carregando...
-            </button>
-        {:else}
-            <button class="btn btn-sm btn-wide btn-error">
-                <Icon icon="mdi:trash" />
-                Limpar lixeira
-            </button>
-        {/if}
-    </form>
+    <dialog bind:this={clearDialog} class="modal">
+        <div class="modal-box shadow-none flex flex-col gap-2">
+            <span class="text-xl font-bold">Você tem certeza que deseja limpar a lixeira?</span>
+
+            <p class="text-justify">
+                Apenas os seus próprios projetos serão deletados. Para remover um projeto de outro
+                usuário no qual você possui permissão, exclua-o manualmente.
+            </p>
+
+            <p class="font-bold">
+                {pagination.total_records.toLocaleString(data.user.language)} projetos poderão ser deletados.
+                (caso você seja dono de todos)
+            </p>
+
+            <form
+                method="POST"
+                action="?/clear"
+                class="mt-4"
+                use:enhance={() => {
+                    loading = true;
+
+                    return ({ update }) => {
+                        loading = false;
+
+                        return update({ reset: true });
+                    };
+                }}
+            >
+                <button class="btn btn-error w-full">
+                    <Icon icon="mdi:trash" />
+                    Limpar lixeira
+                </button>
+            </form>
+
+            <form method="dialog">
+                <button class="btn btn-primary w-full">
+                    <Icon icon="material-symbols:close" />
+                    Não quero. (cancelar)
+                </button>
+            </form>
+        </div>
+        <form
+            method="dialog"
+            class="modal-backdrop backdrop-grayscale bg-black/60 backdrop:transition-all"
+        >
+            <button class="cursor-default">close</button>
+        </form>
+    </dialog>
 {/if}
 
 <div class="divider" />
