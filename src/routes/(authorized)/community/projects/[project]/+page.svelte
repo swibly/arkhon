@@ -5,6 +5,7 @@
     import UserIcon from '$lib/components/UserIcon.svelte';
     import type { User } from '$lib/user';
     import type { LayoutServerData } from './$types';
+    import { goto } from '$app/navigation';
 
     export let data: LayoutServerData & { user: User };
 
@@ -163,7 +164,9 @@
                         return ({ update }) => {
                             loadingFavorite = false;
                             spawn({
-                                message: project.is_favorited  ? 'Você desfavoritou este projeto.' : 'Você favoritou este projeto.'
+                                message: project.is_favorited
+                                    ? 'Você desfavoritou este projeto.'
+                                    : 'Você favoritou este projeto.'
                             });
 
                             return update({ reset: true });
@@ -235,7 +238,7 @@
                             message: 'Você saiu deste projeto.'
                         });
 
-                        return update({ reset: false });
+                        goto(`/profile/${data.user.username}`);
                     };
                 }}
             >
