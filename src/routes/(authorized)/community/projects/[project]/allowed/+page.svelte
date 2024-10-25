@@ -71,7 +71,7 @@
         Página anterior
     </button>
 
-    {#if data.user.id === project.owner_id}
+    {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_users === true).length > 0}
         <form
             action="/home?/searchUsers"
             method="POST"
