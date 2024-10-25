@@ -29,6 +29,18 @@ export const actions: Actions = {
     update: async function ({ cookies, params, request }) {
         const data = await request.formData();
 
+        const banner = data.get('banner') as File | undefined;
+
+        if (banner && banner.name !== '') {
+            if (!['.png', '.jpg', '.jpeg'].some((type) => banner.name.endsWith(type))) {
+                return fail(400, {
+                    error: 'Tipo de arquivo inválido.'
+                });
+            }
+        } else {
+            data.delete('banner');
+        }
+
         try {
             const response = await updateProject(
                 cookies.get(JWT_TOKEN_COOKIE_NAME)!,

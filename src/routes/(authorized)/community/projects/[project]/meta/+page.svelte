@@ -27,6 +27,52 @@
     let loading = false;
     let error: string | [string, string] | undefined;
 
+    let imgPreview: HTMLImageElement;
+    let fileInput: HTMLInputElement;
+    let file: File | null = null;
+    let fileError: string | null = null;
+
+    function handleFileChange(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const selectedFile = input.files[0];
+            const fileSizeLimit = 5 * 1024 * 1024;
+
+            if (selectedFile.size > fileSizeLimit) {
+                fileError = 'Tamanho do arquivo não pode ser maior que 5MB';
+                file = null;
+
+                imgPreview.src = 'https://placehold.co/600x400';
+
+                spawn({ message: fileError, status: 'error' });
+            } else {
+                fileError = null;
+                file = selectedFile;
+
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    imgPreview.src = e.target!.result as string;
+                };
+            }
+        }
+    }
+
+    function handleImageError() {
+        fileError = 'Imagem inválida ou corrompida.';
+        file = null;
+
+        imgPreview.src = 'https://placehold.co/600x400';
+
+        spawn({ message: fileError, status: 'error' });
+    }
+
+    function handleImageLoad() {
+        if (file === null) return;
+
+        spawn({ message: 'Imagem adicionada como banner.' });
+    }
+
     onMount(() => {
         for (const input of document.querySelectorAll<HTMLInputElement>('input')) {
             input.oninput = () => {
@@ -56,6 +102,34 @@
         Página anterior
     </button>
 
+    <div class="mb-4 space-y-2">
+        <h1 class="text-3xl font-bold">Banner do projeto</h1>
+        <p>Clique na imagem para editar.</p>
+
+        <div class="relative">
+            <img
+                bind:this={imgPreview}
+                src={data.project.banner_url !== ''
+                    ? data.project.banner_url
+                    : 'https://placehold.co/600x400'}
+                alt=""
+                class="object-cover w-full h-full max-h-96 rounded-md"
+                on:error={handleImageError}
+                on:load={handleImageLoad}
+            />
+
+            <button
+                type="button"
+                class="absolute inset-0 transition opacity-0 bg-black/50 hover:opacity-100 rounded-md"
+                on:click={() => fileInput.click()}
+            >
+                <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
+            </button>
+        </div>
+    </div>
+
+    <div class="divider" />
+
     <form
         method="POST"
         action="?/update"
@@ -64,12 +138,12 @@
             error = undefined;
             errorField = '';
 
-            return ({ update, result }) => {
+            return async ({ update, result }) => {
+                loading = false;
+
                 if (result.type !== 'success') {
                     // @ts-ignore
                     error = result.data.error;
-
-                    loading = false;
 
                     if (typeof error === 'object') {
                         errorField = Object.keys(error)[0];
@@ -80,7 +154,7 @@
                         duration: 7000
                     });
 
-                    return update({ reset: false });
+                    return update({ reset: true });
                 }
 
                 unsavedChanges = false;
@@ -89,10 +163,20 @@
                     message: 'Projeto salvo!'
                 });
 
-                return update({ reset: false });
+                await update({ reset: true });
+                window.location.reload();
             };
         }}
     >
+        <input
+            type="file"
+            name="banner"
+            accept="image/png,image/jpg,image/jpeg"
+            on:change={handleFileChange}
+            bind:this={fileInput}
+            class="hidden"
+        />
+
         <div class="mb-4 space-y-2">
             <h1 class="text-3xl font-bold">Informações do projeto</h1>
             <p>
@@ -185,16 +269,24 @@
         />
 
         <Attention type="tip">
-            O <span class="font-bold">orçamento</span> é uma estimativa do valor que você pretende gastar no seu projeto.
+            O <span class="font-bold">orçamento</span> é uma estimativa do valor que você pretende gastar
+            no seu projeto.
         </Attention>
 
         <div class="divider divider-start divider-end" />
 
-        <div class="flex items-center gap-2">
-            <button type="submit" class="btn btn-sm btn-primary">
-                <Icon icon="mdi:feather" />
-                Salvar
-            </button>
+        <div class="flex flex-col items-center gap-2">
+            {#if loading}
+                <button type="button" class="btn btn-md btn-primary w-full btn-disabled">
+                    <span class="loading loading-spinner loading-md" />
+                    Carregando...
+                </button>
+            {:else}
+                <button type="submit" class="btn btn-md btn-primary w-full">
+                    <Icon icon="mdi:feather" />
+                    Salvar
+                </button>
+            {/if}
 
             {#if unsavedChanges}
                 <p class="link opacity-50 italic">Alterações não salvas</p>
