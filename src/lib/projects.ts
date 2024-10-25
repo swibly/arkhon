@@ -65,6 +65,26 @@ export async function createProject(
     }
 }
 
+export async function updateProject(token: string, projectID: number, data: FormData) {
+    try {
+        const res = await axios.patch(`/v1/projects/${projectID}`, data, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            status: res.status,
+            message: res.data.message as string
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string | [string, string],
+            // @ts-ignore
+            status: e.response.status
+        };
+    }
+}
+
 export async function getProjectsByUser(
     token: string,
     username: string,
@@ -260,5 +280,31 @@ export async function getTrashed(token: string, options: PaginationOptions = {})
             previous_page: -1,
             total_records: 0
         } as Pagination<Project>;
+    }
+}
+
+export async function publishProject(token: string, projectID: number) {
+    try {
+        await axios.patch(
+            `/v1/projects/${projectID}/publish`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function unpublishProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/unpublish`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
     }
 }
