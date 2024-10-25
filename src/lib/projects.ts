@@ -283,6 +283,18 @@ export async function getTrashed(token: string, options: PaginationOptions = {})
     }
 }
 
+export async function clearTrash(token: string) {
+    try {
+        await axios.delete(`/v1/projects/trash`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+
 export async function publishProject(token: string, projectID: number) {
     try {
         await axios.patch(
