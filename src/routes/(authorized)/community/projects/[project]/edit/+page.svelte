@@ -9,9 +9,7 @@
         renderAll,
         startDraw,
         stopDraw,
-        saveCanvas,
-        loadCanvas,
-        toPNG
+        loadCanvas
     } from '$lib/editor/canvas';
     import {
         remove,
@@ -30,7 +28,6 @@
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import ObjectInfo from '$lib/components/ObjectInfo.svelte';
     import ProjectTab from '$lib/components/ProjectTab.svelte';
-    import changeMode from '$lib/components/ProjectTab.svelte';
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
@@ -51,7 +48,6 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
-    let projectTab: any;
     const quadSize = {
         w: 3000,
         h: 3000
@@ -61,15 +57,13 @@
         activeButton = value;
     }
 
-    $: console.log(data.project.name);
-
     onMount(function () {
         fabric = new Canvas(canvas, {
             selection: true,
-            preserveObjectStacking: true
-        });        
+            preserveObjectStacking: true            
+        });
 
-        loadCanvas(fabric);
+        loadCanvas(fabric, data.content);
 
         rect = new Rect({
             width: 100,
@@ -91,10 +85,10 @@
         });
 
         resize(fabric, innerWidth, innerHeight);
-        centerView(fabric, quadSize.w, quadSize.h);
+        centerView(fabric, quadSize.w, quadSize.h);             
 
         fabric.on('after:render', () => {
-            loadCount++;            
+            loadCount++;
 
             if (fabric.getObjects().length !== asideObjects.length) {
                 asideObjects = [];
@@ -105,6 +99,7 @@
                     asideObjects.push(obj);
                 }
             }
+                    
 
             if (loadCount === 1) {
                 drawGrid(fabric, 100, quadSize.w, quadSize.h);
@@ -462,128 +457,123 @@
     });
 </script>
 
-<main class="w-full min-h-screen overflow-hidden">
-    <main class="flex h-[calc(100vh-5.5vh)]">
-        <aside class="w-0 xl:w-1/4 2xl:w-1/5 h-full bg-base-200 scrollbar-thin">
-            <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
-                <button
-                    class={`text-sm sm:text-base transition duration-150 ease-in-out ${
-                        activeButton === 'project'
-                            ? 'border-b-4 border-primary'
-                            : 'border-transparent hover:border-b-4 hover:border-secondary'
-                    } focus:border-b-4 focus:border-primary`}
-                    on:click={() => setActiveButton('project')}
-                >
-                    Projeto
-                </button>
+<main class="flex h-full">
+    <aside class="w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin">
+        <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
+            <button
+                class={`text-sm sm:text-base transition duration-150 ease-in-out ${
+                    activeButton === 'project'
+                        ? 'border-b-4 border-primary'
+                        : 'border-transparent hover:border-b-4 hover:border-secondary'
+                } focus:border-b-4 focus:border-primary`}
+                on:click={() => setActiveButton('project')}
+            >
+                Projeto
+            </button>
 
-                <button
-                    class={`text-sm sm:text-base transition duration-150 ease-in-out ${
-                        activeButton === 'component'
-                            ? 'border-b-4 border-primary'
-                            : 'border-transparent hover:border-b-4 hover:border-secondary'
-                    } focus:border-b-4 focus:border-primary`}
-                    on:click={() => setActiveButton('component')}
-                >
-                    Componentes
-                </button>
+            <button
+                class={`text-sm sm:text-base transition duration-150 ease-in-out ${
+                    activeButton === 'component'
+                        ? 'border-b-4 border-primary'
+                        : 'border-transparent hover:border-b-4 hover:border-secondary'
+                } focus:border-b-4 focus:border-primary`}
+                on:click={() => setActiveButton('component')}
+            >
+                Componentes
+            </button>
 
-                <button
-                    class={`text-sm sm:text-base transition duration-150 ease-in-out ${
-                        activeButton === 'store'
-                            ? 'border-b-4 border-primary'
-                            : 'border-transparent hover:border-b-4 hover:border-secondary'
-                    } focus:border-b-4 focus:border-primary`}
-                    on:click={() => setActiveButton('store')}
-                >
-                    Loja
-                </button>
-            </nav>
-            <div class="divider" />
-            <main>
-                {#if activeButton == 'project'}
-                    <details class="dropdown w-full">
-                        <summary
-                            class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
-                            >Andar 1</summary
+            <button
+                class={`text-sm sm:text-base transition duration-150 ease-in-out ${
+                    activeButton === 'store'
+                        ? 'border-b-4 border-primary'
+                        : 'border-transparent hover:border-b-4 hover:border-secondary'
+                } focus:border-b-4 focus:border-primary`}
+                on:click={() => setActiveButton('store')}
+            >
+                Loja
+            </button>
+        </nav>
+        <div class="divider" />
+        <main>
+            {#if activeButton == 'project'}
+                <details class="dropdown w-full">
+                    <summary
+                        class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
+                        >Andar 1</summary
+                    >
+                    <div
+                        class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
+                    >
+                        <button class="flex items-center gap-4 btn bg-base-300 border-0"
+                            ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button
                         >
-                        <div
-                            class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
-                        >
-                            <button class="flex items-center gap-4 btn bg-base-300 border-0"
-                                ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button
-                            >
-                        </div>
-                    </details>
+                    </div>
+                </details>
 
-                    <div class="divider" />
+                <div class="divider" />
 
-                    <main class="flex flex-col justify-center mx-8 mt-4">
-                        <h1 class="text-xl font-bold text-center">Objetos</h1>
-                        <section class="mt-4 mx-4 w-5/6">
-                            {#if asideObjects.length > 4}
-                                {#each asideObjects as object, index (object)}
-                                    {#if index > 3}
-                                        {#if object.type === 'rect'}
-                                            <p class="flex items-center gap-4">
-                                                <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
+                <main class="flex flex-col justify-center mx-8 mt-4">
+                    <h1 class="text-xl font-bold text-center">Objetos</h1>
+                    <section class="mt-4 mx-4 w-5/6">
+                        {#if asideObjects.length > 4}
+                            {#each asideObjects as object, index (object)}
+                                {#if index > 3}
+                                    {#if object.type === 'rect'}
+                                        <p class="flex items-center gap-4">
+                                            <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
+                                        </p>
+                                    {:else if object.type === 'circle'}
+                                        <p class="flex items-center gap-4">
+                                            <Icon
+                                                icon="material-symbols:circle"
+                                                font-size="15px"
+                                            />Círculo
+                                        </p>
+                                    {:else if object.type === 'path'}
+                                        <p class="flex items-center gap-4">
+                                            <Icon icon="ri:brush-fill" font-size="15px" />Desenho
+                                        </p>
+                                    {:else if object.type === 'i-text'}
+                                        <article class="flex items-center gap-4">
+                                            <Icon icon="solar:text-bold" font-size="15px" />
+                                            <p
+                                                class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                                            >
+                                                {verifyText(object).text}
                                             </p>
-                                        {:else if object.type === 'circle'}
-                                            <p class="flex items-center gap-4">
-                                                <Icon
-                                                    icon="material-symbols:circle"
-                                                    font-size="15px"
-                                                />Círculo
-                                            </p>
-                                        {:else if object.type === 'path'}
-                                            <p class="flex items-center gap-4">
-                                                <Icon
-                                                    icon="ri:brush-fill"
-                                                    font-size="15px"
-                                                />Desenho
-                                            </p>
-                                        {:else if object.type === 'i-text'}
-                                            <article class="flex items-center gap-4">
-                                                <Icon icon="solar:text-bold" font-size="15px" />
-                                                <p
-                                                    class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                                                >
-                                                    {verifyText(object).text}
-                                                </p>
-                                            </article>
-                                        {:else if object.type === 'polygon'}
-                                            <p class="flex items-center gap-4">
-                                                <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
-                                            </p>
-                                        {/if}
+                                        </article>
+                                    {:else if object.type === 'polygon'}
+                                        <p class="flex items-center gap-4">
+                                            <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
+                                        </p>
                                     {/if}
-                                {/each}
-                            {:else}
-                                <p class="text-md text-center font-semibold">
-                                    Nenhum objeto foi adicionado ao canvas
-                                </p>
-                            {/if}
-                        </section>
-                    </main>
-                {/if}
-                {#if activeButton == 'component'}{/if}
-                {#if activeButton == 'store'}{/if}
-            </main>
-        </aside>
-
-        <main class="w-full xl:w-3/4 2xl:w-4/5">
-            <ObjectMenu canvas={fabric} />
-            <ObjectInfo canvas={fabric} />
-            <RightMenu canvas={fabric} />
-            <ProjectTab
-                bind:mode
-                canvas={fabric}
-                width={quadSize.w}
-                height={quadSize.h}
-                cursors={[rect, circle]}                
-                name={data.project.name}
-            />
-            <canvas bind:this={canvas} />
+                                {/if}
+                            {/each}
+                        {:else}
+                            <p class="text-md text-center font-semibold">
+                                Nenhum objeto foi adicionado ao canvas
+                            </p>
+                        {/if}
+                    </section>
+                </main>
+            {/if}
+            {#if activeButton == 'component'}{/if}
+            {#if activeButton == 'store'}{/if}
         </main>
+    </aside>
+
+    <main class="w-full xl:w-3/4 2xl:w-4/5">
+        <ObjectMenu canvas={fabric} />
+        <ObjectInfo canvas={fabric} />
+        <RightMenu canvas={fabric} data={data.project}/>
+        <ProjectTab
+            bind:mode
+            canvas={fabric}
+            width={quadSize.w}
+            height={quadSize.h}
+            cursors={[rect, circle]}
+            data={data.project}
+        />
+        <canvas bind:this={canvas} />
     </main>
 </main>

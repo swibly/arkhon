@@ -18,7 +18,7 @@
                 width: 50,
                 height: 50,
                 fill: null,
-                stroke: 'white',
+                stroke: '#0175AF',
                 strokeWidth: 2,
                 strokeUniform: true,
                 lockSkewingX: true,
@@ -33,7 +33,7 @@
                 fontFamily: 'sans-serif',
                 fontSize: 14,
                 opacity: 0,
-                textAlign: 'center'
+                textAlign: 'center',                                
             });
 
             canvas.add(text);

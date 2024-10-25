@@ -4,9 +4,7 @@ import { add } from './objects';
 export function centerView(canvas: Canvas, width: number, height: number): void {
     canvas.setZoom(0.7);
 
-    canvas.absolutePan(
-        new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2)
-    );
+    canvas.absolutePan(new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2));
 }
 
 export function renderAll(canvas: Canvas): void {
@@ -64,7 +62,7 @@ export function resize(canvas: Canvas, width: number, height: number) {
     if (width >= 1536) {
         canvas.setDimensions({
             width: width - width / 5,
-            height: height - (height / 100) * 5.5
+            height: height - 85
         });
     } else if (width >= 1280) {
         canvas.setDimensions({
@@ -79,30 +77,27 @@ export function resize(canvas: Canvas, width: number, height: number) {
     }
 }
 
-export function saveCanvas(canvas: Canvas) {
-    localStorage.setItem('canvasValue', JSON.stringify(canvas));
+export function loadCanvas(canvas: Canvas, json: any) {
+    canvas.loadFromJSON(json);    
 }
 
-export function loadCanvas(canvas: Canvas) {
-    let json = localStorage.getItem('canvasValue');
-
-    if (typeof json === 'string') {
-        let objects = JSON.parse(json);
-        canvas.loadFromJSON(objects);
-    }
-}
-
-export function toPNG(canvas: Canvas, width: number, height: number, viewportWidth: number, viewportHeight: number) {
+export function toPNG(
+    canvas: Canvas,
+    width: number,
+    height: number,
+    viewportWidth: number,
+    viewportHeight: number
+) {
     centerView(canvas, width, height);
 
     let dataURL = canvas.toDataURL({
         multiplier: 1,
-        format: 'png',     
+        format: 'png',
         top: -height / 2,
-        left: -width / 2, 
+        left: -width / 2,
         width: width,
         height: height
-    });    
+    });
 
     canvas.viewportTransform[4] = viewportWidth;
     canvas.viewportTransform[5] = viewportHeight;

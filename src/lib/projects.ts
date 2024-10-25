@@ -263,8 +263,8 @@ export async function getTrashed(token: string, options: PaginationOptions = {})
     }
 }
 
-export async function getContentByProjectId(token: string, id: number){
-    try{
+export async function getContentByProjectId(token: string, id: number) {
+    try {
         const res = await axios.get(`/v1/projects/${id}/content`, {
             headers: { Authorization: token }
         });
@@ -274,3 +274,13 @@ export async function getContentByProjectId(token: string, id: number){
         return console.error(error);
     }
 }
+
+export async function saveProjectContent(token: string, id: number, canvas: any) {    
+    try {
+        await axios.put(`/v1/projects/${id}/content`, canvas, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        return console.error(error);
+    }
+}   

@@ -24,7 +24,7 @@ export function sendBackward(canvas: Canvas) {
             canvas.sendObjectBackwards(object);
         } else {
             canvas.moveObjectTo(object, 4);
-        }        
+        }
     }
 
     renderAll(canvas);
