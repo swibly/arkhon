@@ -207,7 +207,7 @@
     </section>
 
     <section class="flex gap-2 mt-4">
-        {#if showDeleteOperations && currentUser.id === options.owner_id}
+        {#if showDeleteOperations && (currentUser.id === options.owner_id || options.allowed_users.filter((x) => x.id === currentUser.id && x.allow_delete === true).length > 0)}
             <form
                 action="/community/projects/{options.id}?/restore"
                 method="POST"

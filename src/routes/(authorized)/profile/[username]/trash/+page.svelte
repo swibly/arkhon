@@ -3,15 +3,48 @@
     import type { PageServerData } from './$types';
     import ProjectCard from '$lib/components/ProjectCard.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
+    import Icon from '@iconify/svelte';
+    import { enhance } from '$app/forms';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: pagination = data.trashed;
     $: trashed = pagination.data;
+
+    let loading = false;
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Lixeira</h1>
 <p>Seus projetos apagados</p>
+
+{#if data.user.username === data.lookup.username && pagination.total_records !== 0}
+    <form
+        method="POST"
+        action="?/clear"
+        class="mt-4"
+        use:enhance={() => {
+            loading = true;
+
+            return ({ update }) => {
+                loading = false;
+
+                return update({ reset: true });
+            };
+        }}
+    >
+        {#if loading}
+            <button type="button" class="btn btn-sm btn-wide btn-disabled">
+                <span class="loading loading-spinner loading-md" />
+                Carregando...
+            </button>
+        {:else}
+            <button class="btn btn-sm btn-wide btn-error">
+                <Icon icon="mdi:trash" />
+                Limpar lixeira
+            </button>
+        {/if}
+    </form>
+{/if}
 
 <div class="divider" />
 
