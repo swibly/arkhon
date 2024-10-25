@@ -67,7 +67,7 @@ export async function createProject(
 
 export async function updateProject(token: string, projectID: number, data: FormData) {
     try {
-        const res = await axios.patch(`/v1/projects/${projectID}`, data, {
+        const res = await axios.patch(`/v1/projects/${projectID}/update`, data, {
             headers: { Authorization: token }
         });
 
