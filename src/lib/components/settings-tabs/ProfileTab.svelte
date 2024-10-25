@@ -93,15 +93,22 @@
 
     function handleFormSubmission() {
         loadingImage = true;
-        return function ({
+        return async function ({
             update
         }: {
             update: (options?: { reset?: boolean; invalidateAll?: boolean }) => Promise<void>;
         }) {
             loadingImage = false;
             image = null;
-            spawn({ message: 'Imagem alterada com sucesso. A imagem pode demorar alguns minutos para atualizar na plataforma.' });
-            return update({ reset: true });
+
+            spawn({
+                message:
+                    'Imagem alterada com sucesso. A imagem pode demorar alguns minutos para atualizar na plataforma.'
+            });
+
+            await update({ reset: true });
+
+            window.location.reload();
         };
     }
 </script>
@@ -154,14 +161,16 @@
                 <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
             </button>
 
-            <form method="POST" action="/home?/removeImage" use:enhance>
-                <button
-                    class="absolute bottom-0 right-0 bg-error text-error-content rounded-full border-4 border-base-100 p-2 tooltip"
-                    data-tip="Redefine sua imagem para a padrão do Gravatar"
-                >
-                    <Icon icon="mdi:trash" class="size-6" />
-                </button>
-            </form>
+            {#if !user.pfp.includes('gravatar')}
+                <form method="POST" action="/home?/removeImage" use:enhance>
+                    <button
+                        class="absolute bottom-0 right-0 bg-error text-error-content rounded-full border-4 border-base-100 p-2 tooltip"
+                        data-tip="Redefine sua imagem para a padrão do Gravatar"
+                    >
+                        <Icon icon="mdi:trash" class="size-6" />
+                    </button>
+                </form>
+            {/if}
         </div>
 
         <input

@@ -157,12 +157,16 @@
     <div class="modal-box bg-transparent shadow-none flex flex-col gap-2">
         <form action="/settings?/deleteAccount" method="POST">
             <button class="btn btn-error hover:animate-shake">
+                <Icon icon="pepicons-pop:leave" />
                 Deletar PERMANENTEMENTE minha conta e TODOS os meus projetos.
             </button>
         </form>
 
         <form method="dialog">
-            <button class="btn btn-primary w-full">Quero ficar. (cancelar)</button>
+            <button class="btn btn-primary w-full">
+                <Icon icon="material-symbols:close" />
+                Quero ficar. (cancelar)
+            </button>
         </form>
     </div>
     <form method="dialog" class="modal-backdrop backdrop-grayscale backdrop:transition-all">

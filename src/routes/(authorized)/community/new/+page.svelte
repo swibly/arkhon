@@ -8,6 +8,7 @@
     import type { LayoutServerData } from '../../$types';
     import type { ActionData } from './$types';
     import { onMount } from 'svelte';
+    import { getComparison } from '$lib/utils';
 
     let imgPreview: HTMLImageElement;
     let fileInput: HTMLInputElement;
@@ -16,30 +17,7 @@
 
     let width = 30;
     let height = 30;
-    let comparison = getComparison();
-
-    function getComparison() {
-        const area = width * height;
-
-        if (area <= 5) return 'um armário ou banheiro pequeno';
-        if (area <= 10) return 'um pequeno escritório ou depósito';
-        if (area <= 20) return 'um quarto padrão';
-        if (area <= 30) return 'um quarto grande ou pequena sala de estar';
-        if (area <= 40) return 'uma pequena sala de estar ou cozinha espaçosa';
-        if (area <= 50) return 'um estúdio compacto';
-        if (area <= 60) return 'uma kitchenette ou sala ampla';
-        if (area <= 80) return 'um apartamento compacto';
-        if (area <= 100) return 'um apartamento de dois quartos';
-        if (area <= 120) return 'um apartamento grande ou casa pequena';
-        if (area <= 150) return 'uma casa média';
-        if (area <= 200) return 'uma casa espaçosa de três quartos';
-        if (area <= 300) return 'uma casa de alto padrão';
-        if (area <= 400) return 'uma mansão compacta';
-        if (area <= 500) return 'uma mansão ampla';
-        if (area <= 700) return 'uma propriedade luxuosa';
-        if (area <= 1000) return 'uma grande propriedade rural';
-        return 'um vasto terreno ou complexo comercial';
-    }
+    let comparison = getComparison(width, height);
 
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -117,12 +95,12 @@
     onMount(() => {
         (document.querySelector('input[name="width"]') as HTMLInputElement).oninput = (e) => {
             width = ~~(e.target as HTMLInputElement).value || 30;
-            comparison = getComparison();
+            comparison = getComparison(width, height);
         };
 
         (document.querySelector('input[name="height"]') as HTMLInputElement).oninput = (e) => {
             height = ~~(e.target as HTMLInputElement).value || 30;
-            comparison = getComparison();
+            comparison = getComparison(width, height);
         };
     });
 </script>
@@ -306,7 +284,6 @@
                     labels={{ topLeft: 'Altura (em metros)' }}
                     min={1}
                     max={1000}
-                    on
                 />
             </div>
         </div>
