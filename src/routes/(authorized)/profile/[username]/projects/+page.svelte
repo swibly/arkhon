@@ -24,7 +24,7 @@
         <Pagination {pagination} />
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-x-2 gap-y-4">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4">
         {#each projects as project}
             <ProjectCard options={project} currentUser={data.user} lang={data.user.language} />
         {/each}
