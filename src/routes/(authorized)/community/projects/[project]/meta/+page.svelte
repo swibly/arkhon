@@ -110,6 +110,12 @@
         <h1 class="text-3xl font-bold">Banner do projeto</h1>
         <p>Clique na imagem para editar.</p>
 
+        <div class="my-4">
+            <Attention>
+                A imagem pode demorar alguns minutos para atualizar na plataforma.
+            </Attention>
+        </div>
+
         <div class="relative">
             <img
                 bind:this={imgPreview}
