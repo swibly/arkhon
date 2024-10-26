@@ -4,19 +4,24 @@
         changeFill,
         getActive,
         changeOpacity,
-        takeOpacity
+        changeStroke,
+        takeOpacity, 
+        takeStroke       
     } from '$lib/editor/objects';
     import { type Canvas } from 'fabric';
     import { onMount } from 'svelte';
     import Icon from '@iconify/svelte';
-    import { draggable } from '@neodrag/svelte';    
+    import { draggable } from '@neodrag/svelte';
 
     let objectMenu: HTMLElement;
 
     export let canvas: Canvas;
 
-    let valueSlider: HTMLInputElement;
+    let opacitySlider: HTMLInputElement;
+    let strokeSlider: HTMLInputElement;
     let value: number;
+    let opacityValue: number;
+    let strokeValue: number;
     let mixed: boolean = false;
 
     onMount(() => {
@@ -24,9 +29,11 @@
             canvas.on('selection:created', () => {
                 if (getActive(canvas).length > 1) {
                     mixed = true;
-                    value = 10;
+                    strokeValue = 10;
+                    opacityValue = 10;
                 } else {
-                    value = takeOpacity(canvas);
+                    strokeValue = takeStroke(canvas);
+                    opacityValue = takeOpacity(canvas);
                 }
 
                 if (objectMenu) {
@@ -37,9 +44,11 @@
             canvas.on('selection:updated', () => {
                 if (getActive(canvas).length > 1) {
                     mixed = true;
-                    value = 10;
+                    strokeValue = 10;
+                    opacityValue = 10;
                 } else {
-                    value = takeOpacity(canvas);
+                    strokeValue = takeStroke(canvas);
+                    opacityValue = takeOpacity(canvas);
                 }
             });
 
@@ -58,7 +67,8 @@
                     objectMenu.style.display = 'flex';
                 }
 
-                value = 10;
+                strokeValue = 10;
+                opacityValue = 10;
             }
 
             if (e.ctrlKey && e.key === 'x') {
@@ -71,87 +81,53 @@
 </script>
 
 <article
-    class="hidden absolute w-72 h-80 bg-base-300 z-50 flex-col items-center rounded-xl"
+    class="hidden absolute w-56 h-40 bg-base-100 z-50 flex-col items-center rounded-xl border border-primary overflow-auto"
     bind:this={objectMenu}
     use:draggable={{ bounds: 'canvas', handle: '.handler', position: { x: 20, y: 20 } }}
 >
-    <div class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler">
+    <div
+        class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler rounded-t-lg"
+    >
         <Icon icon="stash:drag-squares-horizontal-solid" class="text-white text-xl" />
     </div>
-    <p class="text-xl pt-4 font-bold">Borda</p>
-    <section class="flex gap-2 pt-2">
+    <p class="text-md pt-2 font-bold -mt-1">Borda</p>
+    <section class="flex items-center gap-2 pt-2">
         <button
-            class="w-4 h-4 font-bold -mt-1"
-            on:click={() => changeBorder(canvas, 'null', ...getActive(canvas))}>X</button
+            class="w-3 h-3 font-bold -mt-1"
+            on:click={() => changeBorder(canvas, 'null', ...getActive(canvas))}
+            ><Icon icon="material-symbols:close" /></button
         >
         <button
-            class="w-4 h-4 bg-white rounded"
+            class="w-3 h-3 bg-white rounded"
             on:click={() => changeBorder(canvas, 'white', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-black rounded"
-            on:click={() => changeBorder(canvas, 'black', ...getActive(canvas))}
+            class="w-3 h-3 bg-gray-500 rounded"
+            on:click={() => changeBorder(canvas, 'gray', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-red-400 rounded"
+            class="w-3 h-3 bg-red-400 rounded"
             on:click={() => changeBorder(canvas, 'red', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-green-400 rounded"
+            class="w-3 h-3 bg-green-400 rounded"
             on:click={() => changeBorder(canvas, 'green', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-blue-400 rounded"
+            class="w-3 h-3 bg-blue-400 rounded"
             on:click={() => changeBorder(canvas, 'blue', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-pink-400 rounded"
+            class="w-3 h-3 bg-pink-400 rounded"
             on:click={() => changeBorder(canvas, 'pink', ...getActive(canvas))}
         />
         <button
-            class="w-4 h-4 bg-yellow-400 rounded"
+            class="w-3 h-3 bg-yellow-400 rounded"
             on:click={() => changeBorder(canvas, 'yellow', ...getActive(canvas))}
         />
     </section>
-    <div class="divider w-48 mx-auto" />
-    <p class="text-center text-xl font-bold">Fundo</p>
-    <section class="flex gap-2 pt-2">
-        <button
-            class="w-4 h-4 font-bold -mt-1"
-            on:click={() => changeFill(canvas, 'null', ...getActive(canvas))}>X</button
-        >
-        <button
-            class="w-4 h-4 bg-white rounded border border-2"
-            on:click={() => changeFill(canvas, 'white', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-black rounded"
-            on:click={() => changeFill(canvas, 'black', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-red-400 rounded"
-            on:click={() => changeFill(canvas, 'red', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-green-400 rounded"
-            on:click={() => changeFill(canvas, 'green', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-blue-400 rounded"
-            on:click={() => changeFill(canvas, 'blue', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-pink-400 rounded"
-            on:click={() => changeFill(canvas, 'pink', ...getActive(canvas))}
-        />
-        <button
-            class="w-4 h-4 bg-yellow-400 rounded"
-            on:click={() => changeFill(canvas, 'yellow', ...getActive(canvas))}
-        />
-    </section>
-    <div class="divider w-48 mx-auto" />
-    <p class="text-center text-xl font-bold">Opacidade</p>
-    <p class={`${mixed ? 'block' : 'hidden'} text-center text-lg font-bold text-secondary`}>
+    <p class="text-center text-md font-bold mt-2">Espessura da Borda</p>
+    <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
         Mixed
     </p>
     <section class="flex gap-2 pt-2">
@@ -159,10 +135,64 @@
             type="range"
             min="0"
             max="10"
-            {value}
-            bind:this={valueSlider}
-            on:input={() => (value = changeOpacity(canvas, valueSlider))}
-            class={`range ${mixed ? 'range-primary' : 'range-secondary'}`}
+            value={strokeValue}
+            bind:this={strokeSlider}
+            on:input={() => (strokeValue = changeStroke(canvas, strokeSlider))}
+            class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
+        />
+        <div class="divider" />
+    </section>
+    <div class="divider w-36 mx-auto -mt-4" />
+    <p class="text-md font-bold -mt-4">Fundo</p>
+    <section class="flex items-center gap-2 pt-2">
+        <button
+            class="w-3 h-3 -mt-1 font-bold"
+            on:click={() => changeFill(canvas, 'null', ...getActive(canvas))}
+            ><Icon icon="material-symbols:close" /></button
+        >
+        <button
+            class="w-3 h-3 bg-white rounded"
+            on:click={() => changeFill(canvas, 'white', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-gray-500 rounded"
+            on:click={() => changeFill(canvas, 'gray', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-red-400 rounded"
+            on:click={() => changeFill(canvas, 'red', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-green-400 rounded"
+            on:click={() => changeFill(canvas, 'green', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-blue-400 rounded"
+            on:click={() => changeFill(canvas, 'blue', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-pink-400 rounded"
+            on:click={() => changeFill(canvas, 'pink', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-yellow-400 rounded"
+            on:click={() => changeFill(canvas, 'yellow', ...getActive(canvas))}
+        />
+    </section>
+    <div class="divider w-36 mx-auto" />
+    <p class="text-center text-md font-bold -mt-4">Opacidade</p>
+    <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
+        Mixed
+    </p>
+    <section class="flex gap-2 pt-2">
+        <input
+            type="range"
+            min="0"
+            max="10"
+            value={opacityValue}
+            bind:this={opacitySlider}
+            on:input={() => (opacityValue = changeOpacity(canvas, opacitySlider))}
+            class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
         />
         <div class="divider" />
     </section>

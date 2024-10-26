@@ -15,6 +15,8 @@
         remove,
         removeGroup,
         getActive,
+        copy,
+        paste,
         addRect,
         addText,
         addCircle,
@@ -22,7 +24,7 @@
         addLine,
         stopLine,
         resetOpacity,
-        verifyText
+        verifyObject
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
@@ -40,6 +42,7 @@
     let canvas: HTMLCanvasElement;
     let fabric: Canvas;
     let _clipboard: FabricObject;
+    let copiedObjects: FabricObject[];
     let mode: string = 'select';
     let lastPosX: number;
     let lastPosY: number;
@@ -49,8 +52,8 @@
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
     const quadSize = {
-        w: 3000,
-        h: 3000
+        w: data.project.width * 100,
+        h: data.project.height * 100
     };
 
     function setActiveButton(value: String) {
@@ -60,7 +63,7 @@
     onMount(function () {
         fabric = new Canvas(canvas, {
             selection: true,
-            preserveObjectStacking: true            
+            preserveObjectStacking: true
         });
 
         loadCanvas(fabric, data.content);
@@ -85,7 +88,7 @@
         });
 
         resize(fabric, innerWidth, innerHeight);
-        centerView(fabric, quadSize.w, quadSize.h);             
+        centerView(fabric, quadSize.w, quadSize.h);
 
         fabric.on('after:render', () => {
             loadCount++;
@@ -99,7 +102,6 @@
                     asideObjects.push(obj);
                 }
             }
-                    
 
             if (loadCount === 1) {
                 drawGrid(fabric, 100, quadSize.w, quadSize.h);
@@ -281,12 +283,8 @@
                 e.preventDefault();
 
                 if (fabric.getActiveObject()) {
-                    fabric
-                        .getActiveObject()!
-                        .clone()
-                        .then((cloned) => {
-                            _clipboard = cloned;
-                        });
+                    _clipboard = await copy(fabric);
+                    copiedObjects = getActive(fabric);
                 }
 
                 removeGroup(fabric, ...getActive(fabric));
@@ -310,36 +308,13 @@
 
             if (e.ctrlKey && e.key == 'c') {
                 if (fabric.getActiveObject()) {
-                    fabric
-                        .getActiveObject()!
-                        .clone()
-                        .then((cloned) => {
-                            _clipboard = cloned;
-                        });
+                    _clipboard = await copy(fabric);
+                    copiedObjects = getActive(fabric);                    
                 }
             }
 
             if (e.ctrlKey && e.key == 'v') {
-                const clonedObj = await _clipboard.clone();
-                fabric.discardActiveObject();
-                clonedObj.set({
-                    left: clonedObj.left + 10,
-                    top: clonedObj.top + 10,
-                    evented: true
-                });
-                if (clonedObj instanceof ActiveSelection) {
-                    clonedObj.canvas = fabric;
-                    clonedObj.forEachObject((obj) => {
-                        fabric.add(obj);
-                    });
-                    clonedObj.setCoords();
-                } else {
-                    fabric.add(clonedObj);
-                }
-                _clipboard.top += 10;
-                _clipboard.left += 10;
-                fabric.setActiveObject(clonedObj);
-                fabric.requestRenderAll();
+                paste(fabric, _clipboard, copiedObjects);
             }
 
             if (e.ctrlKey && e.key == 'd') {
@@ -518,7 +493,15 @@
                         {#if asideObjects.length > 4}
                             {#each asideObjects as object, index (object)}
                                 {#if index > 3}
-                                    {#if object.type === 'rect'}
+                                    {#if verifyObject(object).isComponent}
+                                        <p class="flex items-center gap-4">
+                                            <Icon
+                                                icon="iconamoon:component-fill"
+                                                font-size="15px"
+                                            />
+                                            {verifyObject(object).name}
+                                        </p>
+                                    {:else if object.type === 'rect'}
                                         <p class="flex items-center gap-4">
                                             <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
                                         </p>
@@ -539,7 +522,7 @@
                                             <p
                                                 class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
                                             >
-                                                {verifyText(object).text}
+                                                {verifyObject(object).text}
                                             </p>
                                         </article>
                                     {:else if object.type === 'polygon'}
@@ -565,7 +548,7 @@
     <main class="w-full xl:w-3/4 2xl:w-4/5">
         <ObjectMenu canvas={fabric} />
         <ObjectInfo canvas={fabric} />
-        <RightMenu canvas={fabric} data={data.project}/>
+        <RightMenu canvas={fabric} data={data.project} />
         <ProjectTab
             bind:mode
             canvas={fabric}

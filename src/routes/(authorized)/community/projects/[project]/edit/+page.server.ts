@@ -22,11 +22,11 @@ export const actions: Actions = {
 
         const canvas = data.get('json');                
         
-        await saveProjectContent(jwt, parseInt(params.project), canvas);
+        await saveProjectContent(jwt, parseInt(params.project), JSON.parse(String(canvas)));
     },
 
     create: async function ({ cookies, params, request}){
         const data = await request.formData();
-        const nome = data.get('name')                    
+        const name = data.get('name');    
     }
 };

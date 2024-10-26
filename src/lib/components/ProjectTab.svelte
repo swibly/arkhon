@@ -154,7 +154,7 @@
                     use:enhance={function ({ formData }) {
                         loading = true;
 
-                        formData.set('json', JSON.stringify(canvas));
+                        formData.set('json', JSON.stringify(canvas.toObject(['name', 'price', 'isComponent'])));
 
                         return () => {
                             loading = false;

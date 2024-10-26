@@ -1,4 +1,13 @@
-import { Group, IText, Rect, Circle, Polygon, type Canvas, type FabricObject } from 'fabric';
+import {
+    Group,
+    IText,
+    Rect,
+    Circle,
+    Polygon,
+    ActiveSelection,
+    type Canvas,
+    type FabricObject
+} from 'fabric';
 import { renderAll } from './canvas';
 
 let capturedPoints: Array<{ x: number; y: number }> = [];
@@ -53,13 +62,30 @@ export async function ungroup(canvas: Canvas): Promise<void> {
 
             add(canvas, obj);
 
-            obj.set({
-                lockMovementX: item.lockMovementX,
-                lockMovementY: item.lockMovementY,
-                lockScalingX: item.lockScalingX,
-                lockScalingY: item.lockScalingY,
-                lockRotation: item.lockRotation
-            });
+            // @ts-ignore
+            if (item.isComponent) {
+                obj.set({
+                    lockMovementX: item.lockMovementX,
+                    lockMovementY: item.lockMovementY,
+                    lockScalingX: item.lockScalingX,
+                    lockScalingY: item.lockScalingY,
+                    lockRotation: item.lockRotation,
+                    // @ts-ignore
+                    name: item.name,
+                    // @ts-ignore
+                    price: item.price,
+                    // @ts-ignore
+                    isComponent: item.isComponent
+                });
+            } else {
+                obj.set({
+                    lockMovementX: item.lockMovementX,
+                    lockMovementY: item.lockMovementY,
+                    lockScalingX: item.lockScalingX,
+                    lockScalingY: item.lockScalingY,
+                    lockRotation: item.lockRotation
+                });
+            }
         }
     }
 }
@@ -86,6 +112,96 @@ export function unlock(canvas: Canvas) {
     });
 
     renderAll(canvas);
+}
+
+export function copy(canvas: Canvas) {
+    return canvas.getActiveObject()!.clone();
+}
+
+export async function paste(
+    canvas: Canvas,
+    clipboard: FabricObject,
+    copiedObjects: FabricObject[]
+) {
+    let count: number = 0;
+
+    const clonedObj = await clipboard.clone();
+
+    canvas.discardActiveObject();
+    clonedObj.set({
+        left: clonedObj.left + 10,
+        top: clonedObj.top + 10,
+        evented: true
+    });
+    if (clonedObj instanceof ActiveSelection) {
+        clonedObj.canvas = canvas;
+        clonedObj.forEachObject((obj) => {
+            canvas.add(obj);
+
+            // @ts-ignore
+            if (copiedObjects[count].isComponent) {
+                obj.set({
+                    lockMovementX: copiedObjects[count].lockMovementX,
+                    lockMovementY: copiedObjects[count].lockMovementY,
+                    lockScalingX: copiedObjects[count].lockScalingX,
+                    lockScalingY: copiedObjects[count].lockScalingY,
+                    lockRotation: copiedObjects[count].lockRotation,
+                    // @ts-ignore
+                    name: copiedObjects[count].name,
+                    // @ts-ignore
+                    price: copiedObjects[count].price,
+                    // @ts-ignore
+                    isComponent: copiedObjects[count].isComponent
+                });
+            } else {
+                obj.set({
+                    lockMovementX: copiedObjects[count].lockMovementX,
+                    lockMovementY: copiedObjects[count].lockMovementY,
+                    lockScalingX: copiedObjects[count].lockScalingX,
+                    lockScalingY: copiedObjects[count].lockScalingY,
+                    lockRotation: copiedObjects[count].lockRotation,
+                    // @ts-ignore
+                    isComponent: copiedObjects[count].isComponent
+                });
+            }
+
+            count++;
+        });
+        clonedObj.setCoords();
+    } else {
+        canvas.add(clonedObj);
+
+        // @ts-ignore
+        if (copiedObjects[0].isComponent) {
+            clonedObj.set({
+                lockMovementX: copiedObjects[0].lockMovementX,
+                lockMovementY: copiedObjects[0].lockMovementY,
+                lockScalingX: copiedObjects[0].lockScalingX,
+                lockScalingY: copiedObjects[0].lockScalingY,
+                lockRotation: copiedObjects[0].lockRotation,
+                // @ts-ignore
+                name: copiedObjects[0].name,
+                // @ts-ignore
+                price: copiedObjects[0].price,
+                // @ts-ignore
+                isComponent: copiedObjects[count].isComponent
+            });
+        } else {
+            clonedObj.set({
+                lockMovementX: copiedObjects[0].lockMovementX,
+                lockMovementY: copiedObjects[0].lockMovementY,
+                lockScalingX: copiedObjects[0].lockScalingX,
+                lockScalingY: copiedObjects[0].lockScalingY,
+                lockRotation: copiedObjects[0].lockRotation,
+                // @ts-ignore
+                isComponent: copiedObjects[count].isComponent
+            });
+        }
+    }
+    clipboard.top += 10;
+    clipboard.left += 10;
+    canvas.setActiveObject(clonedObj);
+    canvas.requestRenderAll();
 }
 
 export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>, text: string) {
@@ -125,6 +241,11 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
 
     add(canvas, rect);
 
+    rect.set({
+        isComponent: false
+    });
+    rect.setCoords();
+
     renderAll(canvas);
 }
 
@@ -142,6 +263,11 @@ export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }
     });
 
     add(canvas, circle);
+
+    circle.set({
+        isComponent: false
+    });
+    circle.setCoords();
 
     renderAll(canvas);
 }
@@ -185,6 +311,11 @@ export function addLine(canvas: Canvas) {
     });
 
     add(canvas, line);
+
+    line.set({
+        isComponent: false
+    });
+    line.setCoords();
 
     renderAll(canvas);
 
@@ -239,14 +370,29 @@ export function changeFill(canvas: Canvas, color: string, ...objects: FabricObje
     renderAll(canvas);
 }
 
-export function changeOpacity(canvas: Canvas, valueSlider: HTMLInputElement) {
+export function changeOpacity(canvas: Canvas, opacitySlider: HTMLInputElement) {
     if (getActive(canvas).length > 1) {
-        canvas.getActiveObject()?.set('opacity', parseInt(valueSlider.value) / 10);
+        canvas.getActiveObject()?.set('opacity', parseInt(opacitySlider.value) / 10);
         for (const objs of getActive(canvas)) {
-            objs.set('opacity', parseInt(valueSlider.value) / 10);
+            objs.set('opacity', parseInt(opacitySlider.value) / 10);
         }
     } else {
-        getActive(canvas)[0]?.set('opacity', parseInt(valueSlider.value) / 10);
+        getActive(canvas)[0]?.set('opacity', parseInt(opacitySlider.value) / 10);
+    }
+
+    renderAll(canvas);
+
+    return takeOpacity(canvas);
+}
+
+export function changeStroke(canvas: Canvas, strokeSlider: HTMLInputElement) {
+    if (getActive(canvas).length > 1) {
+        canvas.getActiveObject()?.set('strokeWidth', parseInt(strokeSlider.value));
+        for (const objs of getActive(canvas)) {
+            objs.set('strokeWidth', parseInt(strokeSlider.value));
+        }
+    } else {
+        getActive(canvas)[0]?.set('strokeWidth', parseInt(strokeSlider.value));
     }
 
     renderAll(canvas);
@@ -258,6 +404,10 @@ export function takeOpacity(canvas: Canvas) {
     return getActive(canvas)[0].opacity * 10;
 }
 
+export function takeStroke(canvas: Canvas) {
+    return getActive(canvas)[0].strokeWidth;
+}
+
 export function resetOpacity(canvas: Canvas, obj: FabricObject) {
     obj.set({
         opacity: 0
@@ -266,6 +416,15 @@ export function resetOpacity(canvas: Canvas, obj: FabricObject) {
     canvas.requestRenderAll();
 }
 
-export function verifyText(x: any): any {
+export function verifyObject(x: any): any {
     return x;
+}
+
+export function setInfo(object: FabricObject, name: string, price: number) {
+    object.set({
+        name: name,
+        price: price,
+        isComponent: true
+    });
+    object.setCoords();
 }
