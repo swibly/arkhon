@@ -4,7 +4,7 @@
     import Icon from '@iconify/svelte';
     import type { PageServerData } from './$types';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: projects = data.projects!;
     $: favorites = data.favorites!;

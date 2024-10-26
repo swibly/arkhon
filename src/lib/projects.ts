@@ -294,7 +294,6 @@ export async function clearTrash(token: string) {
     }
 }
 
-
 export async function publishProject(token: string, projectID: number) {
     try {
         await axios.patch(

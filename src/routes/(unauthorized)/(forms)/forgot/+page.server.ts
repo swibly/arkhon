@@ -38,7 +38,7 @@ export const actions: Actions = {
         });
 
         return {
-          message: 'Email enviado, verifique sua caixa de entrada e seu spam!'
+            message: 'Email enviado, verifique sua caixa de entrada e seu spam!'
         };
     }
 };
