@@ -173,8 +173,7 @@
                     message: 'Projeto salvo!'
                 });
 
-                await update({ reset: true });
-                window.location.reload();
+                return await update({ reset: false });
             };
         }}
     >
