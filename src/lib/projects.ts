@@ -319,3 +319,29 @@ export async function unpublishProject(token: string, projectID: number) {
         // TODO: Add error handling
     }
 }
+
+export async function forkProject(token: string, projectID: number) {
+    try {
+        await axios.post(
+            `/v1/projects/${projectID}/fork`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function unlinkProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/fork`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
