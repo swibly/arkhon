@@ -74,20 +74,27 @@
     }
 
     onMount(() => {
+        const widthInput = document.querySelector('input[name="width"]') as HTMLInputElement;
+        const heightInput = document.querySelector('input[name="height"]') as HTMLInputElement;
+
+        width = ~~widthInput.value;
+        height = ~~heightInput.value;
+        comparison = getComparison(width, height);
+
         for (const input of document.querySelectorAll<HTMLInputElement>('input')) {
             input.oninput = () => {
                 unsavedChanges = true;
             };
         }
 
-        (document.querySelector('input[name="width"]') as HTMLInputElement).oninput = (e) => {
+        widthInput.oninput = (e) => {
             width = ~~(e.target as HTMLInputElement).value || 30;
             comparison = getComparison(width, height);
 
             unsavedChanges = true;
         };
 
-        (document.querySelector('input[name="height"]') as HTMLInputElement).oninput = (e) => {
+        heightInput.oninput = (e) => {
             height = ~~(e.target as HTMLInputElement).value || 30;
             comparison = getComparison(width, height);
 
