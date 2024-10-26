@@ -106,9 +106,7 @@
                     'Imagem alterada com sucesso. A imagem pode demorar alguns minutos para atualizar na plataforma.'
             });
 
-            await update({ reset: true });
-
-            window.location.reload();
+            return await update({ reset: false });
         };
     }
 </script>
