@@ -63,7 +63,7 @@
         </p>
 
         <p class="badge badge-success badge-outline gap-1">
-            <Icon icon="bxs:area" />
+            <Icon icon="mdi:dollar" />
             {project.budget.toLocaleString(data.user.language, {
                 style: 'currency',
                 currency: 'BRL'
