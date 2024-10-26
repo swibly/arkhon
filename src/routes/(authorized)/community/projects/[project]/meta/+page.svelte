@@ -96,6 +96,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Editando {data.project.name} - Swibly Arkhon</title>
+</svelte:head>
+
 <div class="w-full max-w-3xl p-4 mx-auto">
     <button role="link" class="btn btn-ghost btn-sm mb-4" on:click={() => history.back()}>
         <Icon icon="streamline:return-2-solid" />
