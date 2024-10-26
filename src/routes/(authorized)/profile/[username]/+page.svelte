@@ -84,7 +84,7 @@
                     {#if projects.total_records > projects.data.length}
                         <a
                             href="/profile/{data.lookup.username}/projects"
-                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {projects.total_records - projects.data.length}
@@ -134,7 +134,7 @@
                     {#if favorites.total_records > favorites.data.length}
                         <a
                             href="/profile/{data.lookup.username}/favorites"
-                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {favorites.total_records - favorites.data.length}
