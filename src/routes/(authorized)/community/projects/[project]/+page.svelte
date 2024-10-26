@@ -22,6 +22,9 @@
         })),
         { name: project.owner_username, pfp: project.owner_pfp }
     ];
+
+    let loadingClone = false;
+    let loadingUnlink = false;
 </script>
 
 <svelte:head>
@@ -34,7 +37,7 @@
         Página anterior
     </button>
 
-    <article class="flex gap-1 my-4">
+    <article class="flex items-center gap-1 my-4">
         {#if project.is_public}
             <p class="badge badge-primary badge-outline gap-1">
                 <Icon icon="mdi:globe" />
@@ -52,7 +55,7 @@
                 href="/community/projects/{project.fork}"
                 class="badge badge-secondary badge-outline gap-1"
             >
-                <Icon icon="prime:clone" />
+                <Icon icon="fa-solid:clone" />
                 Clonado
             </a>
         {/if}
@@ -76,6 +79,66 @@
         alt={`Banner do projeto ${project.name}`}
         class="min-h-64 max-h-96 w-full object-cover rounded-xl"
     />
+
+    <article class="flex items-center justify-center gap-1 my-4">
+        {#if project.fork !== null && (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0)}
+            <form
+                method="POST"
+                action="?/unlink"
+                use:enhance={async function () {
+                    loadingUnlink = true;
+
+                    return ({ update }) => {
+                        loadingUnlink = false;
+
+                        spawn({ message: 'Projeto desvinculado do original.' });
+
+                        return update({ reset: false });
+                    };
+                }}
+            >
+                {#if loadingUnlink}
+                    <button type="button" class="btn btn-sm" disabled>
+                        <span class="loading loading-spinner loading-md" />
+                        Carregando...
+                    </button>
+                {:else}
+                    <button class="btn btn-sm">
+                        <Icon icon="mingcute:unlink-fill" />
+                        Desvincular
+                    </button>
+                {/if}
+            </form>
+        {/if}
+
+        <form
+            method="POST"
+            action="?/clone"
+            use:enhance={async function () {
+                loadingClone = true;
+
+                return ({ update }) => {
+                    loadingClone = false;
+
+                    spawn({ message: 'Projeto clonado. Verifique seus projetos!' });
+
+                    return update({ reset: false });
+                };
+            }}
+        >
+            {#if loadingClone}
+                <button type="button" class="btn btn-sm" disabled>
+                    <span class="loading loading-spinner loading-md" />
+                    Carregando...
+                </button>
+            {:else}
+                <button class="btn btn-sm btn-primary">
+                    <Icon icon="fa-solid:clone" />
+                    Clonar
+                </button>
+            {/if}
+        </form>
+    </article>
 
     <div class="flex items-center gap-2 my-4">
         <div class="shrink-0">
