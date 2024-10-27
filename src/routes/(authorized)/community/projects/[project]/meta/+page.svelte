@@ -351,8 +351,20 @@
                         use:enhance={function () {
                             loadingPublish = true;
 
-                            return function ({ update }) {
+                            return function ({ result, update }) {
                                 loadingPublish = false;
+
+                                console.log(result);
+                                // @ts-ignore
+                                if (result.data.error) {
+                                    spawn({
+                                        // @ts-ignore
+                                        message: result.data.error,
+                                        status: 'error'
+                                    });
+
+                                    return update();
+                                }
 
                                 spawn({ message: 'Projeto publicado com sucesso!' });
 
