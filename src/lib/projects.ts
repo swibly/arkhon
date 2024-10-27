@@ -296,16 +296,24 @@ export async function clearTrash(token: string) {
 
 export async function publishProject(token: string, projectID: number) {
     try {
-        await axios.patch(
+        const res = await axios.patch(
             `/v1/projects/${projectID}/publish`,
             {},
             {
                 headers: { Authorization: token }
             }
         );
-    } catch (error) {
-        console.error(error);
-        // TODO: Add error handling
+
+        if (res.data.error) {
+            return {
+                error: res.data.error as string
+            };
+        }
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string
+        };
     }
 }
 

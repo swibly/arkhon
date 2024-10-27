@@ -19,7 +19,7 @@ export const actions: Actions = {
     publish: async function ({ cookies, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
 
-        await publishProject(jwt, parseInt(params.project));
+        return await publishProject(jwt, parseInt(params.project));
     },
     unpublish: async function ({ cookies, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
