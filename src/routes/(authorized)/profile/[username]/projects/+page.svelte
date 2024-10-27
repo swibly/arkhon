@@ -25,7 +25,7 @@
     </div>
 
     <div
-        class="grid grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4"
+        class="grid grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4 max-sm:flex max-sm:flex-wrap max-md:place-items-center"
     >
         {#each projects as project}
             <ProjectCard options={project} currentUser={data.user} lang={data.user.language} />
