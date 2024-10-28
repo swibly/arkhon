@@ -33,6 +33,9 @@
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
+    import type { Component } from '$lib/component';
+    import ComponentCard from '$lib/components/ComponentCard.svelte';
+    import ComponentPagination from '$lib/components/ComponentPagination.svelte';    
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -51,6 +54,8 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
+    let allComponents: Array<Component>;
+    let ownedComponents: Array<Component>;
     const quadSize = {
         w: data.project.width * 100,
         h: data.project.height * 100
@@ -58,9 +63,14 @@
 
     function setActiveButton(value: String) {
         activeButton = value;
-    }
+    }    
+
+    $: console.log(data.allOwnedComponents);
 
     onMount(function () {
+        allComponents = data.component.data;
+        ownedComponents = data.allOwnedComponents.data;
+
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
@@ -117,13 +127,16 @@
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {
+        fabric.on('mouse:down', function ({ e }) {            
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
                 resetOpacity(fabric, rect);
                 resetOpacity(fabric, circle);
             }
+
+            console.log("Page owned", data.allOwnedComponents);
+            console.log("Page all", data.component);
 
             if (e.altKey) {
                 fabric.isDrawingMode = false;
@@ -309,7 +322,7 @@
             if (e.ctrlKey && e.key == 'c') {
                 if (fabric.getActiveObject()) {
                     _clipboard = await copy(fabric);
-                    copiedObjects = getActive(fabric);                    
+                    copiedObjects = getActive(fabric);
                 }
             }
 
@@ -434,7 +447,7 @@
 
 <main class="flex h-full">
     <aside class="w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin">
-        <nav class="text-center mt-4 grid grid-cols-3 place-items-center">
+        <nav class="text-center mt-4 grid grid-cols-3 place-items-center gap-2">
             <button
                 class={`text-sm sm:text-base transition duration-150 ease-in-out ${
                     activeButton === 'project'
@@ -540,8 +553,60 @@
                     </section>
                 </main>
             {/if}
-            {#if activeButton == 'component'}{/if}
-            {#if activeButton == 'store'}{/if}
+            {#if activeButton == 'component'}
+                <main class="flex flex-col justify-center items-center">
+                    <ComponentPagination
+                        bind:allComponents
+                        bind:ownedComponents
+                        pagination={{
+                            data: ownedComponents,
+                            total_records: data.component.total_records,
+                            total_pages: data.component.total_pages,
+                            current_page: data.component.current_page,
+                            next_page: data.component.next_page,
+                            previous_page: data.component.previous_page
+                        }}
+                        data={data.project}
+                        componentData={data.allOwnedComponents}
+                        type={'owned'}
+                    />
+
+                    <section class="grid grid-cols-2 place-items-center gap-3">
+                        {#each ownedComponents as component, index (component)}
+                            <ComponentCard name={component.name} content={component.content} />
+                        {/each}
+                    </section>
+                </main>
+            {/if}
+            {#if activeButton == 'store'}
+                <main class="flex flex-col justify-center items-center">
+                    <ComponentPagination
+                        bind:allComponents
+                        bind:ownedComponents
+                        pagination={{
+                            data: allComponents.filter(
+                                (component) =>
+                                    component.owner_username !== data.user.username &&
+                                    !component.bought
+                            ),
+                            total_records: data.component.total_records,
+                            total_pages: data.component.total_pages,
+                            current_page: data.component.current_page,
+                            next_page: data.component.next_page,
+                            previous_page: data.component.previous_page
+                        }}
+                        data={data.project}
+                        componentData={data.component}
+                        type={'store'}
+                    />
+
+                    <section class="grid grid-cols-2 place-items-center gap-3">
+                        {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
+                            <ComponentCard name={component.name} content={component.content} />
+                        {/each}
+                    </section>
+                </main>
+            {/if}
         </main>
     </aside>
 

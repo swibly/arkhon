@@ -16,6 +16,7 @@
     import Icon from '@iconify/svelte';
     import type { Project } from '$lib/projects';
     import { enhance } from '$app/forms';
+    import QuestionMark from './QuestionMark.svelte';
 
     let rightMenu: HTMLElement;
     let buttonInside: boolean;
@@ -200,13 +201,21 @@
                                 method="POST"
                                 action={`/community/projects/${data.id}/edit?/create`}
                                 use:enhance={({ formData }) => {
-                                    setInfo(
-                                        finalObject,
-                                        String(formData.get('name')),
-                                        Number(formData.get('price'))
-                                    );
+                                    formData.set('content', JSON.stringify(finalObject));
 
                                     modalRef.close();
+
+                                    return ({ result }) => {
+                                        setInfo(
+                                            finalObject,
+                                            String(formData.get('name')),
+                                            Number(formData.get('price')),
+                                            //@ts-ignore
+                                            result.data.lastComponent.id,
+                                            String(formData.get('description')),
+                                            Number(formData.get('arkhoins'))
+                                        );
+                                    };
                                 }}
                             >
                                 <section class="flex flex-col justify-center items-center mx-8">
@@ -258,6 +267,20 @@
                                             />
                                         </label>
                                     </section>
+
+                                    <label class="flex items-center gap-2 mt-4 w-full">
+                                        <input
+                                            type="checkbox"
+                                            name="isPublic"
+                                            class="checkbox checkbox-sm checkbox-primary"
+                                        />
+                                        <p class="text-md font-semibold">Publicar na loja</p>
+                                        <QuestionMark>
+                                            Ao marcar essa opção o seu objeto será postado
+                                            publicamente na loja valendo a quantidade de Arkhoins na
+                                            qual você definiu.
+                                        </QuestionMark>
+                                    </label>
                                     <button
                                         type="submit"
                                         class="btn btn-sm btn-primary w-full mt-4"
@@ -286,15 +309,23 @@
                             </form>
                             <form
                                 method="POST"
-                                action={`/community/projects/${data.id}/edit?/create`}
+                                action={`/community/projects/${data.id}/edit?/edit`}
                                 use:enhance={({ formData }) => {
-                                    setInfo(
-                                        finalObject,
-                                        String(formData.get('name')),
-                                        Number(formData.get('price'))
-                                    );
+                                    // setInfo(
+                                    //     finalObject,
+                                    //     String(formData.get('name')),
+                                    //     Number(formData.get('price'))
+                                    // );
 
-                                    editModalRef.close();
+                                    // let formName = 
+
+                                    formData.set('content', JSON.stringify(finalObject));
+
+                                    editModalRef.close();          
+
+                                    if(!formData.get('price')){
+                                        console.log(formData.get('price'));
+                                    }                                       
                                 }}
                             >
                                 <section class="flex flex-col justify-center items-center mx-8">
@@ -308,8 +339,7 @@
                                         <input
                                             type="text"
                                             name="name"
-                                            placeholder="Nome do componente"
-                                            required
+                                            placeholder="Nome do componente"                                            
                                         />
                                     </label>
                                     <textarea
@@ -328,8 +358,7 @@
                                             <input
                                                 type="number"
                                                 name="price"
-                                                class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                required
+                                                class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"                                                
                                                 placeholder="Preço (R$)"
                                             />
                                         </label>
@@ -341,11 +370,24 @@
                                                 type="number"
                                                 name="arkhoins"
                                                 class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                placeholder="Preço (Arkhoins)"
-                                                required
+                                                placeholder="Preço (Arkhoins)"                                                
                                             />
                                         </label>
                                     </section>
+                                    <label class="flex items-center gap-2 mt-4 w-full">
+                                        <input
+                                            type="checkbox"
+                                            name="isPublic"
+                                            class="checkbox checkbox-sm checkbox-primary"
+                                        />
+                                        <p class="text-md font-semibold">Publicar na loja</p>
+                                        <QuestionMark>
+                                            Ao marcar essa opção o seu objeto será postado
+                                            publicamente na loja valendo a quantidade de Arkhoins na
+                                            qual você definiu.
+                                        </QuestionMark>
+                                    </label>
+
                                     <button
                                         type="submit"
                                         class="btn btn-sm btn-primary w-full mt-4"

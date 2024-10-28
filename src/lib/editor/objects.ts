@@ -420,11 +420,14 @@ export function verifyObject(x: any): any {
     return x;
 }
 
-export function setInfo(object: FabricObject, name: string, price: number) {
+export function setInfo(object: FabricObject, name: string, price: number, id: number, description: string, arkhoins: number) {
     object.set({
+        id: id,
         name: name,
         price: price,
-        isComponent: true
+        isComponent: true,
+        description: description,
+        arkhoins: arkhoins
     });
     object.setCoords();
 }

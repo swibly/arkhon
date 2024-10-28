@@ -275,12 +275,12 @@ export async function getContentByProjectId(token: string, id: number) {
     }
 }
 
-export async function saveProjectContent(token: string, id: number, canvas: object) {    
+export async function saveProjectContent(token: string, id: number, canvas: object) {
     try {
         await axios.put(`/v1/projects/${id}/content`, canvas, {
             headers: { Authorization: token }
-        })     
+        });
     } catch (error) {
         return console.error(error);
     }
-}   
+}
