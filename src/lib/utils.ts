@@ -14,7 +14,7 @@ export type PaginationOptions = Partial<{
 
 export function getPaginationOptionsFromURL(url: URL): PaginationOptions {
     let page = 1;
-    let limit = 15;
+    let limit = 20;
 
     url.searchParams.forEach((value, key) => {
         if (key === 'page') {
