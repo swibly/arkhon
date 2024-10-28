@@ -373,3 +373,25 @@ export async function unlinkProject(token: string, projectID: number) {
         // TODO: Add error handling
     }
 }
+
+export async function getContentByProjectId(token: string, id: number) {
+    try {
+        const res = await axios.get(`/v1/projects/${id}/content`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data;
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function saveProjectContent(token: string, id: number, canvas: object) {
+    try {
+        await axios.put(`/v1/projects/${id}/content`, canvas, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        return console.error(error);
+    }
+}
