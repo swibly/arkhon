@@ -302,7 +302,7 @@
             name="budget"
             icon="mdi:dollar"
             type="number"
-            step="0.01"
+            step="1"
             placeholder="0"
             labels={{ topLeft: 'Orçamento' }}
             min={0}
