@@ -85,6 +85,26 @@ export async function updateProject(token: string, projectID: number, data: Form
     }
 }
 
+export async function getPublicProjects(token: string, options: PaginationOptions = {}) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.get(`/v1/projects?page=${page}&perpage=${limit}`, { headers: { Authorization: token } });
+
+        return res.data as Pagination<Project>;
+    } catch (error) {
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 0,
+            current_page: 0,
+            previous_page: -1,
+            total_records: 0
+        } as Pagination<Project>;
+    }
+}
+
 export async function getProjectsByUser(
     token: string,
     username: string,
