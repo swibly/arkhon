@@ -1,4 +1,4 @@
-import axios from "./server/axios";
+import axios from './server/axios';
 
 export type Component = {
     id: number;
@@ -38,9 +38,12 @@ export async function getPublicComponents(token: string, page: string) {
 
 export async function getAllUserComponents(token: string, username: string, page: string) {
     try {
-        const res = await axios.get(`/v1/components/user/${username}/owned?page=${page.toString()}`, {
-            headers: { Authorization: token }
-        });
+        const res = await axios.get(
+            `/v1/components/user/${username}/owned?page=${page.toString()}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
 
         return res.data;
     } catch (error) {
@@ -63,6 +66,18 @@ export async function editComponent(token: string, body: object, id: number) {
         await axios.patch(`/v1/components/${id}/update`, body, {
             headers: { Authorization: token }
         });
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function getComponentInfo(token: string, id: number) {
+    try {
+        let res = await axios.patch(`/v1/components/${id}`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data
     } catch (error) {
         return console.error(error);
     }

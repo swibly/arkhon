@@ -6,7 +6,8 @@ import {
     getAllUserComponents,
     getPublicComponents,
     createComponent,
-    editComponent
+    editComponent,
+    getComponentInfo
 } from '$lib/component';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { getUserByToken } from '$lib/user';
@@ -70,22 +71,39 @@ export const actions: Actions = {
 
     edit: async function ({ cookies, request }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        let user = await getUserByToken(jwt);
         let data = await request.formData();
-        let name = data.get('name');
-        let description = data.get('description');
+        let id = Number(data.get('id'));
+        let name = String(data.get('newName'));
+        let description = String(data.get('newDescription'));
         let content = JSON.parse(JSON.stringify(data.get('content')));
-        let budget = data.get('price');
-        let arkhoins = data.get('arkhoins');        
+        let budget = Number(data.get('newPrice'));
+        let arkhoins = Number(data.get('newArkhoins'));        
+        let isPublic = String(data.get('newPublic')) === 'false' ? false : true;      
+        let message: string;
 
         const json = {
-            Name: String(name),
-            Description: String(description),
-            Content: JSON.parse(JSON.stringify(content)),
-            Price: Number(arkhoins),
-            Budget: Number(budget)
+            Name: name,
+            Description: description,
+            Content: content,
+            Price: arkhoins,
+            Budget: budget,
+            Public: isPublic
         };
 
-        // editComponent();
+        // let component = await getComponentInfo(jwt, id);
+
+        // if(component.owner_username === user?.username){
+        //     await editComponent(jwt, json, id);            
+
+        //     message = "Ok";
+        // }else{
+        //     message = "Você não tem permissão para editar esse componente.";
+        // }
+
+        // return {
+        //     message: "A"
+        // }
     },
 
     get: async function ({ cookies, request }) {

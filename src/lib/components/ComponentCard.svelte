@@ -1,12 +1,15 @@
 <script lang="ts" type="module">
     import { Rect, Circle, Polygon, Group } from 'fabric';
     import { onMount } from 'svelte';
+    import Icon from '@iconify/svelte';
 
     export let name: String;
     export let content: string;
+    export let type: string;
 
     let svg: any;
     let svgRef: HTMLElement;
+    let modalRef: HTMLDialogElement;
 
     onMount(() => {
         if (JSON.parse(content).type === 'Rect') {
@@ -42,7 +45,7 @@
 
             svg = component.toSVG();
 
-            svgRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 5000 5000">${svg}</svg>`;            
+            svgRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 5000 5000">${svg}</svg>`;
         }
 
         if (JSON.parse(content).type === 'Group') {
@@ -53,30 +56,35 @@
                     allObjs.push(new Rect(obj));
                 }
 
-                if(obj.type === 'Circle'){
+                if (obj.type === 'Circle') {
                     allObjs.push(new Circle(obj));
                 }
 
-                if(obj.type === 'Polygon'){
+                if (obj.type === 'Polygon') {
                     allObjs.push(new Polygon(obj.points, obj));
                 }
             }
 
             let component = new Group(allObjs);
-                component.set({
-                    left: 0,
-                    top: 0
-                })
+            component.set({
+                left: 0,
+                top: 0
+            });
 
-                svg = component.toSVG();
+            svg = component.toSVG();
 
-                svgRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 5000 5000">${svg}</svg>`;                
+            svgRef.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 5000 5000">${svg}</svg>`;
         }
     });
+
+    function openModal() {
+        modalRef.showModal();
+    }
 </script>
 
 <main
     class="w-28 h-28 flex flex-col items-center justify-center border border-secondary border-2 rounded-md my-2"
+    on:click={() => openModal()}
 >
     <article
         bind:this={svgRef}
@@ -88,3 +96,21 @@
         {name}
     </h1>
 </main>
+
+{#if type === 'component'}
+    <dialog id="my_modal_3" class="modal" bind:this={modalRef}>
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+        </div>
+    </dialog>
+{:else}
+    <dialog id="my_modal_3" class="modal" bind:this={modalRef}>
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+        </div>
+    </dialog>
+{/if}

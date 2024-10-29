@@ -35,7 +35,7 @@
     import type { Project } from '$lib/projects';
     import type { Component } from '$lib/component';
     import ComponentCard from '$lib/components/ComponentCard.svelte';
-    import ComponentPagination from '$lib/components/ComponentPagination.svelte';    
+    import ComponentPagination from '$lib/components/ComponentPagination.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -56,6 +56,8 @@
     let asideObjects: Array<FabricObject> = [];
     let allComponents: Array<Component>;
     let ownedComponents: Array<Component>;
+    let pointerX: number;
+    let pointerY: number;
     const quadSize = {
         w: data.project.width * 100,
         h: data.project.height * 100
@@ -63,9 +65,9 @@
 
     function setActiveButton(value: String) {
         activeButton = value;
-    }    
+    }
 
-    $: console.log(data.allOwnedComponents);
+    // $: console.log(data.allOwnedComponents);
 
     onMount(function () {
         allComponents = data.component.data;
@@ -127,7 +129,7 @@
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {            
+        fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
@@ -135,8 +137,8 @@
                 resetOpacity(fabric, circle);
             }
 
-            console.log("Page owned", data.allOwnedComponents);
-            console.log("Page all", data.component);
+            // console.log("Page owned", data.allOwnedComponents);
+            // console.log("Page all", data.component);
 
             if (e.altKey) {
                 fabric.isDrawingMode = false;
@@ -573,7 +575,7 @@
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each ownedComponents as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} />
+                            <ComponentCard name={component.name} content={component.content} type="component"/>
                         {/each}
                     </section>
                 </main>
@@ -602,7 +604,7 @@
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} />
+                            <ComponentCard name={component.name} content={component.content} type="store"/>
                         {/each}
                     </section>
                 </main>

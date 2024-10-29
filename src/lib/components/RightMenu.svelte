@@ -16,7 +16,7 @@
     import Icon from '@iconify/svelte';
     import type { Project } from '$lib/projects';
     import { enhance } from '$app/forms';
-    import QuestionMark from './QuestionMark.svelte';
+    import QuestionMark from './QuestionMark.svelte';    
 
     let rightMenu: HTMLElement;
     let buttonInside: boolean;
@@ -213,7 +213,8 @@
                                             //@ts-ignore
                                             result.data.lastComponent.id,
                                             String(formData.get('description')),
-                                            Number(formData.get('arkhoins'))
+                                            Number(formData.get('arkhoins')),
+                                            Boolean(formData.get('isPublic'))
                                         );
                                     };
                                 }}
@@ -311,21 +312,76 @@
                                 method="POST"
                                 action={`/community/projects/${data.id}/edit?/edit`}
                                 use:enhance={({ formData }) => {
-                                    // setInfo(
-                                    //     finalObject,
-                                    //     String(formData.get('name')),
-                                    //     Number(formData.get('price'))
-                                    // );
+                                    if (!formData.get('name')) {
+                                        // @ts-ignore
+                                        formData.set('newName', String(finalObject.name));
+                                    } else {
+                                        // @ts-ignore
+                                        formData.set('newName', formData.get('name'));
+                                    }
 
-                                    // let formName = 
+                                    if (!formData.get('description')) {
+                                        formData.set(
+                                            'newDescription',
+                                            // @ts-ignore
+                                            String(finalObject.description)
+                                        );
+                                    } else {
+                                        // @ts-ignore
+                                        formData.set('newDescription', formData.get('description'));
+                                    }
+
+                                    if (!formData.get('price')) {
+                                        // @ts-ignore
+                                        formData.set('newPrice', String(finalObject.price));
+                                    } else {
+                                        // @ts-ignore
+                                        formData.set('newPrice', formData.get('price'));
+                                    }
+
+                                    if (!formData.get('arkhoins')) {
+                                        // @ts-ignore
+                                        formData.set('newArkhoins', String(finalObject.arkhoins));
+                                    } else {
+                                        // @ts-ignore
+                                        formData.set('newArkhoins', formData.get('arkhoins'));
+                                    }
+
+                                    if (formData.get('isPublic') === null) {
+                                        formData.set('newPublic', 'false');
+                                    } else {
+                                        formData.set('newPublic', 'true');
+                                    }
 
                                     formData.set('content', JSON.stringify(finalObject));
+                                    // @ts-ignore
+                                    formData.set('id', String(finalObject.id));
 
-                                    editModalRef.close();          
+                                    editModalRef.close();
 
-                                    if(!formData.get('price')){
-                                        console.log(formData.get('price'));
-                                    }                                       
+                                    return ({ result }) => {                                        
+                                        setInfo(
+                                            finalObject,
+                                            String(formData.get('newName')),
+                                            Number(formData.get('newPrice')),
+                                            // @ts-ignore
+                                            finalObject.id,
+                                            String(formData.get('newDescription')),
+                                            Number(formData.get('newArkhoins')),
+                                            String(formData.get('newPublic')) === 'false'
+                                                ? false
+                                                : true
+                                        );
+
+                                        // @ts-ignore
+
+                                        // console.log(result);
+                                        // if(result.data.message !== "Ok"){
+                                        //     // @ts-ignore
+                                        //     // spawn({ message: result.data.message });
+                                        //     console.log("A");
+                                        // }
+                                    };
                                 }}
                             >
                                 <section class="flex flex-col justify-center items-center mx-8">
@@ -339,7 +395,7 @@
                                         <input
                                             type="text"
                                             name="name"
-                                            placeholder="Nome do componente"                                            
+                                            placeholder="Nome do componente"
                                         />
                                     </label>
                                     <textarea
@@ -358,7 +414,7 @@
                                             <input
                                                 type="number"
                                                 name="price"
-                                                class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"                                                
+                                                class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 placeholder="Preço (R$)"
                                             />
                                         </label>
@@ -370,7 +426,7 @@
                                                 type="number"
                                                 name="arkhoins"
                                                 class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                placeholder="Preço (Arkhoins)"                                                
+                                                placeholder="Preço (Arkhoins)"
                                             />
                                         </label>
                                     </section>
