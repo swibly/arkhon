@@ -10,10 +10,32 @@
     <header
         class="sticky top-0 z-50 flex items-center gap-2 p-4 bg-base-100 border-b border-base-200"
     >
-        <div>
-            <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
-            <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>
+        <div class="flex items-center gap-4">
+            <a href="/home">
+                <img src="/gallery/icon-no-bg.svg" alt="" class="size-14" />
+            </a>
+
+            <div>
+                <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
+                <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>
+            </div>
         </div>
+
+        <div class="divider divider-horizontal mx-1 max-sm:hidden" />
+
+        <nav class="max-sm:hidden space-x-2">
+            <a
+                href="/profile/{data.user.username}"
+                class="inline-flex items-center link link-primary"
+            >
+                <Icon icon="mdi:user" />
+                Perfil
+            </a>
+            <a href="/community" class="inline-flex items-center link link-secondary">
+                <Icon icon="fluent:people-community-12-filled" />
+                Comunidade
+            </a>
+        </nav>
 
         <div class="grow" />
 
