@@ -4,33 +4,29 @@
     export let type: 'danger' | 'alert' | 'tip' = 'alert';
 </script>
 
-<div class="max-w-5xl w-fit">
-    {#if type === 'alert'}
-        <article
-            class="border-l-2 border-l-warning-content p-2 flex items-center gap-2 text-warning-content bg-warning rounded-r-md"
-        >
+<article
+    class="p-4 rounded border"
+    class:text-success={type === 'tip'}
+    class:border-success={type === 'tip'}
+    class:text-warning={type === 'alert'}
+    class:border-warning={type === 'alert'}
+    class:text-error={type === 'danger'}
+    class:border-error={type === 'danger'}
+>
+    <div class="flex items-center gap-2 font-bold text-lg">
+        {#if type === 'alert'}
             <Icon icon="mdi:alert" class="shrink-0" />
-            <p>
-                <slot />
-            </p>
-        </article>
-    {:else if type === 'danger'}
-        <article
-            class="border-l-2 border-l-error-content p-2 flex items-center gap-2 text-error-content bg-error rounded-r-md"
-        >
+            Alerta
+        {:else if type === 'danger'}
             <Icon icon="akar-icons:stop-fill" class="shrink-0" />
-            <p>
-                <slot />
-            </p>
-        </article>
-    {:else if type === 'tip'}
-        <article
-            class="border-l-2 border-l-success-content p-2 flex items-center gap-2 text-success-content bg-success/70 rounded-r-md"
-        >
+            Perigo
+        {:else if type === 'tip'}
             <Icon icon="mingcute:question-fill" class="shrink-0" />
-            <p>
-                <slot />
-            </p>
-        </article>
-    {/if}
-</div>
+            Dica
+        {/if}
+    </div>
+
+    <p class="text-justify">
+        <slot />
+    </p>
+</article>
