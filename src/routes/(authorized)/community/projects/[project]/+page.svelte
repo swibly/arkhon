@@ -72,6 +72,53 @@
                 currency: 'BRL'
             })}
         </p>
+
+        <div class="grow" />
+
+        <div>
+            {#if loadingFavorite}
+                <button type="button" class="btn btn-sm" disabled>
+                    {#if project.is_favorited}
+                        Desfavoritar
+                        <Icon icon="material-symbols:favorite" />
+                    {:else}
+                        Favoritar
+                        <Icon icon="material-symbols:favorite-outline" />
+                    {/if}
+                </button>
+            {:else}
+                <form
+                    action="?/{project.is_favorited ? 'un' : ''}favorite"
+                    method="POST"
+                    use:enhance={function () {
+                        loadingFavorite = true;
+                        return ({ update }) => {
+                            loadingFavorite = false;
+                            spawn({
+                                message: project.is_favorited
+                                    ? 'Você desfavoritou este projeto.'
+                                    : 'Você favoritou este projeto.'
+                            });
+
+                            return update({ reset: true });
+                        };
+                    }}
+                >
+                    <button type="submit" class="btn btn-sm">
+                        {#if project.is_favorited}
+                            Desfavoritar
+                            <Icon icon="material-symbols:favorite" class="transition text-error" />
+                        {:else}
+                            Favoritar
+                            <Icon
+                                icon="material-symbols:favorite-outline"
+                                class="transition text-error"
+                            />
+                        {/if}
+                    </button>
+                </form>
+            {/if}
+        </div>
     </article>
 
     <img

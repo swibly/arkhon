@@ -196,6 +196,10 @@
                                                 message: result.data.error,
                                                 status: 'error'
                                             });
+                                        } else {
+                                            spawn({
+                                              message: 'Usuário adicionado.'
+                                            });
                                         }
 
                                         return update({ reset: false });
