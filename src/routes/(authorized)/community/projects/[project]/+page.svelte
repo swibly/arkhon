@@ -25,6 +25,7 @@
 
     let loadingClone = false;
     let loadingUnlink = false;
+    let loadingDelete = false;
 </script>
 
 <svelte:head>
@@ -185,6 +186,29 @@
                 </button>
             {/if}
         </form>
+
+        {#if (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_delete === true).length > 0) && project.deleted_at === null}
+            <form
+                action="?/delete"
+                method="POST"
+                use:enhance={() => {
+                    return ({ update }) => {
+                        spawn({ message: 'Projeto deletado da lixeira.' });
+                        update({ reset: false });
+                    };
+                }}
+            >
+                <button class="btn btn-error btn-sm" disabled={loadingDelete}>
+                    {#if loadingDelete}
+                        <Icon icon="mdi:trash" />
+                        Enviando para lixeira
+                    {:else}
+                        <Icon icon="mdi:trash" />
+                        Enviar para lixeira
+                    {/if}
+                </button>
+            </form>
+        {/if}
     </article>
 
     <div class="flex items-center gap-2 my-4">
@@ -361,7 +385,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2 mt-4">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2 mt-4">
         <a href="/community/projects/{project.id}/edit" class="btn btn-sm btn-primary">
             <Icon icon="mdi:eye" />
             Ir para o editor
