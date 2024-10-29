@@ -1,4 +1,6 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss';
+import daisyui from 'daisyui';
+
 export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     theme: {
@@ -22,7 +24,7 @@ export default {
             }
         }
     },
-    plugins: [require('daisyui')],
+    plugins: [daisyui],
     daisyui: {
         logs: false,
         darkTheme: 'dark',
@@ -67,4 +69,4 @@ export default {
         ]
     },
     darkMode: ['class', '[data-theme="dark"]']
-};
+} as Config;
