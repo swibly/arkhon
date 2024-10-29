@@ -78,8 +78,11 @@ export async function searchUsersByName(token: string, search: string, options: 
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;
 
-        const res = await axios.get(
-            `/v1/search/user?name=${search}&page=${page}&perpage=${limit}`,
+        const res = await axios.post(
+            `/v1/search/user?page=${page}&perpage=${limit}`,
+            {
+                name: search
+            },
             {
                 headers: { Authorization: token }
             }

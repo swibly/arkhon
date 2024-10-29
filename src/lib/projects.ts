@@ -90,7 +90,9 @@ export async function getPublicProjects(token: string, options: PaginationOption
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;
 
-        const res = await axios.get(`/v1/projects?page=${page}&perpage=${limit}`, { headers: { Authorization: token } });
+        const res = await axios.get(`/v1/projects?page=${page}&perpage=${limit}`, {
+            headers: { Authorization: token }
+        });
 
         return res.data as Pagination<Project>;
     } catch (error) {
@@ -393,5 +395,38 @@ export async function saveProjectContent(token: string, id: number, canvas: obje
         });
     } catch (error) {
         return console.error(error);
+    }
+}
+
+export async function searchProjectsByName(
+    token: string,
+    search: string,
+    options: PaginationOptions
+) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.post(
+            `/v1/search/project?page=${page}&perpage=${limit}`,
+            {
+                name: search
+            },
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        return {
+            search: res.data as Pagination<Project>,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
     }
 }
