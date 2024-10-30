@@ -91,7 +91,7 @@ export async function searchUsers(token: string, search: UserSearch, options: Pa
         });
 
         return {
-            search: res.data as User[],
+            search: res.data as Pagination<User>,
             status: res.status
         };
     } catch (e) {

@@ -1,5 +1,5 @@
 import axios from './server/axios';
-import { PaginationOptions, Search } from './utils';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type Component = {
     id: number;
@@ -92,7 +92,7 @@ export async function searchComponents(
         });
 
         return {
-            search: res.data as Component[],
+            search: res.data as Pagination<Component>,
             status: res.status
         };
     } catch (e) {
