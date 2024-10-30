@@ -7,7 +7,11 @@ import {
     getPublicComponents,
     createComponent,
     editComponent,
-    getComponentInfo
+    getComponentInfo,
+    putComponentinTrash,
+    getAllComponentsinTrash,
+    buyComponent,
+    publishComponent
 } from '$lib/component';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { getUserByToken } from '$lib/user';
@@ -47,7 +51,7 @@ export const actions: Actions = {
         const content = data.get('content');
         const budget = data.get('price');
         const arkhoins = data.get('arkhoins');
-        const isPublic = data.get('isPublic');
+        const isPublic = String(data.get('isPublic')) === 'false' ? false : true;
 
         const json = {
             Name: String(name),
@@ -57,15 +61,22 @@ export const actions: Actions = {
             Budget: Number(budget)
         };
 
-        await createComponent(jwt, json, Boolean(isPublic));
+        await createComponent(jwt, json, isPublic);
         let components = await getAllUserComponents(jwt, String(user?.username), '1');
         let allComponents = await getAllUserComponents(
             jwt,
             String(user?.username),
             components.total_pages
         );
+
+        let lastComponent = allComponents.data[(allComponents.total_records % 10) - 1];
+
+        if(isPublic){
+            await publishComponent(jwt, lastComponent.id);
+        }
+
         return {
-            lastComponent: allComponents.data[(allComponents.total_records % 10) - 1]
+            lastComponent: lastComponent
         };
     },
 
@@ -80,7 +91,7 @@ export const actions: Actions = {
         let budget = Number(data.get('newPrice'));
         let arkhoins = Number(data.get('newArkhoins'));        
         let isPublic = String(data.get('newPublic')) === 'false' ? false : true;      
-        let message: string;
+        // let message: string;
 
         const json = {
             Name: name,
@@ -94,7 +105,7 @@ export const actions: Actions = {
         // let component = await getComponentInfo(jwt, id);
 
         // if(component.owner_username === user?.username){
-        //     await editComponent(jwt, json, id);            
+            await editComponent(jwt, json, id);            
 
         //     message = "Ok";
         // }else{
@@ -104,6 +115,10 @@ export const actions: Actions = {
         // return {
         //     message: "A"
         // }
+
+        if(isPublic){
+            await publishComponent(jwt, id);
+        }
     },
 
     get: async function ({ cookies, request }) {
@@ -122,7 +137,7 @@ export const actions: Actions = {
         };
     },
 
-    reset: async function ({ cookies, request }) {
+    reset: async function ({ cookies }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         let user = await getUserByToken(jwt);
 
@@ -130,5 +145,30 @@ export const actions: Actions = {
             component: await getPublicComponents(jwt, '1'),
             allOwnedComponents: await getAllUserComponents(jwt, String(user?.username), '1')
         };
+    },
+
+    delete: async function ({cookies, request}){
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        const data = await request.formData();
+        const id = data.get('id');
+
+        await putComponentinTrash(jwt, Number(id));
+
+        return {
+            trash: await getAllComponentsinTrash(jwt)
+        }
+    },
+
+    buy: async function ({cookies, request}){
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        let user = await getUserByToken(jwt);
+        const data = await request.formData();
+        const id = data.get('id');
+
+        await buyComponent(jwt, Number(id));
+
+        return {
+            usersComponent: await getAllUserComponents(jwt, String(user?.username), '4')
+        }
     }
 };

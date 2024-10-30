@@ -77,7 +77,50 @@ export async function getComponentInfo(token: string, id: number) {
             headers: { Authorization: token }
         });
 
-        return res.data
+        return res.data;
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function putComponentinTrash(token: string, id: number) {
+    try {
+        await axios.delete(`/v1/components/${id}/trash`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function getAllComponentsinTrash(token: string) {
+    try {
+        let res = await axios.get(`/v1/components/trash`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data;
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function buyComponent(token: string, id: number) {
+    try {
+        await axios.post(`/v1/components/${id}/buy`, {}, { headers: { Authorization: token } });
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function publishComponent(token: string, id: number) {
+    try {
+        await axios.patch(
+            `/v1/components/${id}/publish`,
+            {
+                headers: { Authorization: token }
+            }
+        );
     } catch (error) {
         return console.error(error);
     }

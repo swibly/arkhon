@@ -65,9 +65,7 @@
 
     function setActiveButton(value: String) {
         activeButton = value;
-    }
-
-    // $: console.log(data.allOwnedComponents);
+    }    
 
     onMount(function () {
         allComponents = data.component.data;
@@ -78,7 +76,9 @@
             preserveObjectStacking: true
         });
 
-        loadCanvas(fabric, data.content);
+        if(data.content){
+            loadCanvas(fabric, data.content);
+        }        
 
         rect = new Rect({
             width: 100,
@@ -575,7 +575,7 @@
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each ownedComponents as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} type="component"/>
+                            <ComponentCard componentInfo={component} type="component" canvas={fabric} data={data.project}/>
                         {/each}
                     </section>
                 </main>
@@ -599,12 +599,12 @@
                         }}
                         data={data.project}
                         componentData={data.component}
-                        type={'store'}
+                        type={'store'}                        
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} type="store"/>
+                            <ComponentCard componentInfo={component} type="store" canvas={fabric} data={data.project}/>
                         {/each}
                     </section>
                 </main>

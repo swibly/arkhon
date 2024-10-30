@@ -77,7 +77,7 @@ export function resize(canvas: Canvas, width: number, height: number) {
     }
 }
 
-export function loadCanvas(canvas: Canvas, json: any) {
+export function loadCanvas(canvas: Canvas, json: object) {
     canvas.loadFromJSON(json);    
 }
 
