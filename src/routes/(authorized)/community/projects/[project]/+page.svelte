@@ -76,7 +76,7 @@
 
         <div class="grow" />
 
-        <div>
+        <div class="max-sm:hidden">
             {#if loadingFavorite}
                 <button type="button" class="btn btn-sm" disabled>
                     {#if project.is_favorited}
