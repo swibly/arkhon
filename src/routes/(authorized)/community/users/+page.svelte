@@ -91,7 +91,7 @@
 
     <section class="w-full">
         {#if userSearch !== undefined}
-            <div class="mx-auto w-fit">
+            <div class="mx-auto w-fit mb-4">
                 <Pagination pagination={userSearch} />
             </div>
 
@@ -119,11 +119,13 @@
                 {/each}
             </ul>
         {:else}
-            <div class="mx-auto w-fit">
+            <div class="mx-auto w-fit mb-4">
                 <Pagination {pagination} />
             </div>
 
-            <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4 max-md:flex max-md:flex-col">
+            <ul
+                class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4 max-md:flex max-md:flex-col"
+            >
                 {#each users as user}
                     <li>
                         <UserProfileCard

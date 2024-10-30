@@ -34,5 +34,6 @@ export const actions: Actions = {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
 
         await unfollow(jwt, params.username!);
-    }
+    },
+    report: async function () {}
 };

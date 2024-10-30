@@ -19,11 +19,6 @@ export const actions: Actions = {
         const data = await request.formData();
         let search: UserSearch = {};
 
-        // ascending: 'on',
-        // name: 'a',
-        // order: 'alphabetic',
-        // verified: 'on'
-
         const name = data.get('name')?.toString();
         const ascending = data.get('ascending')?.toString();
         const verified = data.get('verified')?.toString();
