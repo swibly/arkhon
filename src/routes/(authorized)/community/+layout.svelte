@@ -37,7 +37,7 @@
                         class="btn btn-sm"
                         class:btn-primary={path.includes('users')}
                     >
-                        <Icon icon="iconamoon:component-fill" />
+                        <Icon icon="mdi:users" />
                         Usuários
                     </a>
                 </nav>

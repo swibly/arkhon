@@ -11,7 +11,7 @@
 </script>
 
 {#if projects.length === 0}
-    <p class="mb-4 opacity-70 italic">Nenhum projeto encontrado.</p>
+    <p class="mb-4 opacity-70 italic text-center">Nenhum projeto encontrado.</p>
 {:else}
     <div class="mx-auto w-fit">
         <Pagination {pagination} />
