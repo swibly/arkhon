@@ -12,8 +12,8 @@
 <div class="p-4">
     {#if path.match(/\/community\/(projects|components|users)(\/)?$/)}
         <div class="flex gap-4 *:shrink-0">
-            <section class="grow">
-                <nav class="grid grid-cols-3 gap-2 mx-auto w-fit">
+            <section class="w-full">
+                <nav class="mx-auto w-fit">
                     <a
                         href="/community/projects"
                         class="btn btn-sm"

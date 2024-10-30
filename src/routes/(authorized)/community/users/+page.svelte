@@ -18,7 +18,7 @@
     $: userSearch = undefined as PaginationType<User> | undefined;
 </script>
 
-<div class="flex gap-4">
+<div class="flex max-sm:flex-col gap-4">
     <aside class="pr-4 border-r border-r-base-200">
         <form
             method="POST"
@@ -66,11 +66,11 @@
                 disableDefaultLabels
             />
 
-            <label class="form-control w-full max-w-xs">
+            <label class="form-control w-full">
                 <div class="label">
                     <span class="label-text">Ordenar por</span>
                 </div>
-                <select name="order" class="select select-sm select-bordered w-full max-w-xs">
+                <select name="order" class="select select-sm select-bordered w-full">
                     <option disabled selected>Selecione um</option>
                     <option value="alphabetic">Ordem Alfabética</option>
                     <option value="order_created">Data de criação</option>
@@ -89,7 +89,7 @@
         </form>
     </aside>
 
-    <section class="grow">
+    <section class="w-full">
         {#if userSearch !== undefined}
             <div class="mx-auto w-fit">
                 <Pagination pagination={userSearch} />
@@ -123,7 +123,7 @@
                 <Pagination {pagination} />
             </div>
 
-            <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
+            <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4 max-md:flex max-md:flex-col">
                 {#each users as user}
                     <li>
                         <UserProfileCard
