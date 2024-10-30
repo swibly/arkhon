@@ -1,5 +1,5 @@
 import axios from './server/axios';
-import { Pagination, PaginationOptions } from './utils';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type User = {
     id: number;
@@ -73,20 +73,22 @@ export type Follower = {
     following_since: Date;
 };
 
-export async function searchUsersByName(token: string, search: string, options: PaginationOptions) {
+export type UserSearch = Search &
+    Partial<{
+        /** Only verified users */
+        verified_only: boolean;
+        /** Most followers first */
+        most_followers: boolean;
+    }>;
+
+export async function searchUsers(token: string, search: UserSearch, options: PaginationOptions) {
     try {
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;
 
-        const res = await axios.post(
-            `/v1/search/user?page=${page}&perpage=${limit}`,
-            {
-                name: search
-            },
-            {
-                headers: { Authorization: token }
-            }
-        );
+        const res = await axios.post(`/v1/search/user?page=${page}&perpage=${limit}`, search, {
+            headers: { Authorization: token }
+        });
 
         return {
             search: res.data as User[],

@@ -12,6 +12,21 @@ export type PaginationOptions = Partial<{
     limit: number;
 }>;
 
+export type Search = Partial<{
+    /** Generic name, can be username, first name, last name etc */
+    name: string;
+    /** By default sorting is descending */
+    ascending: boolean;
+    /** Sorts the primary name in the model (e.g.: User -> username, Project -> name, etc) */
+    order_alphabetic: boolean;
+    /** Only query for whom the current user follows */
+    followed: boolean;
+    /** Order by created at */
+    order_created: boolean;
+    /** Order by modified at */
+    order_modified: boolean;
+}>;
+
 export function getPaginationOptionsFromURL(url: URL): PaginationOptions {
     let page = 1;
     let limit = 20;

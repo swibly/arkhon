@@ -1,6 +1,6 @@
 import axios from './server/axios';
 import { UserProjectAllowList, UserProjectPermissions } from './user';
-import { Pagination, PaginationOptions } from './utils';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type Project = {
     id: number;
@@ -25,6 +25,22 @@ export type Project = {
     is_favorited: boolean;
     total_favorites: number;
 };
+
+export type ProjectSearch = Search &
+    Partial<{
+        /** Projects with most favorites first */
+        most_favorites: boolean;
+        /** Projects with most clones first */
+        most_clones: boolean;
+        /** Minimum area to be queried */
+        min_area: number;
+        /** Maximum area to be queried */
+        max_area: number;
+        /** Minimum budget to be queried */
+        min_budget: number;
+        /** Maximum budget to be queried */
+        max_budget: number;
+    }>;
 
 export async function createProject(
     token: string,
@@ -398,24 +414,18 @@ export async function saveProjectContent(token: string, id: number, canvas: obje
     }
 }
 
-export async function searchProjectsByName(
+export async function searchProjects(
     token: string,
-    search: string,
+    search: ProjectSearch,
     options: PaginationOptions
 ) {
     try {
         const page = options.page ?? 1;
         const limit = options.limit ?? 10;
 
-        const res = await axios.post(
-            `/v1/search/project?page=${page}&perpage=${limit}`,
-            {
-                name: search
-            },
-            {
-                headers: { Authorization: token }
-            }
-        );
+        const res = await axios.post(`/v1/search/project?page=${page}&perpage=${limit}`, search, {
+            headers: { Authorization: token }
+        });
 
         return {
             search: res.data as Pagination<Project>,
