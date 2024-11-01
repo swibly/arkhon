@@ -1,4 +1,5 @@
-import axios from "./server/axios";
+import axios from './server/axios';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type Component = {
     id: number;
@@ -24,6 +25,12 @@ export type Component = {
     total_sells: number;
 };
 
+export type ComponentSearch = Search &
+    Partial<{
+        /** Most holders first */
+        most_holders: boolean;
+    }>;
+
 export async function getPublicComponents(token: string, page: string) {
     try {
         const res = await axios.get(`/v1/components?page=${page.toString()}`, {
@@ -38,9 +45,12 @@ export async function getPublicComponents(token: string, page: string) {
 
 export async function getAllUserComponents(token: string, username: string, page: string) {
     try {
-        const res = await axios.get(`/v1/components/user/${username}/owned?page=${page.toString()}`, {
-            headers: { Authorization: token }
-        });
+        const res = await axios.get(
+            `/v1/components/user/${username}/owned?page=${page.toString()}`,
+            {
+                headers: { Authorization: token }
+            }
+        );
 
         return res.data;
     } catch (error) {
@@ -65,5 +75,32 @@ export async function editComponent(token: string, body: object, id: number) {
         });
     } catch (error) {
         return console.error(error);
+    }
+}
+
+export async function searchComponents(
+    token: string,
+    search: ComponentSearch,
+    options: PaginationOptions
+) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.post(`/v1/search/component?page=${page}&perpage=${limit}`, search, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            search: res.data as Pagination<Component>,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
     }
 }

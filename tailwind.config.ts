@@ -1,4 +1,6 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss';
+import daisyui from 'daisyui';
+
 export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     theme: {
@@ -22,7 +24,7 @@ export default {
             }
         }
     },
-    plugins: [require('daisyui')],
+    plugins: [daisyui],
     daisyui: {
         logs: false,
         darkTheme: 'dark',
@@ -34,21 +36,22 @@ export default {
                     neutral: '#E0E0E0',
                     accent: '#FF4081',
                     'base-100': '#F4F4F4',
-                    success: '#4CAF50',
-                    warning: '#FFC107',
+                    info: '#2196F3',
+                    success: '#00AB6B',
+                    warning: '#CC7722',
                     error: '#F44336'
                 },
                 dark: {
-                    primary: '#FFA333',
-                    secondary: '#0175AF',
+                    primary: '#0175AF',
+                    secondary: '#FFA333',
+                    neutral: '#E0E0E0',
                     accent: '#FF4081',
-                    neutral: '#2D2D2D',
-                    'base-100': '#060606',
-                    'base-200': '#121212',
-                    'base-300': '#242424',
+                    'base-100': '#121212',
+                    'base-200': '#363636',
+                    'base-300': '#484848',
                     info: '#2196F3',
                     success: '#4CAF50',
-                    warning: '#FFC107',
+                    warning: '#DAA520',
                     error: '#F44336'
                 },
                 contrast: {
@@ -66,4 +69,4 @@ export default {
         ]
     },
     darkMode: ['class', '[data-theme="dark"]']
-};
+} as Config;

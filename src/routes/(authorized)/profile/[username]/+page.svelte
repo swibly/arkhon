@@ -26,6 +26,11 @@
                     Meus projetos
                 </a>
 
+                <a href="/community" class="btn btn-sm btn-secondary">
+                    <Icon icon="fluent:people-community-12-filled" />
+                    Comunidade
+                </a>
+
                 <a href="/community/store" class="btn btn-secondary btn-sm">
                     <Icon icon="mdi:store" />
                     Loja

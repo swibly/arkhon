@@ -20,7 +20,7 @@
     }
 </script>
 
-{#if pagination.total_pages !== 1}
+{#if pagination.total_pages !== 1 && pagination.total_records !== 0}
     <div class="mb-4 join">
         {#if pagination.current_page > 2}
             <a href={setupURL(1)} class="join-item btn btn-sm">1</a>
