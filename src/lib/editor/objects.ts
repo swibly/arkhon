@@ -69,14 +69,25 @@ export async function ungroup(canvas: Canvas): Promise<void> {
                     lockMovementY: item.lockMovementY,
                     lockScalingX: item.lockScalingX,
                     lockScalingY: item.lockScalingY,
-                    lockRotation: item.lockRotation,
-                    // @ts-ignore
-                    name: item.name,
-                    // @ts-ignore
-                    price: item.price,
-                    // @ts-ignore
-                    isComponent: item.isComponent
+                    lockRotation: item.lockRotation
                 });
+
+                // @ts-ignore
+                setInfo(
+                    obj,
+                    // @ts-ignore
+                    item.name,
+                    // @ts-ignore
+                    item.price,
+                    // @ts-ignore
+                    item.id,
+                    // @ts-ignore
+                    item.description,
+                    // @ts-ignore
+                    item.arkhoins,
+                    // @ts-ignore
+                    item.isPublic
+                );
             } else {
                 obj.set({
                     lockMovementX: item.lockMovementX,
@@ -145,14 +156,25 @@ export async function paste(
                     lockMovementY: copiedObjects[count].lockMovementY,
                     lockScalingX: copiedObjects[count].lockScalingX,
                     lockScalingY: copiedObjects[count].lockScalingY,
-                    lockRotation: copiedObjects[count].lockRotation,
-                    // @ts-ignore
-                    name: copiedObjects[count].name,
-                    // @ts-ignore
-                    price: copiedObjects[count].price,
-                    // @ts-ignore
-                    isComponent: copiedObjects[count].isComponent
+                    lockRotation: copiedObjects[count].lockRotation
                 });
+
+                // @ts-ignore
+                setInfo(
+                    obj,
+                    // @ts-ignore
+                    copiedObjects[count].name,
+                    // @ts-ignore
+                    copiedObjects[count].price,
+                    // @ts-ignore
+                    copiedObjects[count].id,
+                    // @ts-ignore
+                    copiedObjects[count].description,
+                    // @ts-ignore
+                    copiedObjects[count].arkhoins,
+                    // @ts-ignore
+                    copiedObjects[count].isPublic
+                );
             } else {
                 obj.set({
                     lockMovementX: copiedObjects[count].lockMovementX,
@@ -178,14 +200,25 @@ export async function paste(
                 lockMovementY: copiedObjects[0].lockMovementY,
                 lockScalingX: copiedObjects[0].lockScalingX,
                 lockScalingY: copiedObjects[0].lockScalingY,
-                lockRotation: copiedObjects[0].lockRotation,
-                // @ts-ignore
-                name: copiedObjects[0].name,
-                // @ts-ignore
-                price: copiedObjects[0].price,
-                // @ts-ignore
-                isComponent: copiedObjects[count].isComponent
+                lockRotation: copiedObjects[0].lockRotation
             });
+
+            // @ts-ignore
+            setInfo(
+                clonedObj,
+                // @ts-ignore
+                copiedObjects[0].name,
+                // @ts-ignore
+                copiedObjects[0].price,
+                // @ts-ignore
+                copiedObjects[0].id,
+                // @ts-ignore
+                copiedObjects[0].description,
+                // @ts-ignore
+                copiedObjects[0].arkhoins,
+                // @ts-ignore
+                copiedObjects[0].isPublic
+            );
         } else {
             clonedObj.set({
                 lockMovementX: copiedObjects[0].lockMovementX,
@@ -242,7 +275,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
     add(canvas, rect);
 
     rect.set({
-        isComponent: false
+        isComponent: false,
+        material: 'cimento'
     });
     rect.setCoords();
 
@@ -265,7 +299,8 @@ export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }
     add(canvas, circle);
 
     circle.set({
-        isComponent: false
+        isComponent: false,
+        material: 'cimento'
     });
     circle.setCoords();
 
@@ -313,7 +348,8 @@ export function addLine(canvas: Canvas) {
     add(canvas, line);
 
     line.set({
-        isComponent: false
+        isComponent: false,
+        material: 'cimento'
     });
     line.setCoords();
 
@@ -439,4 +475,45 @@ export function setInfo(
         isPublic: isPublic
     });
     object.setCoords();
+}
+
+export function changeMaterial(objects: FabricObject[], material: string) {
+    for (const obj of objects) {
+        // @ts-ignore
+        if (!obj.isComponent) {
+            obj.set({
+                material: material
+            });
+        }
+    }
+}
+
+export function addInfoText(canvas: Canvas) {
+    let text = new IText('', {
+        width: 50,
+        height: 50,
+        fill: null,
+        stroke: '#0175AF',
+        strokeWidth: 2,
+        strokeUniform: true,
+        lockSkewingX: true,
+        lockSkewingY: true,
+        lockMovementX: true,
+        lockMovementY: true,
+        lockRotation: true,
+        lockScalingFlip: true,
+        lockScalingX: true,
+        lockScalingY: true,
+        selectable: false,
+        fontFamily: 'sans-serif',
+        fontSize: 14,
+        opacity: 0,
+        textAlign: 'center'
+    });
+
+    canvas.add(text);
+
+    canvas.moveObjectTo(text, 3);
+
+    text.excludeFromExport = true;
 }

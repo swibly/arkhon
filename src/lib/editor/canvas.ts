@@ -1,4 +1,4 @@
-import { PencilBrush, Point, Path, type Canvas } from 'fabric';
+import { PencilBrush, Point, Path, type Canvas, FabricObject } from 'fabric';
 import { add } from './objects';
 
 export function centerView(canvas: Canvas, width: number, height: number): void {
@@ -78,7 +78,7 @@ export function resize(canvas: Canvas, width: number, height: number) {
 }
 
 export function loadCanvas(canvas: Canvas, json: object) {
-    canvas.loadFromJSON(json);    
+    canvas.loadFromJSON(json);
 }
 
 export function toPNG(

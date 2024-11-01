@@ -258,18 +258,6 @@
 </main>
 
 {#if type === 'store'}
-    <!-- <dialog id="my_modal_3" class="modal" bind:this={modalRef}>
-        <div class="modal-box">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <article
-                bind:this={svgPortrait}
-                class="w-10/12 h-24 bg-base-200 overflow-hidden p-2 border border-secondary mt-4"
-            />
-        </div>
-    </dialog>
-{:else} -->
     <dialog id="my_modal_3" class="modal" bind:this={modalRef}>
         <div class="modal-box">
             <form method="dialog">

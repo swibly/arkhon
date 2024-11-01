@@ -7,7 +7,8 @@
         ungroup,
         lock,
         unlock,
-        setInfo
+        setInfo,
+        changeMaterial
     } from '$lib/editor/objects';
     import { type FabricObject, type Canvas } from 'fabric';
     import { bringFront, sendBack, sendBackward, bringForward } from '$lib/editor/layers';
@@ -189,6 +190,38 @@
                     <li on:click={() => bringFront(canvas)}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
                             >Trazer para o topo</a
+                        >
+                    </li>
+                </ul>
+            </details>
+        </li>
+        <li>
+            <details>
+                <summary> Material </summary>
+                <ul>
+                    <li on:click={() => changeMaterial(getActive(canvas), 'cimento')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Cimento</a>
+                    </li>
+
+                    <li on:click={() => changeMaterial(getActive(canvas), 'azulejo')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Azulejo</a>
+                    </li>
+
+                    <li on:click={() => changeMaterial(getActive(canvas), 'porcelanato')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Porcelanato</a
+                        >
+                    </li>
+
+                    <li on:click={() => changeMaterial(getActive(canvas), 'madeira')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Madeira</a
+                        >
+                    </li>
+
+                    <li on:click={() => changeMaterial(getActive(canvas), 'cerâmica')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
+                            >Cerâmica</a
                         >
                     </li>
                 </ul>

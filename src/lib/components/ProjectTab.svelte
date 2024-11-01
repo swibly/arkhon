@@ -1,11 +1,13 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { Canvas, type FabricObject } from 'fabric';
+    import { type Canvas, type FabricObject } from 'fabric';
     import { centerView, startDraw, stopDraw, toPNG } from '$lib/editor/canvas';
-    import { stopLine, resetOpacity } from '$lib/editor/objects';
+    import { stopLine, resetOpacity, verifyObject } from '$lib/editor/objects';
     import { enhance } from '$app/forms';
     import type { Project } from '$lib/projects';
     import { spawn } from '$lib/toast';
+    import { onMount } from 'svelte';
+    import { canvasCalculation } from '$lib/editor/calculation';
 
     export let canvas: Canvas;
     export let width: number;
@@ -15,10 +17,24 @@
     export let data: Project;
     let loading: boolean = false;
 
+    let modalRef: HTMLDialogElement;
+    let buttonCalculation: HTMLElement;                
+    let results: object;
+
     let quadSize = {
         w: width,
         h: height
     };
+
+    onMount(() => {
+        buttonCalculation.addEventListener('mousedown', () => {
+            results = canvasCalculation(canvas);
+        });
+    });
+
+    function calculation() {
+        modalRef.showModal();
+    }
 </script>
 
 <main
@@ -135,7 +151,9 @@
             class="dropdown-content bg-secondary z-[1] w-20 p-2 shadow flex flex-col justify-center items-center"
         >
             <li>
-                <button><Icon icon="ph:play-fill" font-size="20px" class="text-white" /></button>
+                <button on:click={() => calculation()} bind:this={buttonCalculation}
+                    ><Icon icon="ph:play-fill" font-size="20px" class="text-white" /></button
+                >
             </li>
             <li>
                 <button on:click={() => centerView(canvas, quadSize.w, quadSize.h)}
@@ -154,7 +172,21 @@
                     use:enhance={function ({ formData }) {
                         loading = true;
 
-                        formData.set('json', JSON.stringify(canvas.toObject(['name', 'price', 'isComponent', 'isPublic', 'description', 'id', 'arkhoins'])));
+                        formData.set(
+                            'json',
+                            JSON.stringify(
+                                canvas.toObject([
+                                    'name',
+                                    'price',
+                                    'isComponent',
+                                    'isPublic',
+                                    'description',
+                                    'id',
+                                    'arkhoins',
+                                    'material'
+                                ])
+                            )
+                        );
 
                         return () => {
                             loading = false;
@@ -188,3 +220,39 @@
         </ul>
     </div>
 </main>
+
+<dialog id="my_modal_3" class="modal" bind:this={modalRef}>
+    <div class="modal-box w-full grid place-items-center">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <main class="flex flex-col justify-center items-center">
+            <h1 class="text-center text-lg font-semibold">Cálculo do Orçamento da Planta</h1>
+            <div class="overflow-x-auto mt-4">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th />
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#if results}
+                            {#each verifyObject(results).components as component, index (component)}                            
+                                <tr>
+                                    <th>{index}</th>
+                                    <td>{component.name}</td>
+                                    <td>{component.price}</td>
+                                    <td>{verifyObject(results).duplicatedComponents[component.id]}</td>
+                                </tr>
+                            {/each}
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</dialog>

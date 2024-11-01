@@ -18,65 +18,64 @@
     export let canvas: Canvas;
 
     let opacitySlider: HTMLInputElement;
-    let strokeSlider: HTMLInputElement;
-    let value: number;
+    let strokeSlider: HTMLInputElement;    
     let opacityValue: number;
     let strokeValue: number;
-    let mixed: boolean = false;
+    let mixed: boolean = false;    
 
-    onMount(() => {
-        addEventListener('load', () => {
-            canvas.on('selection:created', () => {
-                if (getActive(canvas).length > 1) {
-                    mixed = true;
-                    strokeValue = 10;
-                    opacityValue = 10;
-                } else {
-                    strokeValue = takeStroke(canvas);
-                    opacityValue = takeOpacity(canvas);
-                }
+    onMount(() => {              
+        // addEventListener('load', () => {            
+        //     canvas.on('selection:created', () => {
+        //         if (getActive(canvas).length > 1) {
+        //             mixed = true;
+        //             strokeValue = 10;
+        //             opacityValue = 10;
+        //         } else {
+        //             strokeValue = takeStroke(canvas);
+        //             opacityValue = takeOpacity(canvas);
+        //         }
 
-                if (objectMenu) {
-                    objectMenu.style.display = 'flex';
-                }
-            });
+        //         if (objectMenu) {
+        //             objectMenu.style.display = 'flex';
+        //         }
+        //     });
 
-            canvas.on('selection:updated', () => {
-                if (getActive(canvas).length > 1) {
-                    mixed = true;
-                    strokeValue = 10;
-                    opacityValue = 10;
-                } else {
-                    strokeValue = takeStroke(canvas);
-                    opacityValue = takeOpacity(canvas);
-                }
-            });
+        //     canvas.on('selection:updated', () => {
+        //         if (getActive(canvas).length > 1) {
+        //             mixed = true;
+        //             strokeValue = 10;
+        //             opacityValue = 10;
+        //         } else {
+        //             strokeValue = takeStroke(canvas);
+        //             opacityValue = takeOpacity(canvas);
+        //         }
+        //     });
 
-            canvas.on('selection:cleared', () => {
-                if (objectMenu) {
-                    objectMenu.style.display = 'none';
-                }
+        //     canvas.on('selection:cleared', () => {
+        //         if (objectMenu) {
+        //             objectMenu.style.display = 'none';
+        //         }
 
-                mixed = false;
-            });
-        });
+        //         mixed = false;
+        //     });
+        // });
 
-        addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'a' && getActive(canvas).length > 0) {
-                if (objectMenu) {
-                    objectMenu.style.display = 'flex';
-                }
+        // addEventListener('keydown', (e) => {
+        //     if (e.ctrlKey && e.key === 'a' && getActive(canvas).length > 0) {
+        //         if (objectMenu) {
+        //             objectMenu.style.display = 'flex';
+        //         }
 
-                strokeValue = 10;
-                opacityValue = 10;
-            }
+        //         strokeValue = 10;
+        //         opacityValue = 10;
+        //     }
 
-            if (e.ctrlKey && e.key === 'x') {
-                if (objectMenu) {
-                    objectMenu.style.display = 'none';
-                }
-            }
-        });
+        //     if (e.ctrlKey && e.key === 'x') {
+        //         if (objectMenu) {
+        //             objectMenu.style.display = 'none';
+        //         }
+        //     }
+        // });
     });
 </script>
 

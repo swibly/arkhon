@@ -24,12 +24,19 @@
         addLine,
         stopLine,
         resetOpacity,
-        verifyObject
+        verifyObject,
+        changeBorder,
+        changeStroke,
+        changeFill,
+        changeOpacity,
+        takeStroke,
+        takeOpacity
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import ObjectInfo from '$lib/components/ObjectInfo.svelte';
     import ProjectTab from '$lib/components/ProjectTab.svelte';
+    import { draggable } from '@neodrag/svelte';
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
@@ -56,8 +63,17 @@
     let asideObjects: Array<FabricObject> = [];
     let allComponents: Array<Component>;
     let ownedComponents: Array<Component>;
-    let pointerX: number;
-    let pointerY: number;
+
+    let objectMenu: HTMLElement;
+    let opacitySlider: HTMLInputElement;
+    let strokeSlider: HTMLInputElement;
+    let opacityValue: number;
+    let strokeValue: number;
+    let mixed: boolean = false;
+
+    let modalRef: HTMLDialogElement;
+    let count: number = 0;
+
     const quadSize = {
         w: data.project.width * 100,
         h: data.project.height * 100
@@ -65,7 +81,7 @@
 
     function setActiveButton(value: String) {
         activeButton = value;
-    }    
+    }
 
     onMount(function () {
         allComponents = data.component.data;
@@ -76,9 +92,9 @@
             preserveObjectStacking: true
         });
 
-        if(data.content){
+        if (data.content) {
             loadCanvas(fabric, data.content);
-        }        
+        }
 
         rect = new Rect({
             width: 100,
@@ -130,15 +146,14 @@
         });
 
         fabric.on('mouse:down', function ({ e }) {
+            count++
+
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
                 resetOpacity(fabric, rect);
                 resetOpacity(fabric, circle);
             }
-
-            // console.log("Page owned", data.allOwnedComponents);
-            // console.log("Page all", data.component);
 
             if (e.altKey) {
                 fabric.isDrawingMode = false;
@@ -271,6 +286,39 @@
                     asideObjects.push(obj);
                 }
             }
+        });
+
+        fabric.on('selection:created', () => {
+            if (getActive(fabric).length > 1) {
+                mixed = true;
+                strokeValue = 10;
+                opacityValue = 10;
+            } else {
+                strokeValue = takeStroke(fabric);
+                opacityValue = takeOpacity(fabric);
+            }
+
+            if (objectMenu) {
+                objectMenu.style.display = 'flex';
+            }
+        });
+
+        fabric.on('selection:updated', () => {
+            if (getActive(fabric).length > 1) {
+                mixed = true;
+                strokeValue = 10;
+                opacityValue = 10;
+            } else {
+                strokeValue = takeStroke(fabric);
+                opacityValue = takeOpacity(fabric);
+            }
+        });
+
+        fabric.on('selection:cleared', () => {
+            if (objectMenu) {
+                objectMenu.style.display = 'none';
+            }
+            mixed = false;
         });
 
         addEventListener('resize', function () {
@@ -575,7 +623,12 @@
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each ownedComponents as component, index (component)}
-                            <ComponentCard componentInfo={component} type="component" canvas={fabric} data={data.project}/>
+                            <ComponentCard
+                                componentInfo={component}
+                                type="component"
+                                canvas={fabric}
+                                data={data.project}
+                            />
                         {/each}
                     </section>
                 </main>
@@ -599,12 +652,17 @@
                         }}
                         data={data.project}
                         componentData={data.component}
-                        type={'store'}                        
+                        type={'store'}
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
                         {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
-                            <ComponentCard componentInfo={component} type="store" canvas={fabric} data={data.project}/>
+                            <ComponentCard
+                                componentInfo={component}
+                                type="store"
+                                canvas={fabric}
+                                data={data.project}
+                            />
                         {/each}
                     </section>
                 </main>
@@ -613,8 +671,124 @@
     </aside>
 
     <main class="w-full xl:w-3/4 2xl:w-4/5">
-        <ObjectMenu canvas={fabric} />
-        <ObjectInfo canvas={fabric} />
+        <article
+            class="hidden absolute w-56 h-40 bg-base-100 z-50 flex-col items-center rounded-xl border border-primary overflow-auto"
+            bind:this={objectMenu}
+            use:draggable={{ bounds: 'canvas', handle: '.handler', position: { x: 20, y: 20 } }}
+        >
+            <div
+                class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler rounded-t-lg"
+            >
+                <Icon icon="stash:drag-squares-horizontal-solid" class="text-white text-xl" />
+            </div>
+            <p class="text-md pt-2 font-bold -mt-1">Borda</p>
+            <section class="flex items-center gap-2 pt-2">
+                <button
+                    class="w-3 h-3 font-bold -mt-1"
+                    on:click={() => changeBorder(fabric, 'null', ...getActive(fabric))}
+                    ><Icon icon="material-symbols:close" /></button
+                >
+                <button
+                    class="w-3 h-3 bg-white rounded"
+                    on:click={() => changeBorder(fabric, 'white', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-gray-500 rounded"
+                    on:click={() => changeBorder(fabric, 'gray', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-red-400 rounded"
+                    on:click={() => changeBorder(fabric, 'red', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-green-400 rounded"
+                    on:click={() => changeBorder(fabric, 'green', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-blue-400 rounded"
+                    on:click={() => changeBorder(fabric, 'blue', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-pink-400 rounded"
+                    on:click={() => changeBorder(fabric, 'pink', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-yellow-400 rounded"
+                    on:click={() => changeBorder(fabric, 'yellow', ...getActive(fabric))}
+                />
+            </section>
+            <p class="text-center text-md font-bold mt-2">Espessura da Borda</p>
+            <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
+                Mixed
+            </p>
+            <section class="flex gap-2 pt-2">
+                <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={strokeValue}
+                    bind:this={strokeSlider}
+                    on:input={() => (strokeValue = changeStroke(fabric, strokeSlider))}
+                    class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
+                />
+                <div class="divider" />
+            </section>
+            <div class="divider w-36 mx-auto -mt-4" />
+            <p class="text-md font-bold -mt-4">Fundo</p>
+            <section class="flex items-center gap-2 pt-2">
+                <button
+                    class="w-3 h-3 -mt-1 font-bold"
+                    on:click={() => changeFill(fabric, 'null', ...getActive(fabric))}
+                    ><Icon icon="material-symbols:close" /></button
+                >
+                <button
+                    class="w-3 h-3 bg-white rounded"
+                    on:click={() => changeFill(fabric, 'white', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-gray-500 rounded"
+                    on:click={() => changeFill(fabric, 'gray', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-red-400 rounded"
+                    on:click={() => changeFill(fabric, 'red', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-green-400 rounded"
+                    on:click={() => changeFill(fabric, 'green', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-blue-400 rounded"
+                    on:click={() => changeFill(fabric, 'blue', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-pink-400 rounded"
+                    on:click={() => changeFill(fabric, 'pink', ...getActive(fabric))}
+                />
+                <button
+                    class="w-3 h-3 bg-yellow-400 rounded"
+                    on:click={() => changeFill(fabric, 'yellow', ...getActive(fabric))}
+                />
+            </section>
+            <div class="divider w-36 mx-auto" />
+            <p class="text-center text-md font-bold -mt-4">Opacidade</p>
+            <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
+                Mixed
+            </p>
+            <section class="flex gap-2 pt-2">
+                <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={opacityValue}
+                    bind:this={opacitySlider}
+                    on:input={() => (opacityValue = changeOpacity(fabric, opacitySlider))}
+                    class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
+                />
+                <div class="divider" />
+            </section>
+        </article>
+
         <RightMenu canvas={fabric} data={data.project} />
         <ProjectTab
             bind:mode
