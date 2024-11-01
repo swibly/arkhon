@@ -26,12 +26,12 @@
         <nav class="max-sm:hidden space-x-2">
             <a
                 href="/profile/{data.user.username}"
-                class="inline-flex items-center link link-primary"
+                class="btn btn-sm btn-primary"
             >
                 <Icon icon="mdi:user" />
                 Perfil
             </a>
-            <a href="/community" class="inline-flex items-center link link-secondary">
+            <a href="/community" class="btn btn-sm btn-secondary">
                 <Icon icon="fluent:people-community-12-filled" />
                 Comunidade
             </a>
