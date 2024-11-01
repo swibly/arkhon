@@ -13,13 +13,13 @@
     $: pagination = data.users;
     $: users = pagination.data;
 
-    $: ascending = true;
+    $: ascending = false;
 
     $: userSearch = undefined as PaginationType<User> | undefined;
 </script>
 
 <div class="flex max-sm:flex-col gap-4">
-    <aside class="pr-4 border-r border-r-base-200">
+    <aside class="sm:pr-4 sm:border-r border-r-base-200 w-full max-w-96">
         <form
             method="POST"
             action="?/search"
@@ -71,9 +71,8 @@
                     <span class="label-text">Ordenar por</span>
                 </div>
                 <select name="order" class="select select-sm select-bordered w-full">
-                    <option disabled selected>Selecione um</option>
                     <option value="alphabetic">Ordem Alfabética</option>
-                    <option value="order_created">Data de criação</option>
+                    <option value="order_created" selected>Data de criação</option>
                 </select>
                 <div class="label" />
             </label>

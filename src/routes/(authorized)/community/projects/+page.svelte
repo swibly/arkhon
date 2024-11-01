@@ -20,7 +20,7 @@
 </script>
 
 <div class="flex max-sm:flex-col gap-4">
-    <aside class="pr-4 border-r border-r-base-200">
+    <aside class="sm:pr-4 sm:border-r sm:border-r-base-200 w-full max-w-96">
         <form
             method="POST"
             action="?/search"

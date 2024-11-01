@@ -13,7 +13,7 @@
     {#if path.match(/\/community\/(projects|components|users)(\/)?$/)}
         <div class="flex gap-4 *:shrink-0">
             <section class="w-full">
-                <nav class="mx-auto w-fit">
+                <nav class="flex gap-2 flex-wrap justify-center">
                     <a
                         href="/community/projects"
                         class="btn btn-sm"
