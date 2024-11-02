@@ -43,6 +43,14 @@ export const actions: Actions = {
                     search.order_alphabetic = true;
                     break;
                 }
+                case 'favorites': {
+                  search.most_favorites = true;
+                  break;
+                }
+                case 'clones': {
+                  search.most_clones = true;
+                  break;
+                }
                 case 'order_created': {
                     search.order_created = true;
                     break;
