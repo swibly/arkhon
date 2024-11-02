@@ -44,12 +44,12 @@ export const actions: Actions = {
                     break;
                 }
                 case 'favorites': {
-                  search.most_favorites = true;
-                  break;
+                    search.most_favorites = true;
+                    break;
                 }
                 case 'clones': {
-                  search.most_clones = true;
-                  break;
+                    search.most_clones = true;
+                    break;
                 }
                 case 'order_created': {
                     search.order_created = true;

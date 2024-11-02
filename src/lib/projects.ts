@@ -24,6 +24,7 @@ export type Project = {
     allowed_users: UserProjectPermissions[];
     is_favorited: boolean;
     total_favorites: number;
+    total_clones: number;
 };
 
 export type ProjectSearch = Search &

@@ -151,6 +151,11 @@
         {options.total_favorites}
     </p>
 
+    <p class="badge gap-1">
+        <Icon icon="fa-solid:clone" />
+        {options.total_clones}
+    </p>
+
     <div class="divider" />
 
     <section class="flex">
