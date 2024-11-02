@@ -8,7 +8,9 @@
         lock,
         unlock,
         setInfo,
-        changeMaterial
+        changeMaterial,
+        changeObjectType
+
     } from '$lib/editor/objects';
     import { type FabricObject, type Canvas } from 'fabric';
     import { bringFront, sendBack, sendBackward, bringForward } from '$lib/editor/layers';
@@ -214,16 +216,26 @@
                     </li>
 
                     <li on:click={() => changeMaterial(getActive(canvas), 'madeira')}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Madeira</a
-                        >
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Madeira</a>
                     </li>
 
                     <li on:click={() => changeMaterial(getActive(canvas), 'cerâmica')}>
-                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
-                            >Cerâmica</a
-                        >
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Cerâmica</a>
                     </li>
+                </ul>
+            </details>
+        </li>
+        <li>
+            <details>
+                <summary> Tipo de estrutura </summary>
+                <ul>
+                    <li on:click={() => changeObjectType(getActive(canvas), 'chão')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Chão</a>
+                    </li>
+
+                    <li on:click={() => changeObjectType(getActive(canvas), 'parede')}>
+                        <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Parede</a>
+                    </li>                    
                 </ul>
             </details>
         </li>

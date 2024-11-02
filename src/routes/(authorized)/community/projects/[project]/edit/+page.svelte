@@ -32,9 +32,7 @@
         takeStroke,
         takeOpacity
     } from '$lib/editor/objects';
-    import RightMenu from '$lib/components/RightMenu.svelte';
-    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
-    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
+    import RightMenu from '$lib/components/RightMenu.svelte';    
     import ProjectTab from '$lib/components/ProjectTab.svelte';
     import { draggable } from '@neodrag/svelte';
     import type { PageServerData } from './$types';
@@ -69,10 +67,7 @@
     let strokeSlider: HTMLInputElement;
     let opacityValue: number;
     let strokeValue: number;
-    let mixed: boolean = false;
-
-    let modalRef: HTMLDialogElement;
-    let count: number = 0;
+    let mixed: boolean = false;    
 
     const quadSize = {
         w: data.project.width * 100,
@@ -145,9 +140,7 @@
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {
-            count++
-
+        fabric.on('mouse:down', function ({ e }) {            
             if (fabric.getActiveObject()) {
                 mode = 'select';
 

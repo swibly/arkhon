@@ -18,8 +18,9 @@
     let loading: boolean = false;
 
     let modalRef: HTMLDialogElement;
-    let buttonCalculation: HTMLElement;                
+    let buttonCalculation: HTMLElement;
     let results: object;
+    let displayComponents: Array<FabricObject>;
 
     let quadSize = {
         w: width,
@@ -29,6 +30,25 @@
     onMount(() => {
         buttonCalculation.addEventListener('mousedown', () => {
             results = canvasCalculation(canvas);
+            displayComponents = [];
+
+            for (const item of verifyObject(results).components) {
+                if (verifyObject(results).duplicatedComponents[item.id] > 1) {
+                    for (const trueItems of displayComponents) {
+                        // @ts-ignore
+                        if (trueItems.id === item.id) {
+                            displayComponents.splice(
+                                displayComponents.indexOf(trueItems),
+                                displayComponents.indexOf(trueItems)
+                            );
+                        }
+
+                        displayComponents.push(item);
+                    }
+                } else {
+                    displayComponents.push(item);
+                }
+            }
         });
     });
 
@@ -183,7 +203,8 @@
                                     'description',
                                     'id',
                                     'arkhoins',
-                                    'material'
+                                    'material',
+                                    'structureType'
                                 ])
                             )
                         );
@@ -222,37 +243,107 @@
 </main>
 
 <dialog id="my_modal_3" class="modal" bind:this={modalRef}>
-    <div class="modal-box w-full grid place-items-center">
+    <div class="modal-box w-full max-w-2xl grid place-items-center overflow-auto">
         <form method="dialog">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
 
-        <main class="flex flex-col justify-center items-center">
-            <h1 class="text-center text-lg font-semibold">Cálculo do Orçamento da Planta</h1>
-            <div class="overflow-x-auto mt-4">
+        <main class="w-full flex flex-col justify-center items-center">
+            <h1 class="text-center text-xl font-semibold">Cálculo do Orçamento da Planta</h1>
+            <div class="divider w-11/12 mx-auto" />
+            <h2 class="text-center text-md font-semibold">Componentes</h2>
+            <div class="w-full max-w-lg overflow-x-auto mt-4">
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
                             <th />
-                            <th>Nome</th>
-                            <th>Preço</th>
-                            <th>Quantidade</th>
+                            <th class="text-center">Nome</th>
+                            <th class="text-center">Preço</th>
+                            <th class="text-center">Quantidade</th>
+                            <th class="text-center">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         {#if results}
-                            {#each verifyObject(results).components as component, index (component)}                            
+                            {#each displayComponents as component, index (component)}
                                 <tr>
-                                    <th>{index}</th>
-                                    <td>{component.name}</td>
-                                    <td>{component.price}</td>
-                                    <td>{verifyObject(results).duplicatedComponents[component.id]}</td>
+                                    <th class="text-center">{index + 1}</th>
+                                    <td class="text-center">{verifyObject(component).name}</td>
+                                    <td class="text-center">{verifyObject(component).price}</td>
+                                    <td class="text-center"
+                                        >{verifyObject(results).duplicatedComponents[
+                                            verifyObject(component).id
+                                        ]}</td
+                                    >
+                                    <td class="text-center"
+                                        >{verifyObject(component).price *
+                                            verifyObject(results).duplicatedComponents[
+                                                verifyObject(component).id
+                                            ]}</td
+                                    >
                                 </tr>
                             {/each}
                         {/if}
                     </tbody>
                 </table>
             </div>
+            <div class="divider w-11/12 mx-auto" />
+            <h2 class="text-center text-md font-semibold">Estruturas da planta</h2>
+            <div class="w-full max-w-lg overflow-x-auto mt-4">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th />
+                            <th class="text-center">Tipo</th>
+                            <th class="text-center">Material</th>
+                            <th class="text-center">Preço</th>
+                            <th class="text-center">Tamanho (largura x altura)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#if results}
+                            {#each verifyObject(results).objects as object, index (object)}
+                                <tr>
+                                    <th class="text-center">{index + 1}</th>
+                                    <td class="text-center"
+                                        >{object.structureType.charAt(0).toUpperCase() +
+                                            object.structureType.slice(1)}</td
+                                    >
+                                    <td class="text-center"
+                                        >{object.material.charAt(0).toUpperCase() +
+                                            object.material.slice(1)}</td
+                                    >
+                                    <td class="text-center"
+                                        >R${verifyObject(results).objectsValues[index].toFixed(
+                                            2
+                                        )}</td
+                                    >
+                                    <td class="text-center"
+                                        >{((object.width * object.scaleX.toFixed(2)) / 100).toFixed(
+                                            2
+                                        )}m x {(
+                                            (object.height * object.scaleY.toFixed(2)) /
+                                            100
+                                        ).toFixed(2)}m</td
+                                    >
+                                </tr>
+                            {/each}
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
+            <div class="divider w-11/12 mx-auto" />
+            <section
+                class="w-11/12 bg-secondary h-8 rounded-lg flex flex-col justify-center item-center"
+            >
+                {#if results}
+                    <h1 class="text-center text-white font-semibold">
+                        O valor total estimado de sua planta é de aproximadamente: R${Math.ceil(
+                            verifyObject(results).budget.toFixed(2)
+                        )}
+                    </h1>
+                {/if}
+            </section>
         </main>
     </div>
 </dialog>

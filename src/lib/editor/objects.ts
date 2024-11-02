@@ -156,7 +156,13 @@ export async function paste(
                     lockMovementY: copiedObjects[count].lockMovementY,
                     lockScalingX: copiedObjects[count].lockScalingX,
                     lockScalingY: copiedObjects[count].lockScalingY,
-                    lockRotation: copiedObjects[count].lockRotation
+                    lockRotation: copiedObjects[count].lockRotation,
+                    // @ts-ignore
+                    isComponent: copiedObjects[count].isComponent,
+                    // @ts-ignore
+                    material: copiedObjects[count].material,
+                    // @ts-ignore
+                    structureType: copiedObjects[count].structureType
                 });
 
                 // @ts-ignore
@@ -200,7 +206,13 @@ export async function paste(
                 lockMovementY: copiedObjects[0].lockMovementY,
                 lockScalingX: copiedObjects[0].lockScalingX,
                 lockScalingY: copiedObjects[0].lockScalingY,
-                lockRotation: copiedObjects[0].lockRotation
+                lockRotation: copiedObjects[0].lockRotation,
+                // @ts-ignore
+                isComponent: copiedObjects[0].isComponent,
+                // @ts-ignore
+                material: copiedObjects[0].material,
+                // @ts-ignore
+                structureType: copiedObjects[0].structureType
             });
 
             // @ts-ignore
@@ -227,7 +239,11 @@ export async function paste(
                 lockScalingY: copiedObjects[0].lockScalingY,
                 lockRotation: copiedObjects[0].lockRotation,
                 // @ts-ignore
-                isComponent: copiedObjects[count].isComponent
+                isComponent: copiedObjects[0].isComponent,
+                // @ts-ignore
+                material: copiedObjects[0].material,
+                // @ts-ignore
+                structureType: copiedObjects[0].structureType
             });
         }
     }
@@ -276,7 +292,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
 
     rect.set({
         isComponent: false,
-        material: 'cimento'
+        material: 'cimento',
+        structureType: 'chão'
     });
     rect.setCoords();
 
@@ -300,7 +317,8 @@ export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }
 
     circle.set({
         isComponent: false,
-        material: 'cimento'
+        material: 'cimento',
+        structureType: 'chão'
     });
     circle.setCoords();
 
@@ -349,7 +367,8 @@ export function addLine(canvas: Canvas) {
 
     line.set({
         isComponent: false,
-        material: 'cimento'
+        material: 'cimento',
+        structureType: 'chão'
     });
     line.setCoords();
 
@@ -488,32 +507,13 @@ export function changeMaterial(objects: FabricObject[], material: string) {
     }
 }
 
-export function addInfoText(canvas: Canvas) {
-    let text = new IText('', {
-        width: 50,
-        height: 50,
-        fill: null,
-        stroke: '#0175AF',
-        strokeWidth: 2,
-        strokeUniform: true,
-        lockSkewingX: true,
-        lockSkewingY: true,
-        lockMovementX: true,
-        lockMovementY: true,
-        lockRotation: true,
-        lockScalingFlip: true,
-        lockScalingX: true,
-        lockScalingY: true,
-        selectable: false,
-        fontFamily: 'sans-serif',
-        fontSize: 14,
-        opacity: 0,
-        textAlign: 'center'
-    });
-
-    canvas.add(text);
-
-    canvas.moveObjectTo(text, 3);
-
-    text.excludeFromExport = true;
+export function changeObjectType(objects: FabricObject[], type: string) {
+    for (const obj of objects) {
+        // @ts-ignore
+        if (!obj.isComponent) {
+            obj.set({
+                structureType: type
+            });
+        }
+    }
 }
