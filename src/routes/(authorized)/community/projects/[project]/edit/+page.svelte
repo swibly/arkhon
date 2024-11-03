@@ -32,7 +32,7 @@
         takeStroke,
         takeOpacity
     } from '$lib/editor/objects';
-    import RightMenu from '$lib/components/RightMenu.svelte';    
+    import RightMenu from '$lib/components/RightMenu.svelte';
     import ProjectTab from '$lib/components/ProjectTab.svelte';
     import { draggable } from '@neodrag/svelte';
     import type { PageServerData } from './$types';
@@ -67,7 +67,10 @@
     let strokeSlider: HTMLInputElement;
     let opacityValue: number;
     let strokeValue: number;
-    let mixed: boolean = false;    
+    let mixed: boolean = false;
+
+    let redoStack: Array<object> = [];
+    let undoStack: Array<object> = [];
 
     const quadSize = {
         w: data.project.width * 100,
@@ -91,25 +94,6 @@
             loadCanvas(fabric, data.content);
         }
 
-        rect = new Rect({
-            width: 100,
-            height: 100,
-            top: quadSize.h / 2 - 50,
-            left: quadSize.w / 2 - 50,
-            fill: 'white',
-            opacity: 0,
-            selectable: false
-        });
-
-        circle = new Circle({
-            radius: 60,
-            top: quadSize.h / 2 - 50,
-            left: quadSize.w / 2 - 50,
-            fill: 'white',
-            opacity: 0,
-            selectable: false
-        });
-
         resize(fabric, innerWidth, innerHeight);
         centerView(fabric, quadSize.w, quadSize.h);
 
@@ -127,6 +111,25 @@
             }
 
             if (loadCount === 1) {
+                rect = new Rect({
+                    width: 100,
+                    height: 100,
+                    top: quadSize.h / 2 - 50,
+                    left: quadSize.w / 2 - 50,
+                    fill: 'white',
+                    opacity: 0,
+                    selectable: false
+                });
+
+                circle = new Circle({
+                    radius: 60,
+                    top: quadSize.h / 2 - 50,
+                    left: quadSize.w / 2 - 50,
+                    fill: 'white',
+                    opacity: 0,
+                    selectable: false
+                });
+
                 drawGrid(fabric, 100, quadSize.w, quadSize.h);
 
                 fabric.add(rect);
@@ -140,7 +143,10 @@
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {            
+        fabric.on('mouse:down', function ({ e }) {
+            console.log('undo', undoStack);
+            console.log('redo', redoStack);
+
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
@@ -269,7 +275,17 @@
             }
         });
 
+        fabric.on('object:added', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
+            }
+        });
+
         fabric.on('object:modified', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
+            }
+
             if (fabric.getActiveObject()!.type === 'i-text') {
                 asideObjects = [];
 
@@ -278,6 +294,12 @@
                 for (const obj of items) {
                     asideObjects.push(obj);
                 }
+            }
+        });
+
+        fabric.on('object:removed', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
             }
         });
 
@@ -393,6 +415,18 @@
                 }
             }
 
+            if (e.ctrlKey && e.key == 'z') {
+                e.preventDefault();
+
+                undo(fabric);
+            }
+
+            if (e.ctrlKey && e.key == 'y') {
+                e.preventDefault();
+
+                redo(fabric);
+            }
+
             if (
                 (getActive(fabric).length === 1 && getActive(fabric)[0].type !== 'i-text') ||
                 getActive(fabric).length !== 1
@@ -486,6 +520,64 @@
             }
         });
     });
+
+    function saveState(canvas: Canvas) {
+        redoStack = [];
+        undoStack.push(
+            canvas.toObject([
+                'name',
+                'price',
+                'isComponent',
+                'isPublic',
+                'description',
+                'id',
+                'arkhoins',
+                'material',
+                'structureType'
+            ])
+        );
+    }
+
+    function undo(canvas: Canvas) {
+        let lastState;
+        let prevState;
+
+        if (undoStack.length > 0) {
+            if (undoStack.length > 1) {
+                lastState = undoStack[undoStack.length - 2];
+                prevState = undoStack.pop();
+
+                if (prevState !== undefined) {
+                    redoStack.push(prevState);
+                }
+            } else {
+                lastState = data.content;
+                prevState = undoStack.pop();
+
+                if (prevState !== undefined) {
+                    redoStack.push(prevState);
+                }
+            }
+
+            loadCanvas(canvas, lastState);
+            canvas.requestRenderAll();
+            loadCount = 0;
+        }
+    }
+
+    function redo(canvas: Canvas) {
+        let lastState;
+
+        if (redoStack.length > 0) {
+            lastState = redoStack[redoStack.length - 1];
+            redoStack.pop();
+
+            undoStack.push(lastState);
+            loadCanvas(canvas, lastState);
+            canvas.requestRenderAll();
+            loadCount = 0;
+        }
+    }
 </script>
 
 <main class="flex h-full">
