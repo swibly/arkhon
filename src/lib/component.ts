@@ -1,4 +1,5 @@
 import axios from './server/axios';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type Component = {
     id: number;
@@ -23,6 +24,12 @@ export type Component = {
     bought: boolean;
     total_sells: number;
 };
+
+export type ComponentSearch = Search &
+    Partial<{
+        /** Most holders first */
+        most_holders: boolean;
+    }>;
 
 export async function getPublicComponents(token: string, page: string) {
     try {
@@ -115,13 +122,37 @@ export async function buyComponent(token: string, id: number) {
 
 export async function publishComponent(token: string, id: number) {
     try {
-        await axios.patch(
-            `/v1/components/${id}/publish`,
-            {
-                headers: { Authorization: token }
-            }
-        );
+        await axios.patch(`/v1/components/${id}/publish`, {
+            headers: { Authorization: token }
+        });
     } catch (error) {
         return console.error(error);
+    }
+}
+
+export async function searchComponents(
+    token: string,
+    search: ComponentSearch,
+    options: PaginationOptions
+) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.post(`/v1/search/component?page=${page}&perpage=${limit}`, search, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            search: res.data as Pagination<Component>,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
     }
 }

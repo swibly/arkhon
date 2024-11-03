@@ -1,6 +1,6 @@
 import axios from './server/axios';
 import { UserProjectAllowList, UserProjectPermissions } from './user';
-import { Pagination, PaginationOptions } from './utils';
+import { Pagination, PaginationOptions, Search } from './utils';
 
 export type Project = {
     id: number;
@@ -24,7 +24,24 @@ export type Project = {
     allowed_users: UserProjectPermissions[];
     is_favorited: boolean;
     total_favorites: number;
+    total_clones: number;
 };
+
+export type ProjectSearch = Search &
+    Partial<{
+        /** Projects with most favorites first */
+        most_favorites: boolean;
+        /** Projects with most clones first */
+        most_clones: boolean;
+        /** Minimum area to be queried */
+        min_area: number;
+        /** Maximum area to be queried */
+        max_area: number;
+        /** Minimum budget to be queried */
+        min_budget: number;
+        /** Maximum budget to be queried */
+        max_budget: number;
+    }>;
 
 export async function createProject(
     token: string,
@@ -62,6 +79,48 @@ export async function createProject(
             // @ts-ignore
             status: e.response.status
         };
+    }
+}
+
+export async function updateProject(token: string, projectID: number, data: FormData) {
+    try {
+        const res = await axios.patch(`/v1/projects/${projectID}/update`, data, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            status: res.status,
+            message: res.data.message as string
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string | [string, string],
+            // @ts-ignore
+            status: e.response.status
+        };
+    }
+}
+
+export async function getPublicProjects(token: string, options: PaginationOptions = {}) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.get(`/v1/projects?page=${page}&perpage=${limit}`, {
+            headers: { Authorization: token }
+        });
+
+        return res.data as Pagination<Project>;
+    } catch (error) {
+        return {
+            data: [],
+            next_page: -1,
+            total_pages: 0,
+            current_page: 0,
+            previous_page: -1,
+            total_records: 0
+        } as Pagination<Project>;
     }
 }
 
@@ -263,6 +322,77 @@ export async function getTrashed(token: string, options: PaginationOptions = {})
     }
 }
 
+export async function clearTrash(token: string) {
+    try {
+        await axios.delete(`/v1/projects/trash`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function publishProject(token: string, projectID: number) {
+    try {
+        const res = await axios.patch(
+            `/v1/projects/${projectID}/publish`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+
+        if (res.data.error) {
+            return {
+                error: res.data.error as string
+            };
+        }
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error as string
+        };
+    }
+}
+
+export async function unpublishProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/unpublish`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function forkProject(token: string, projectID: number) {
+    try {
+        await axios.post(
+            `/v1/projects/${projectID}/fork`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
+export async function unlinkProject(token: string, projectID: number) {
+    try {
+        await axios.delete(`/v1/projects/${projectID}/fork`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        console.error(error);
+        // TODO: Add error handling
+    }
+}
+
 export async function getContentByProjectId(token: string, id: number) {
     try {
         const res = await axios.get(`/v1/projects/${id}/content`, {
@@ -282,5 +412,32 @@ export async function saveProjectContent(token: string, id: number, canvas: obje
         });
     } catch (error) {
         return console.error(error);
+    }
+}
+
+export async function searchProjects(
+    token: string,
+    search: ProjectSearch,
+    options: PaginationOptions
+) {
+    try {
+        const page = options.page ?? 1;
+        const limit = options.limit ?? 10;
+
+        const res = await axios.post(`/v1/search/project?page=${page}&perpage=${limit}`, search, {
+            headers: { Authorization: token }
+        });
+
+        return {
+            search: res.data as Pagination<Project>,
+            status: res.status
+        };
+    } catch (e) {
+        return {
+            // @ts-ignore
+            error: e.response.data.error,
+            // @ts-ignore
+            status: e.response.status
+        };
     }
 }

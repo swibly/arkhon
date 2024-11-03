@@ -335,7 +335,7 @@
 
         <section class="mb-4 text-sm breadcrumbs">
             <ul>
-                {#each paths as path}
+                {#each paths.filter((x) => x.trim() !== '') as path}
                     <li class="flex items-center justify-center gap-2">
                         <Icon icon={pathIcons[path] ?? 'mdi:user'} />
                         {#if path === 'profile' || path === paths[paths.length - 1]}

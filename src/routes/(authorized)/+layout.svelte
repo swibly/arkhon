@@ -1,25 +1,45 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import type { LayoutServerData } from './$types';
+    import ThemeToggler from '$lib/components/ThemeToggler.svelte';
 
     export let data: LayoutServerData;
 </script>
 
 <div class="w-full min-h-screen">
-    <header class="sticky top-0 z-50 flex items-center gap-2 p-4 bg-base-100 border-b border-base-200">
-        <div>
-            <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
-            <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>
+    <header
+        class="sticky top-0 z-50 flex items-center gap-2 p-4 bg-base-100 border-b border-base-200"
+    >
+        <div class="flex items-center gap-4">
+            <a href="/home">
+                <img src="/gallery/icon-no-bg.svg" alt="" class="size-14" />
+            </a>
+
+            <div>
+                <a href="/home" class="text-2xl font-bold text-primary">Arkhon</a>
+                <p class="text-sm opacity-50">Bem-vindo, {data.user.firstname}!</p>
+            </div>
         </div>
+
+        <div class="divider divider-horizontal mx-1 max-sm:hidden" />
+
+        <nav class="max-sm:hidden space-x-2">
+            <a
+                href="/profile/{data.user.username}"
+                class="btn btn-sm btn-primary"
+            >
+                <Icon icon="mdi:user" />
+                Perfil
+            </a>
+            <a href="/community" class="btn btn-sm btn-secondary">
+                <Icon icon="fluent:people-community-12-filled" />
+                Comunidade
+            </a>
+        </nav>
 
         <div class="grow" />
 
-        <label class="swap swap-rotate">
-            <input type="checkbox" class="theme-controller" value="dark" />
-
-            <Icon icon="ph:sun-fill" class="swap-off size-6" />
-            <Icon icon="ph:moon-fill" class="swap-on size-6" />
-        </label>
+        <ThemeToggler />
 
         <div class="size-8 dropdown dropdown-end">
             <button tabindex="0">

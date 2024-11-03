@@ -41,7 +41,7 @@
                 href="/community/projects/{options.fork}"
                 class="badge badge-secondary badge-outline gap-1"
             >
-                <Icon icon="prime:clone" />
+                <Icon icon="fa-solid:clone" />
                 Clonado
             </a>
         {/if}
@@ -52,12 +52,6 @@
 
         <div class="grow" />
 
-        <span>
-            {options.total_favorites.toLocaleString(lang, {
-                notation: 'compact',
-                compactDisplay: 'long'
-            })}
-        </span>
         {#if loadingFavorite}
             {#if options.is_favorited}
                 <Icon icon="material-symbols:favorite" class="transition text-neutral size-6" />
@@ -131,7 +125,7 @@
     </div>
 
     <section class="flex flex-col gap-2 mb-4 pt-2">
-        <h2 class="text-xl font-bold">
+        <h2 class="text-xl font-bold line-clamp-1">
             {options.name}
         </h2>
 
@@ -144,13 +138,33 @@
         </p>
     </section>
 
+    <p class="badge gap-1">
+        <Icon icon="mdi:dollar" />
+        {options.budget.toLocaleString(lang, {
+            style: 'currency',
+            currency: 'BRL'
+        })}
+    </p>
+
+    <p class="badge gap-1">
+        <Icon icon="mdi:heart" />
+        {options.total_favorites}
+    </p>
+
+    <p class="badge gap-1">
+        <Icon icon="fa-solid:clone" />
+        {options.total_clones}
+    </p>
+
+    <div class="divider" />
+
     <section class="flex">
-        {#if showDeleteOperations}
+        {#if showDeleteOperations && options.deleted_at !== null}
             <p class="flex items-center gap-1">
                 <Icon icon="mdi:calendar" />
                 Deletado:
                 <span class="font-bold">
-                    {new Date(options.created_at).toLocaleDateString(lang, {
+                    {new Date(options.deleted_at).toLocaleDateString(lang, {
                         day: '2-digit',
                         month: 'short',
                         year: 'numeric',
@@ -207,7 +221,7 @@
     </section>
 
     <section class="flex gap-2 mt-4">
-        {#if showDeleteOperations && currentUser.id === options.owner_id}
+        {#if showDeleteOperations && (currentUser.id === options.owner_id || options.allowed_users.filter((x) => x.id === currentUser.id && x.allow_delete === true).length > 0)}
             <form
                 action="/community/projects/{options.id}?/restore"
                 method="POST"

@@ -4,7 +4,7 @@
     import Icon from '@iconify/svelte';
     import type { PageServerData } from './$types';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: projects = data.projects!;
     $: favorites = data.favorites!;
@@ -24,6 +24,11 @@
                 <a href="/profile/{data.user.username}/projects" class="btn btn-primary btn-sm">
                     <Icon icon="eos-icons:project" />
                     Meus projetos
+                </a>
+
+                <a href="/community" class="btn btn-sm btn-secondary">
+                    <Icon icon="fluent:people-community-12-filled" />
+                    Comunidade
                 </a>
 
                 <a href="/community/store" class="btn btn-secondary btn-sm">
@@ -84,7 +89,7 @@
                     {#if projects.total_records > projects.data.length}
                         <a
                             href="/profile/{data.lookup.username}/projects"
-                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {projects.total_records - projects.data.length}
@@ -134,7 +139,7 @@
                     {#if favorites.total_records > favorites.data.length}
                         <a
                             href="/profile/{data.lookup.username}/favorites"
-                            class="btn btn-link border border-primary h-[468px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {favorites.total_records - favorites.data.length}

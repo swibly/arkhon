@@ -6,6 +6,7 @@
         "@playwright/test": "^1.48.1",
         "@sveltejs/adapter-auto": "^2.1.1",
         "@sveltejs/kit": "^1.30.4",
+        "@types/js-cookie": "^3.0.6",
         "@types/toastify-js": "^1.12.3",
         "@typescript-eslint/eslint-plugin": "^6.21.0",
         "@typescript-eslint/parser": "^6.21.0",
@@ -46,6 +47,7 @@
     "dependencies": {
         "axios": "^1.7.7",
         "fabric": "^6.4.3",
+        "js-cookie": "^3.0.5",
         "@neodrag/svelte": "^2.0.6"
     }
 }

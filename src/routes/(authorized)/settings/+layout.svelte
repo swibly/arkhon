@@ -37,7 +37,7 @@
     </header>
 
     <div class="flex mt-4 max-lg:flex-col">
-        <aside class="shrink-0 relative max-lg:sticky max-lg:top-[84px]">
+        <aside class="shrink-0 relative max-lg:sticky max-lg:top-[84px] z-10">
             <ul
                 class="lg:border-r-2 border-r-base-200 p-4 flex flex-col gap-2 sticky top-[84px] *:justify-start max-lg:flex-row overflow-auto bg-base-100"
             >

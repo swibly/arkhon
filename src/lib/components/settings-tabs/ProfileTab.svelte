@@ -4,8 +4,7 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
     import Input from '../Input.svelte';
-    import { goto, invalidateAll } from '$app/navigation';
-    import { page } from '$app/stores';
+    import Attention from '../Attention.svelte';
 
     type ActionResult =
         | {
@@ -46,14 +45,12 @@
 
     $: errorField = '';
 
-    let imageForm: HTMLFormElement;
     let imagePreview: HTMLImageElement;
     let imageInput: HTMLInputElement;
 
     let image: File | null = null;
     let imageError: string | null = null;
     let loadingImage = false;
-    let hasImageChanged = false;
 
     function handleImageChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -71,7 +68,6 @@
             } else {
                 imageError = null;
                 image = selectedFile;
-                hasImageChanged = true;
 
                 var reader = new FileReader();
                 reader.readAsDataURL(image);
@@ -97,10 +93,20 @@
 
     function handleFormSubmission() {
         loadingImage = true;
-        return function () {
+        return async function ({
+            update
+        }: {
+            update: (options?: { reset?: boolean; invalidateAll?: boolean }) => Promise<void>;
+        }) {
             loadingImage = false;
-            spawn({ message: 'Imagem alterada com sucesso!' });
-            location.reload();
+            image = null;
+
+            spawn({
+                message:
+                    'Imagem alterada com sucesso. A imagem pode demorar alguns minutos para atualizar na plataforma.'
+            });
+
+            return await update({ reset: false });
         };
     }
 </script>
@@ -111,7 +117,6 @@
 </div>
 
 <form
-    bind:this={imageForm}
     method="POST"
     action="/home?/changeImage"
     enctype="multipart/form-data"
@@ -136,23 +141,34 @@
             Salvar
         </button>
     {:else}
-        <div class="relative overflow-hidden rounded-full group">
+        <div class="relative size-48 mx-auto">
             <img
                 bind:this={imagePreview}
                 src={user.pfp}
                 alt=""
-                class="object-cover size-48"
+                class="object-cover size-48 rounded-full"
                 on:error={handleImageError}
                 on:load={handleImageLoad}
             />
 
             <button
                 type="button"
-                class="absolute inset-0 transition opacity-0 bg-black/50 group-hover:opacity-100"
+                class="absolute inset-0 transition opacity-0 bg-black/50 hover:opacity-100 rounded-full"
                 on:click={() => imageInput.click()}
             >
                 <Icon icon="mdi:pencil" class="mx-auto text-white size-16" />
             </button>
+
+            {#if !user.pfp.includes('gravatar')}
+                <form method="POST" action="/home?/removeImage" use:enhance>
+                    <button
+                        class="absolute bottom-0 right-0 bg-error text-error-content rounded-full border-4 border-base-100 p-2 tooltip"
+                        data-tip="Redefine sua imagem para a padrão do Gravatar"
+                    >
+                        <Icon icon="mdi:trash" class="size-6" />
+                    </button>
+                </form>
+            {/if}
         </div>
 
         <input
@@ -170,8 +186,19 @@
 
         <p />
 
-        {#if hasImageChanged}
-            <button type="submit" class="mt-4 btn btn-sm btn-primary w-full">
+        {#if image !== null}
+            <button type="submit" class="mt-4 btn btn-sm btn-primary flex mx-auto">
+                <Icon icon="mdi:feather" />
+                Salvar
+            </button>
+
+            <div class="mt-4">
+                <Attention>
+                    A imagem pode demorar alguns minutos para atualizar em toda a plataforma.
+                </Attention>
+            </div>
+        {:else}
+            <button type="button" class="mt-4 btn btn-sm btn-primary flex mx-auto" disabled>
                 <Icon icon="mdi:feather" />
                 Salvar
             </button>

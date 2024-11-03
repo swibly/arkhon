@@ -18,7 +18,7 @@
 </svelte:head>
 
 {#if data.token !== undefined}
-    <a href="/home" class="w-full bg-warning p-4 flex items-center gap-2 justify-center">
+    <a href="/home" class="w-full bg-warning text-black p-4 flex items-center gap-2 justify-center">
         <Icon icon="mdi:home" />
         Você já estava logado, clique aqui para entrar.
     </a>

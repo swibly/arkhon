@@ -13,26 +13,32 @@
 
 <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-xl border border-base-200">
     <div class="flex items-center gap-2">
-        <img src={pfp} alt="" class="rounded-full object-cover size-16" />
+        <div class="relative shrink-0">
+            <img src={pfp} alt="" class="rounded-full object-cover size-16" />
+
+            {#if verified}
+                <div
+                    class="tooltip absolute -right-1 -bottom-1 bg-base-100 rounded-full border-2 border-base-100"
+                    data-tip="Verificado"
+                >
+                    <Icon icon="material-symbols:verified" class="text-primary size-5" />
+                </div>
+            {/if}
+        </div>
 
         <div>
-            <h2 class="flex items-center justify-center gap-1 text-xl">
-                <a href="/profile/{username}" class="link link-primary">
-                    {firstname}
-                    {lastname}
-                </a>
+            <a href="/profile/{username}" class="link link-primary text-xl line-clamp-1">
+                {firstname}
+                {lastname}
+            </a>
 
-                {#if verified}
-                    <div class="tooltip" data-tip="Verificado">
-                        <Icon icon="material-symbols:verified" class="text-primary" />
-                    </div>
-                {/if}
+            <p class="text-sm opacity-70">
+                @{username}
 
                 {#if id === selfID}
                     <span class="text-sm text-primary">(você)</span>
                 {/if}
-            </h2>
-            <p class="text-sm opacity-70">@{username}</p>
+            </p>
         </div>
     </div>
 

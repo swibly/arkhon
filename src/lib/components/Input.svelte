@@ -27,7 +27,21 @@
     export let error: boolean = false;
 </script>
 
-{#if element !== 'checkbox'}
+{#if element === 'checkbox'}
+    <label class="flex items-center gap-2">
+        <input
+            type="checkbox"
+            class="checkbox checkbox-primary"
+            class:checkbox-xs={size === 'xs'}
+            class:checkbox-sm={size === 'sm'}
+            class:checkbox-md={size === 'md'}
+            class:checkbox-lg={size === 'lg'}
+            {name}
+            {...$$restProps}
+        />
+        <slot />
+    </label>
+{:else}
     <label class="form-control w-full">
         <div class="label">
             <span class="label-text">{@html labels.topLeft ?? ''}</span>
@@ -90,19 +104,5 @@
                     : `${value.length}/${maxSize}`}
             </span>
         </div>
-    </label>
-{:else}
-    <label class="flex items-center gap-2">
-        <input
-            type="checkbox"
-            class="checkbox checkbox-primary"
-            class:checkbox-xs={size === 'xs'}
-            class:checkbox-sm={size === 'sm'}
-            class:checkbox-md={size === 'md'}
-            class:checkbox-lg={size === 'lg'}
-            {name}
-            {...$$restProps}
-        />
-        <slot />
     </label>
 {/if}

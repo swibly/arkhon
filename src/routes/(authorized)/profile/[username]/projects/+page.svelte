@@ -4,7 +4,7 @@
     import ProjectCard from '$lib/components/ProjectCard.svelte';
     import Pagination from '$lib/components/Pagination.svelte';
 
-    export let data: PageServerData & { user: User, lookup: User };
+    export let data: PageServerData & { user: User; lookup: User };
 
     $: pagination = data.projects;
     $: projects = pagination.data;
@@ -24,7 +24,9 @@
         <Pagination {pagination} />
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-x-2 gap-y-4">
+    <div
+        class="grid grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4 max-sm:flex max-sm:flex-wrap max-md:place-items-center"
+    >
         {#each projects as project}
             <ProjectCard options={project} currentUser={data.user} lang={data.user.language} />
         {/each}
