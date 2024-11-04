@@ -58,15 +58,15 @@ export function drawGrid(canvas: Canvas, grid: number, width: number, height: nu
     path.excludeFromExport = true;
 }
 
-export function resize(canvas: Canvas, width: number, height: number) {
+export function resize(canvas: Canvas, width: number, height: number, isAllowed: boolean) {
     if (width >= 1536) {
         canvas.setDimensions({
-            width: width - width / 5,
+            width: (isAllowed ? width - width / 5 : width),
             height: height - 85
         });
     } else if (width >= 1280) {
         canvas.setDimensions({
-            width: width - width / 4,
+            width: (isAllowed ? width - width / 4 : width),
             height: height - (height / 100) * 5.5
         });
     } else {

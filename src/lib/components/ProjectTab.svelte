@@ -15,6 +15,8 @@
     export let cursors: Array<FabricObject>;
     export let mode: string;
     export let data: Project;
+    export let isAllowed: boolean;
+
     let loading: boolean = false;
 
     let modalRef: HTMLDialogElement;
@@ -58,9 +60,9 @@
 </script>
 
 <main
-    class="absolute z-50 w-1/3 h-8 bg-secondary flex items-center justify-between mt-4 shadow-lg rounded-lg left-1/2 -translate-x-1/3"
+    class={`absolute z-50 w-1/3 h-8 bg-secondary ${isAllowed ? 'flex items-center justify-between' : 'grid place-items-center'} mt-4 shadow-lg rounded-lg left-1/2 -translate-x-1/3`}
 >
-    <div class="flex ml-4 gap-4">
+    <div class={`${isAllowed ? 'block' : 'hidden'} flex ml-4 gap-4`}>
         <button
             class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
@@ -161,7 +163,7 @@
     >
         {data.name}
     </h1>
-    <div class="dropdown">
+    <div class={`${isAllowed ? 'block' : 'hidden'} dropdown`}>
         <div tabindex="0" role="button" class="btn btn-secondary btn-sm">
             <Icon icon="icon-park-outline:more" font-size="18px" class="text-white" />
         </div>
@@ -204,7 +206,8 @@
                                     'id',
                                     'arkhoins',
                                     'material',
-                                    'structureType'
+                                    'structureType',
+                                    'owner'
                                 ])
                             )
                         );

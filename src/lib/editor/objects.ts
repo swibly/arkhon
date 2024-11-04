@@ -482,7 +482,8 @@ export function setInfo(
     id: number,
     description: string,
     arkhoins: number,
-    isPublic: boolean
+    isPublic: boolean,
+    owner: string
 ) {
     object.set({
         id: id,
@@ -491,7 +492,8 @@ export function setInfo(
         isComponent: true,
         description: description,
         arkhoins: arkhoins,
-        isPublic: isPublic
+        isPublic: isPublic,
+        owner: owner
     });
     object.setCoords();
 }

@@ -7,11 +7,13 @@
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
     import { getActive, setInfo } from '$lib/editor/objects';
+    import type { User } from '$lib/user';
 
     export let componentInfo: Component;
     export let type: string;
     export let canvas: Canvas;
     export let data: Project;
+    export let user: User;
 
     let svg: string;
     let svgRef: HTMLElement;
@@ -22,12 +24,14 @@
     let isSelected: boolean = false;
 
     onMount(() => {
-        componentCard.addEventListener('mousedown', () => {
+        componentCard.addEventListener('mousedown', () => {             
             isSelected = true;
             canvas.on('mouse:down', ({ e }) => {
                 if (getActive(canvas).length > 0) {
                     isSelected = false;
                 }
+
+                console.log(componentInfo)
 
                 if (isSelected) {
                     if (JSON.parse(componentInfo.content).type === 'Rect') {
@@ -37,7 +41,16 @@
                             top: canvas.getScenePoint(e).y
                         });
 
-                        setInfo(component, componentInfo.name, componentInfo.budget, componentInfo.id, componentInfo.description, componentInfo.price, true);
+                        setInfo(
+                            component,
+                            componentInfo.name,
+                            componentInfo.budget,
+                            componentInfo.id,
+                            componentInfo.description,
+                            componentInfo.price,
+                            true,
+                            componentInfo.owner_username
+                        );
 
                         canvas.add(component);
                         canvas.discardActiveObject();
@@ -53,7 +66,16 @@
                             top: canvas.getScenePoint(e).y
                         });
 
-                        setInfo(component, componentInfo.name, componentInfo.budget, componentInfo.id, componentInfo.description, componentInfo.price, true);
+                        setInfo(
+                            component,
+                            componentInfo.name,
+                            componentInfo.budget,
+                            componentInfo.id,
+                            componentInfo.description,
+                            componentInfo.price,
+                            true,
+                            componentInfo.owner_username
+                        );
 
                         canvas.add(component);
                         canvas.discardActiveObject();
@@ -72,7 +94,16 @@
                             top: canvas.getScenePoint(e).y
                         });
 
-                        setInfo(component, componentInfo.name, componentInfo.budget, componentInfo.id, componentInfo.description, componentInfo.price, true);
+                        setInfo(
+                            component,
+                            componentInfo.name,
+                            componentInfo.budget,
+                            componentInfo.id,
+                            componentInfo.description,
+                            componentInfo.price,
+                            true,
+                            componentInfo.owner_username
+                        );
 
                         canvas.add(component);
                         canvas.discardActiveObject();
@@ -104,7 +135,16 @@
                             top: canvas.getScenePoint(e).y
                         });
 
-                        setInfo(component, componentInfo.name, componentInfo.budget, componentInfo.id, componentInfo.description, componentInfo.price, true);
+                        setInfo(
+                            component,
+                            componentInfo.name,
+                            componentInfo.budget,
+                            componentInfo.id,
+                            componentInfo.description,
+                            componentInfo.price,
+                            true,
+                            componentInfo.owner_username
+                        );
 
                         canvas.add(component);
                         canvas.discardActiveObject();
@@ -298,8 +338,18 @@
                             <p class="font-semibold">Arkhoins: {componentInfo.budget}</p>
                         </article>
                     </section>
-                    <button type="submit" class="btn btn-sm btn-primary w-11/12 mt-4">
-                        <Icon icon="mdi:cart" /> Comprar
+                    <button
+                        type="submit"
+                        class={`btn btn-sm btn-primary ${
+                            componentInfo.owner_username === user.username ? 'btn-disabled' : ''
+                        } w-11/12 mt-4`}
+                    >
+                        {#if componentInfo.owner_username === user.username}
+                            Você já possui esse componente
+                        {:else}
+                            <Icon icon="mdi:cart" />
+                            Comprar
+                        {/if}
                     </button>
                 </section>
             </form>

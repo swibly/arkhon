@@ -26,7 +26,9 @@
                 'description',
                 'id',
                 'arkhoins',
-                'material'
+                'material',
+                'structureType',
+                'owner'
             ]);
 
             console.log(canvasObjects);

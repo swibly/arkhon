@@ -20,7 +20,8 @@ export function canvasCalculation(canvas: Canvas) {
         'id',
         'arkhoins',
         'material',
-        'structureType'
+        'structureType',
+        'owner'
     ]);
 
     for (const obj of canvasObjects.objects) {

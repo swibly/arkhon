@@ -62,6 +62,7 @@ export const actions: Actions = {
         };
 
         await createComponent(jwt, json, isPublic);
+
         let components = await getAllUserComponents(jwt, String(user?.username), '1');
         let allComponents = await getAllUserComponents(
             jwt,
@@ -71,27 +72,22 @@ export const actions: Actions = {
 
         let lastComponent = allComponents.data[(allComponents.total_records % 10) - 1];
 
-        if(isPublic){
-            await publishComponent(jwt, lastComponent.id);
-        }
-
         return {
             lastComponent: lastComponent
         };
     },
 
-    edit: async function ({ cookies, request }) {
+    edit: async function ({ cookies, request, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
-        let user = await getUserByToken(jwt);
         let data = await request.formData();
+        let canvas = data.get('json');
         let id = Number(data.get('id'));
         let name = String(data.get('newName'));
         let description = String(data.get('newDescription'));
         let content = JSON.parse(JSON.stringify(data.get('content')));
         let budget = Number(data.get('newPrice'));
-        let arkhoins = Number(data.get('newArkhoins'));        
-        let isPublic = String(data.get('newPublic')) === 'false' ? false : true;      
-        // let message: string;
+        let arkhoins = Number(data.get('newArkhoins'));
+        let isPublic = String(data.get('newPublic')) === 'false' ? false : true;
 
         const json = {
             Name: name,
@@ -102,23 +98,9 @@ export const actions: Actions = {
             Public: isPublic
         };
 
-        // let component = await getComponentInfo(jwt, id);
+        await editComponent(jwt, json, id);
 
-        // if(component.owner_username === user?.username){
-            await editComponent(jwt, json, id);            
-
-        //     message = "Ok";
-        // }else{
-        //     message = "Você não tem permissão para editar esse componente.";
-        // }
-
-        // return {
-        //     message: "A"
-        // }
-
-        if(isPublic){
-            await publishComponent(jwt, id);
-        }
+        await saveProjectContent(jwt, parseInt(params.project), JSON.parse(String(canvas)));
     },
 
     get: async function ({ cookies, request }) {
@@ -147,7 +129,7 @@ export const actions: Actions = {
         };
     },
 
-    delete: async function ({cookies, request}){
+    delete: async function ({ cookies, request }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         const data = await request.formData();
         const id = data.get('id');
@@ -156,10 +138,10 @@ export const actions: Actions = {
 
         return {
             trash: await getAllComponentsinTrash(jwt)
-        }
+        };
     },
 
-    buy: async function ({cookies, request}){
+    buy: async function ({ cookies, request }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         let user = await getUserByToken(jwt);
         const data = await request.formData();
@@ -169,6 +151,6 @@ export const actions: Actions = {
 
         return {
             usersComponent: await getAllUserComponents(jwt, String(user?.username), '4')
-        }
+        };
     }
 };

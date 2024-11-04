@@ -5,82 +5,83 @@
         getActive,
         changeOpacity,
         changeStroke,
-        takeOpacity, 
-        takeStroke       
+        takeOpacity,
+        takeStroke
     } from '$lib/editor/objects';
     import { type Canvas } from 'fabric';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import Icon from '@iconify/svelte';
     import { draggable } from '@neodrag/svelte';
 
     let objectMenu: HTMLElement;
 
-    export let canvas: Canvas;
+    export let canvas: Canvas;    
 
     let opacitySlider: HTMLInputElement;
-    let strokeSlider: HTMLInputElement;    
+    let strokeSlider: HTMLInputElement;
     let opacityValue: number;
     let strokeValue: number;
-    let mixed: boolean = false;    
+    let mixed: boolean = false;
 
-    onMount(() => {              
-        // addEventListener('load', () => {            
-        //     canvas.on('selection:created', () => {
-        //         if (getActive(canvas).length > 1) {
-        //             mixed = true;
-        //             strokeValue = 10;
-        //             opacityValue = 10;
-        //         } else {
-        //             strokeValue = takeStroke(canvas);
-        //             opacityValue = takeOpacity(canvas);
-        //         }
+    onMount(async () => {
+        await tick();
+        if (canvas) {            
+            canvas.on('selection:created', () => {
+                if (getActive(canvas).length > 1) {
+                    mixed = true;
+                    strokeValue = 10;
+                    opacityValue = 10;
+                } else {
+                    strokeValue = takeStroke(canvas);
+                    opacityValue = takeOpacity(canvas);
+                }
 
-        //         if (objectMenu) {
-        //             objectMenu.style.display = 'flex';
-        //         }
-        //     });
+                if (objectMenu) {
+                    objectMenu.style.display = 'flex';
+                }
+            });
 
-        //     canvas.on('selection:updated', () => {
-        //         if (getActive(canvas).length > 1) {
-        //             mixed = true;
-        //             strokeValue = 10;
-        //             opacityValue = 10;
-        //         } else {
-        //             strokeValue = takeStroke(canvas);
-        //             opacityValue = takeOpacity(canvas);
-        //         }
-        //     });
+            canvas.on('selection:updated', () => {
+                if (getActive(canvas).length > 1) {
+                    mixed = true;
+                    strokeValue = 10;
+                    opacityValue = 10;
+                } else {
+                    strokeValue = takeStroke(canvas);
+                    opacityValue = takeOpacity(canvas);
+                }
+            });
 
-        //     canvas.on('selection:cleared', () => {
-        //         if (objectMenu) {
-        //             objectMenu.style.display = 'none';
-        //         }
+            canvas.on('selection:cleared', () => {
+                if (objectMenu) {
+                    objectMenu.style.display = 'none';
+                }
 
-        //         mixed = false;
-        //     });
-        // });
+                mixed = false;
+            });
 
-        // addEventListener('keydown', (e) => {
-        //     if (e.ctrlKey && e.key === 'a' && getActive(canvas).length > 0) {
-        //         if (objectMenu) {
-        //             objectMenu.style.display = 'flex';
-        //         }
+            addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'a' && getActive(canvas).length > 0) {
+                    if (objectMenu) {
+                        objectMenu.style.display = 'flex';
+                    }
 
-        //         strokeValue = 10;
-        //         opacityValue = 10;
-        //     }
+                    strokeValue = 10;
+                    opacityValue = 10;
+                }
 
-        //     if (e.ctrlKey && e.key === 'x') {
-        //         if (objectMenu) {
-        //             objectMenu.style.display = 'none';
-        //         }
-        //     }
-        // });
+                if (e.ctrlKey && e.key === 'x') {
+                    if (objectMenu) {
+                        objectMenu.style.display = 'none';
+                    }
+                }
+            });
+        }
     });
 </script>
 
 <article
-    class="hidden absolute w-56 h-40 bg-base-100 z-50 flex-col items-center rounded-xl border border-primary overflow-auto"
+    class={`hidden absolute w-56 h-40 bg-base-100 z-50 flex-col items-center rounded-xl border border-primary overflow-auto`}
     bind:this={objectMenu}
     use:draggable={{ bounds: 'canvas', handle: '.handler', position: { x: 20, y: 20 } }}
 >

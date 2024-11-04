@@ -24,23 +24,18 @@
         addLine,
         stopLine,
         resetOpacity,
-        verifyObject,
-        changeBorder,
-        changeStroke,
-        changeFill,
-        changeOpacity,
-        takeStroke,
-        takeOpacity
+        verifyObject
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
     import ProjectTab from '$lib/components/ProjectTab.svelte';
-    import { draggable } from '@neodrag/svelte';
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
     import type { Component } from '$lib/component';
     import ComponentCard from '$lib/components/ComponentCard.svelte';
     import ComponentPagination from '$lib/components/ComponentPagination.svelte';
+    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
+    import type { Pagination } from '$lib/utils';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -59,18 +54,15 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
-    let allComponents: Array<Component>;
-    let ownedComponents: Array<Component>;
-
-    let objectMenu: HTMLElement;
-    let opacitySlider: HTMLInputElement;
-    let strokeSlider: HTMLInputElement;
-    let opacityValue: number;
-    let strokeValue: number;
-    let mixed: boolean = false;
+    let allComponents: Pagination<Component>;
+    let ownedComponents: Pagination<Component>;
 
     let redoStack: Array<object> = [];
     let undoStack: Array<object> = [];
+
+    let isTexting: boolean = false;
+    let isAllowed: boolean;
+    let modalOpen: boolean;
 
     const quadSize = {
         w: data.project.width * 100,
@@ -82,8 +74,23 @@
     }
 
     onMount(function () {
-        allComponents = data.component.data;
-        ownedComponents = data.allOwnedComponents.data;
+        if (data.project.owner_username === data.user.username) {
+            isAllowed = true;
+        } else {
+            data.project.allowed_users.forEach((user) => {
+                if (user.username === data.user.username && user.allow_edit) {
+                    isAllowed = true;
+                } else {
+                    isAllowed = false;
+                }
+            });
+        }
+
+        allComponents = data.component;
+        ownedComponents = data.allOwnedComponents;
+
+        console.log('Owned', data.allOwnedComponents);
+        // console.log("All", allComponents.data.filter((component) => component.owner_username !== data.user.username && !component.bought))
 
         fabric = new Canvas(canvas, {
             selection: true,
@@ -94,7 +101,7 @@
             loadCanvas(fabric, data.content);
         }
 
-        resize(fabric, innerWidth, innerHeight);
+        resize(fabric, innerWidth, innerHeight, isAllowed);
         centerView(fabric, quadSize.w, quadSize.h);
 
         fabric.on('after:render', () => {
@@ -140,12 +147,21 @@
 
                 rect.excludeFromExport = true;
                 circle.excludeFromExport = true;
+
+                if (!isAllowed) {
+                    fabric.selection = false;
+                    fabric.skipTargetFind = true;
+                    fabric.forEachObject((obj) => {
+                        obj.selectable = false;
+                        obj.evented = false;
+                    });
+                }
             }
         });
 
         fabric.on('mouse:down', function ({ e }) {
-            console.log('undo', undoStack);
-            console.log('redo', redoStack);
+            console.log(allComponents);
+            console.log(ownedComponents);
 
             if (fabric.getActiveObject()) {
                 mode = 'select';
@@ -303,41 +319,16 @@
             }
         });
 
-        fabric.on('selection:created', () => {
-            if (getActive(fabric).length > 1) {
-                mixed = true;
-                strokeValue = 10;
-                opacityValue = 10;
-            } else {
-                strokeValue = takeStroke(fabric);
-                opacityValue = takeOpacity(fabric);
-            }
-
-            if (objectMenu) {
-                objectMenu.style.display = 'flex';
-            }
+        fabric.on('text:editing:entered', () => {
+            isTexting = true;
         });
 
-        fabric.on('selection:updated', () => {
-            if (getActive(fabric).length > 1) {
-                mixed = true;
-                strokeValue = 10;
-                opacityValue = 10;
-            } else {
-                strokeValue = takeStroke(fabric);
-                opacityValue = takeOpacity(fabric);
-            }
-        });
-
-        fabric.on('selection:cleared', () => {
-            if (objectMenu) {
-                objectMenu.style.display = 'none';
-            }
-            mixed = false;
+        fabric.on('text:editing:exited', () => {
+            isTexting = false;
         });
 
         addEventListener('resize', function () {
-            resize(fabric, innerWidth, innerHeight);
+            resize(fabric, innerWidth, innerHeight, isAllowed);
         });
 
         addEventListener('keydown', async (e) => {
@@ -351,171 +342,173 @@
                 mode = 'select';
             }
 
-            if (e.key == 'Delete') {
-                removeGroup(fabric, ...getActive(fabric));
-                remove(fabric, ...getActive(fabric));
-                renderAll(fabric);
-            }
-
-            if (e.ctrlKey && e.key == 'x') {
-                e.preventDefault();
-
-                if (fabric.getActiveObject()) {
-                    _clipboard = await copy(fabric);
-                    copiedObjects = getActive(fabric);
-                }
-
-                removeGroup(fabric, ...getActive(fabric));
-                remove(fabric, ...getActive(fabric));
-                renderAll(fabric);
-            }
-
-            if (e.ctrlKey && e.key == 'a') {
-                e.preventDefault();
-
-                fabric.discardActiveObject();
-                var sel = new ActiveSelection(
-                    fabric.getObjects().filter((e) => e.selectable),
-                    {
-                        canvas: fabric
-                    }
-                );
-                fabric.setActiveObject(sel);
-                fabric.renderAll();
-            }
-
-            if (e.ctrlKey && e.key == 'c') {
-                if (fabric.getActiveObject()) {
-                    _clipboard = await copy(fabric);
-                    copiedObjects = getActive(fabric);
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'v') {
-                paste(fabric, _clipboard, copiedObjects);
-            }
-
-            if (e.ctrlKey && e.key == 'd') {
-                e.preventDefault();
-
-                let objs = fabric.getActiveObjects();
-
-                for (const obj of objs) {
-                    let clonedObj = await obj.clone();
-
-                    fabric.discardActiveObject();
-                    clonedObj.set({
-                        left: obj.left + 10,
-                        top: obj.top + 10
-                    });
-
-                    fabric.add(clonedObj);
-                    fabric.setActiveObject(clonedObj);
-                    fabric.requestRenderAll();
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'z') {
-                e.preventDefault();
-
-                undo(fabric);
-            }
-
-            if (e.ctrlKey && e.key == 'y') {
-                e.preventDefault();
-
-                redo(fabric);
-            }
-
             if (
                 (getActive(fabric).length === 1 && getActive(fabric)[0].type !== 'i-text') ||
-                getActive(fabric).length !== 1
+                !isTexting
             ) {
-                if (e.key === 'p') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    startDraw(fabric);
-                    if (mode !== 'paint') {
-                        mode = 'paint';
-                    } else {
-                        stopDraw(fabric);
-                        mode = 'select';
+                if (!modalOpen) {
+                    if (e.key == 'Delete') {
+                        removeGroup(fabric, ...getActive(fabric));
+                        remove(fabric, ...getActive(fabric));
+                        renderAll(fabric);
                     }
-                }
 
-                if (e.key == 's') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
+                    if (e.ctrlKey && e.key == 'x') {
+                        e.preventDefault();
 
-                    mode = 'select';
+                        if (fabric.getActiveObject()) {
+                            _clipboard = await copy(fabric);
+                            copiedObjects = getActive(fabric);
+                        }
 
-                    fabric.renderAll();
-                }
-
-                if (e.key == 't') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
-
-                    if (mode !== 'text') {
-                        mode = 'text';
-                    } else {
-                        mode = 'select';
+                        removeGroup(fabric, ...getActive(fabric));
+                        remove(fabric, ...getActive(fabric));
+                        renderAll(fabric);
                     }
-                }
 
-                if (e.key == 'q') {
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
+                    if (e.ctrlKey && e.key == 'a') {
+                        e.preventDefault();
 
-                    if (mode !== 'rect') {
-                        mode = 'rect';
-                    } else {
-                        mode = 'select';
+                        fabric.discardActiveObject();
+                        var sel = new ActiveSelection(
+                            fabric.getObjects().filter((e) => e.selectable),
+                            {
+                                canvas: fabric
+                            }
+                        );
+                        fabric.setActiveObject(sel);
+                        fabric.renderAll();
+                    }
+
+                    if (e.ctrlKey && e.key == 'c' && !isTexting) {
+                        if (fabric.getActiveObject()) {
+                            _clipboard = await copy(fabric);
+                            copiedObjects = getActive(fabric);
+                        }
+                    }
+
+                    if (e.ctrlKey && e.key == 'v') {
+                        paste(fabric, _clipboard, copiedObjects);
+                    }
+
+                    if (e.ctrlKey && e.key == 'd') {
+                        e.preventDefault();
+
+                        let objs = fabric.getActiveObjects();
+
+                        for (const obj of objs) {
+                            let clonedObj = await obj.clone();
+
+                            fabric.discardActiveObject();
+                            clonedObj.set({
+                                left: obj.left + 10,
+                                top: obj.top + 10
+                            });
+
+                            fabric.add(clonedObj);
+                            fabric.setActiveObject(clonedObj);
+                            fabric.requestRenderAll();
+                        }
+                    }
+
+                    if (e.ctrlKey && e.key == 'z') {
+                        e.preventDefault();
+
+                        undo(fabric);
+                    }
+
+                    if (e.ctrlKey && e.key == 'y') {
+                        e.preventDefault();
+
+                        redo(fabric);
+                    }
+
+                    if (e.key === 'p') {
                         resetOpacity(fabric, rect);
-                    }
-                }
-
-                if (!e.ctrlKey && e.key == 'c') {
-                    resetOpacity(fabric, rect);
-                    stopLine(fabric);
-                    stopDraw(fabric);
-
-                    if (mode !== 'circle') {
-                        mode = 'circle';
-                    } else {
-                        mode = 'select';
                         resetOpacity(fabric, circle);
-                    }
-                }
-
-                if (e.key == 'l') {
-                    resetOpacity(fabric, circle);
-                    resetOpacity(fabric, rect);
-                    stopDraw(fabric);
-
-                    if (mode !== 'line') {
-                        mode = 'line';
-                    } else {
-                        mode = 'select';
                         stopLine(fabric);
+                        startDraw(fabric);
+                        if (mode !== 'paint') {
+                            mode = 'paint';
+                        } else {
+                            stopDraw(fabric);
+                            mode = 'select';
+                        }
                     }
-                }
 
-                if (mode === 'line') {
-                    if (e.key == 'd') {
-                        addLine(fabric);
+                    if (e.key == 's') {
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                         stopLine(fabric);
+                        stopDraw(fabric);
 
                         mode = 'select';
+
+                        fabric.renderAll();
                     }
 
-                    fabric.renderAll();
+                    if (e.key == 't') {
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'text') {
+                            mode = 'text';
+                        } else {
+                            mode = 'select';
+                        }
+                    }
+
+                    if (e.key == 'q') {
+                        resetOpacity(fabric, circle);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'rect') {
+                            mode = 'rect';
+                        } else {
+                            mode = 'select';
+                            resetOpacity(fabric, rect);
+                        }
+                    }
+
+                    if (!e.ctrlKey && e.key == 'c') {
+                        resetOpacity(fabric, rect);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'circle') {
+                            mode = 'circle';
+                        } else {
+                            mode = 'select';
+                            resetOpacity(fabric, circle);
+                        }
+                    }
+
+                    if (e.key == 'l') {
+                        resetOpacity(fabric, circle);
+                        resetOpacity(fabric, rect);
+                        stopDraw(fabric);
+
+                        if (mode !== 'line') {
+                            mode = 'line';
+                        } else {
+                            mode = 'select';
+                            stopLine(fabric);
+                        }
+                    }
+
+                    if (mode === 'line') {
+                        if (e.key == 'd') {
+                            addLine(fabric);
+                            stopLine(fabric);
+
+                            mode = 'select';
+                        }
+
+                        fabric.renderAll();
+                    }
                 }
             }
         });
@@ -533,7 +526,8 @@
                 'id',
                 'arkhoins',
                 'material',
-                'structureType'
+                'structureType',
+                'owner'
             ])
         );
     }
@@ -581,7 +575,11 @@
 </script>
 
 <main class="flex h-full">
-    <aside class="w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin">
+    <aside
+        class={`${
+            isAllowed ? 'block' : 'hidden'
+        } w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin overflow-auto`}
+    >
         <nav class="text-center mt-4 grid grid-cols-3 place-items-center gap-2">
             <button
                 class={`text-sm sm:text-base transition duration-150 ease-in-out ${
@@ -693,26 +691,19 @@
                     <ComponentPagination
                         bind:allComponents
                         bind:ownedComponents
-                        pagination={{
-                            data: ownedComponents,
-                            total_records: data.component.total_records,
-                            total_pages: data.component.total_pages,
-                            current_page: data.component.current_page,
-                            next_page: data.component.next_page,
-                            previous_page: data.component.previous_page
-                        }}
-                        data={data.project}
+                        {data}
                         componentData={data.allOwnedComponents}
                         type={'owned'}
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
-                        {#each ownedComponents as component, index (component)}
+                        {#each ownedComponents.data as component, index (component)}
                             <ComponentCard
                                 componentInfo={component}
                                 type="component"
                                 canvas={fabric}
                                 data={data.project}
+                                user={data.user}
                             />
                         {/each}
                     </section>
@@ -723,30 +714,19 @@
                     <ComponentPagination
                         bind:allComponents
                         bind:ownedComponents
-                        pagination={{
-                            data: allComponents.filter(
-                                (component) =>
-                                    component.owner_username !== data.user.username &&
-                                    !component.bought
-                            ),
-                            total_records: data.component.total_records,
-                            total_pages: data.component.total_pages,
-                            current_page: data.component.current_page,
-                            next_page: data.component.next_page,
-                            previous_page: data.component.previous_page
-                        }}
-                        data={data.project}
+                        {data}
                         componentData={data.component}
                         type={'store'}
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
-                        {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
+                        {#each allComponents.data as component, index (component)}
                             <ComponentCard
                                 componentInfo={component}
                                 type="store"
                                 canvas={fabric}
                                 data={data.project}
+                                user={data.user}
                             />
                         {/each}
                     </section>
@@ -755,126 +735,15 @@
         </main>
     </aside>
 
-    <main class="w-full xl:w-3/4 2xl:w-4/5">
-        <article
-            class="hidden absolute w-56 h-40 bg-base-100 z-50 flex-col items-center rounded-xl border border-primary overflow-auto"
-            bind:this={objectMenu}
-            use:draggable={{ bounds: 'canvas', handle: '.handler', position: { x: 20, y: 20 } }}
-        >
-            <div
-                class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler rounded-t-lg"
-            >
-                <Icon icon="stash:drag-squares-horizontal-solid" class="text-white text-xl" />
-            </div>
-            <p class="text-md pt-2 font-bold -mt-1">Borda</p>
-            <section class="flex items-center gap-2 pt-2">
-                <button
-                    class="w-3 h-3 font-bold -mt-1"
-                    on:click={() => changeBorder(fabric, 'null', ...getActive(fabric))}
-                    ><Icon icon="material-symbols:close" /></button
-                >
-                <button
-                    class="w-3 h-3 bg-white rounded"
-                    on:click={() => changeBorder(fabric, 'white', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-gray-500 rounded"
-                    on:click={() => changeBorder(fabric, 'gray', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-red-400 rounded"
-                    on:click={() => changeBorder(fabric, 'red', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-green-400 rounded"
-                    on:click={() => changeBorder(fabric, 'green', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-blue-400 rounded"
-                    on:click={() => changeBorder(fabric, 'blue', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-pink-400 rounded"
-                    on:click={() => changeBorder(fabric, 'pink', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-yellow-400 rounded"
-                    on:click={() => changeBorder(fabric, 'yellow', ...getActive(fabric))}
-                />
-            </section>
-            <p class="text-center text-md font-bold mt-2">Espessura da Borda</p>
-            <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
-                Mixed
-            </p>
-            <section class="flex gap-2 pt-2">
-                <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    value={strokeValue}
-                    bind:this={strokeSlider}
-                    on:input={() => (strokeValue = changeStroke(fabric, strokeSlider))}
-                    class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
-                />
-                <div class="divider" />
-            </section>
-            <div class="divider w-36 mx-auto -mt-4" />
-            <p class="text-md font-bold -mt-4">Fundo</p>
-            <section class="flex items-center gap-2 pt-2">
-                <button
-                    class="w-3 h-3 -mt-1 font-bold"
-                    on:click={() => changeFill(fabric, 'null', ...getActive(fabric))}
-                    ><Icon icon="material-symbols:close" /></button
-                >
-                <button
-                    class="w-3 h-3 bg-white rounded"
-                    on:click={() => changeFill(fabric, 'white', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-gray-500 rounded"
-                    on:click={() => changeFill(fabric, 'gray', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-red-400 rounded"
-                    on:click={() => changeFill(fabric, 'red', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-green-400 rounded"
-                    on:click={() => changeFill(fabric, 'green', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-blue-400 rounded"
-                    on:click={() => changeFill(fabric, 'blue', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-pink-400 rounded"
-                    on:click={() => changeFill(fabric, 'pink', ...getActive(fabric))}
-                />
-                <button
-                    class="w-3 h-3 bg-yellow-400 rounded"
-                    on:click={() => changeFill(fabric, 'yellow', ...getActive(fabric))}
-                />
-            </section>
-            <div class="divider w-36 mx-auto" />
-            <p class="text-center text-md font-bold -mt-4">Opacidade</p>
-            <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
-                Mixed
-            </p>
-            <section class="flex gap-2 pt-2">
-                <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    value={opacityValue}
-                    bind:this={opacitySlider}
-                    on:input={() => (opacityValue = changeOpacity(fabric, opacitySlider))}
-                    class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
-                />
-                <div class="divider" />
-            </section>
-        </article>
-
-        <RightMenu canvas={fabric} data={data.project} />
+    <main class={`${isAllowed ? 'w-full xl:w-3/4 2xl:w-4/5' : 'w-full'}`}>
+        <ObjectMenu canvas={fabric} />
+        <RightMenu
+            bind:modalOpen
+            canvas={fabric}
+            data={data.project}
+            {isAllowed}
+            user={data.user}
+        />
         <ProjectTab
             bind:mode
             canvas={fabric}
@@ -882,6 +751,7 @@
             height={quadSize.h}
             cursors={[rect, circle]}
             data={data.project}
+            {isAllowed}
         />
         <canvas bind:this={canvas} />
     </main>
