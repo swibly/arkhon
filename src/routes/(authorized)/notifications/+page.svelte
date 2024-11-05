@@ -12,7 +12,12 @@
 </script>
 
 <div class="w-full max-w-3xl p-4 mx-auto">
-<h1 class="text-4xl font-bold text-primary">Notificações</h1>
+    <a href="/profile/{data.user.username}" class="mb-4 btn btn-ghost btn-sm">
+        <Icon icon="streamline:return-2-solid" />
+        Voltar para o perfil
+    </a>
+
+    <h1 class="text-4xl font-bold text-primary">Notificações</h1>
 
     {#if !$page.url.searchParams.has('unread', 'true')}
         <a href="?unread=true" class="link link-secondary">Mostrar apenas não lidos</a>
