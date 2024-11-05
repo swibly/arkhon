@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ActionData, PageServerData } from './$types';
+    import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
     import type { User } from '$lib/user';
     import Input from '$lib/components/Input.svelte';

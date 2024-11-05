@@ -5,10 +5,6 @@
     $: path = $page.url.pathname;
 </script>
 
-<svelte:head>
-    <title>Comunidade - Swibly Arkhon</title>
-</svelte:head>
-
 <div class="p-4">
     {#if path.match(/\/community\/(projects|components|users)(\/)?$/)}
         <div class="flex gap-4 *:shrink-0">
