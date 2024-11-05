@@ -4,9 +4,11 @@
 
     export let pagination: Pagination<any>;
 
-    function setupURL(i: number) {
+    function setupURL(pageNumber: number) {
+        const url = $page.url;
+
         let limit = 15;
-        let urlLimit = $page.url.searchParams.get('limit');
+        let urlLimit = url.searchParams.get('limit');
 
         if (urlLimit) {
             try {
@@ -16,7 +18,10 @@
             }
         }
 
-        return `?page=${i}&limit=${limit}`;
+        url.searchParams.set('page', pageNumber.toString());
+        url.searchParams.set('limit', limit.toString());
+
+        return '?' + url.searchParams.toString();
     }
 </script>
 
