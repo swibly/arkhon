@@ -14,26 +14,25 @@
     export let canvas: Canvas;
     export let data: Project;
     export let user: User;
+    export let isSelected: boolean = false;
 
     let svg: string;
     let svgRef: HTMLElement;
     let svgPortrait: HTMLElement;
     let modalRef: HTMLDialogElement;
     let componentCard: HTMLElement;
-    let component: FabricObject;
-    let isSelected: boolean = false;
+    let component: FabricObject;        
 
     onMount(() => {
-        componentCard.addEventListener('mousedown', () => {             
+        componentCard.addEventListener('mousedown', () => {
             isSelected = true;
+
             canvas.on('mouse:down', ({ e }) => {
                 if (getActive(canvas).length > 0) {
                     isSelected = false;
                 }
 
-                console.log(componentInfo)
-
-                if (isSelected) {
+                if (isSelected && type === 'component') {
                     if (JSON.parse(componentInfo.content).type === 'Rect') {
                         component = new Rect(JSON.parse(componentInfo.content));
                         component.set({
@@ -278,7 +277,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <main
-    class={`w-28 h-28 flex flex-col items-center justify-center border ${
+    class={`w-24 h-24 flex flex-col items-center justify-center border ${
         isSelected && type !== 'store' ? 'border-primary' : 'border-secondary'
     } border-2 rounded-md my-2`}
     on:click={() => showModal()}
@@ -286,7 +285,7 @@
 >
     <article
         bind:this={svgRef}
-        class={`w-16 h-16 grid place-items-center bg-base-200 overflow-hidden p-2 border  ${
+        class={`w-12 h-12 grid place-items-center bg-base-200 overflow-hidden p-2 border  ${
             isSelected && type !== 'store' ? 'border-primary' : 'border-secondary'
         }`}
     />

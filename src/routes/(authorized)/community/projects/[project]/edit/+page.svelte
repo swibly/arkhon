@@ -1,6 +1,6 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
         drawGrid,
@@ -36,6 +36,7 @@
     import ComponentPagination from '$lib/components/ComponentPagination.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import type { Pagination } from '$lib/utils';
+    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -73,23 +74,27 @@
         activeButton = value;
     }
 
-    onMount(function () {
+    onMount(() => {
         if (data.project.owner_username === data.user.username) {
             isAllowed = true;
         } else {
-            data.project.allowed_users.forEach((user) => {
-                if (user.username === data.user.username && user.allow_edit) {
-                    isAllowed = true;
-                } else {
-                    isAllowed = false;
-                }
-            });
+            if (data.project.allowed_users.length === 0) {
+                isAllowed = false;
+            } else {
+                data.project.allowed_users.forEach((user) => {
+                    if (user.username === data.user.username && user.allow_edit) {
+                        isAllowed = true;
+                    } else {
+                        isAllowed = false;
+                    }
+                });
+            }
         }
 
         allComponents = data.component;
         ownedComponents = data.allOwnedComponents;
 
-        console.log('Owned', data.allOwnedComponents);
+        // console.log('Owned', data.allOwnedComponents);
         // console.log("All", allComponents.data.filter((component) => component.owner_username !== data.user.username && !component.bought))
 
         fabric = new Canvas(canvas, {
@@ -110,7 +115,7 @@
             if (fabric.getObjects().length !== asideObjects.length) {
                 asideObjects = [];
 
-                let items = fabric.getObjects();
+                let items = fabric.getObjects().slice(3);
 
                 for (const obj of items) {
                     asideObjects.push(obj);
@@ -160,9 +165,6 @@
         });
 
         fabric.on('mouse:down', function ({ e }) {
-            console.log(allComponents);
-            console.log(ownedComponents);
-
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
@@ -280,6 +282,27 @@
             e.stopPropagation();
         });
 
+        addEventListener('touchstart', (e) => {
+            fabric.isDrawingMode = false;
+            mode = 'select';
+
+            lastPosX = fabric.getViewportPoint(e).x;
+            lastPosY = fabric.getViewportPoint(e).y;
+
+            fabric.selection = false;
+            fabric.isDrawingMode = false;
+        });
+
+        addEventListener('touchmove', (e) => {
+            let vpt = fabric.viewportTransform;
+
+            vpt[4] += fabric.getViewportPoint(e).x - lastPosX;
+            vpt[5] += fabric.getViewportPoint(e).y - lastPosY;
+            fabric.requestRenderAll();
+            lastPosX = fabric.getViewportPoint(e).x;
+            lastPosY = fabric.getViewportPoint(e).y;
+        });
+
         fabric.on('object:rotating', function ({ e, target }) {
             target.snapAngle = ~~e.shiftKey * 15;
         });
@@ -329,6 +352,9 @@
 
         addEventListener('resize', function () {
             resize(fabric, innerWidth, innerHeight, isAllowed);
+            if (innerWidth < 1280) {
+                isAllowed = true;
+            }
         });
 
         addEventListener('keydown', async (e) => {
@@ -344,7 +370,7 @@
 
             if (
                 (getActive(fabric).length === 1 && getActive(fabric)[0].type !== 'i-text') ||
-                !isTexting
+                (!isTexting && isAllowed)
             ) {
                 if (!modalOpen) {
                     if (e.key == 'Delete') {
@@ -359,10 +385,17 @@
                         if (fabric.getActiveObject()) {
                             _clipboard = await copy(fabric);
                             copiedObjects = getActive(fabric);
+
+                            getActive(fabric).forEach((item) => {
+                                // @ts-ignore
+                                if (item.objects !== undefined) {
+                                    removeGroup(fabric, item);
+                                } else {
+                                    remove(fabric, ...getActive(fabric));
+                                }
+                            });
                         }
 
-                        removeGroup(fabric, ...getActive(fabric));
-                        remove(fabric, ...getActive(fabric));
                         renderAll(fabric);
                     }
 
@@ -387,8 +420,10 @@
                         }
                     }
 
-                    if (e.ctrlKey && e.key == 'v') {
-                        paste(fabric, _clipboard, copiedObjects);
+                    if (e.ctrlKey && e.key == 'v' && !isTexting) {
+                        if (_clipboard !== undefined && copiedObjects !== undefined) {
+                            paste(fabric, _clipboard, copiedObjects);
+                        }
                     }
 
                     if (e.ctrlKey && e.key == 'd') {
@@ -574,13 +609,9 @@
     }
 </script>
 
-<main class="flex h-full">
-    <aside
-        class={`${
-            isAllowed ? 'block' : 'hidden'
-        } w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin overflow-auto`}
-    >
-        <nav class="text-center mt-4 grid grid-cols-3 place-items-center gap-2">
+<main class="flex h-[90vh] -m-4 overflow-hidden">
+    <aside class={`${isAllowed ? 'block' : 'hidden'} w-0 xl:w-64 2xl:w-72 bg-base-100`}>
+        <nav class="text-center mt-4 hidden xl:grid grid-cols-3 place-items-center gap-2">
             <button
                 class={`text-sm sm:text-base transition duration-150 ease-in-out ${
                     activeButton === 'project'
@@ -615,67 +646,46 @@
             </button>
         </nav>
         <div class="divider" />
-        <main>
+        <main class="w-full h-full overflow-y-auto">
             {#if activeButton == 'project'}
-                <details class="dropdown w-full">
-                    <summary
-                        class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
-                        >Andar 1</summary
-                    >
-                    <div
-                        class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
-                    >
-                        <button class="flex items-center gap-4 btn bg-base-300 border-0"
-                            ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button
-                        >
-                    </div>
-                </details>
-
-                <div class="divider" />
-
                 <main class="flex flex-col justify-center mx-8 mt-4">
                     <h1 class="text-xl font-bold text-center">Objetos</h1>
                     <section class="mt-4 mx-4 w-5/6">
-                        {#if asideObjects.length > 4}
-                            {#each asideObjects as object, index (object)}
-                                {#if index > 3}
-                                    {#if verifyObject(object).isComponent}
-                                        <p class="flex items-center gap-4">
-                                            <Icon
-                                                icon="iconamoon:component-fill"
-                                                font-size="15px"
-                                            />
-                                            {verifyObject(object).name}
+                        {#if asideObjects.length > 0}
+                            {#each asideObjects as object}
+                                {#if verifyObject(object).isComponent}
+                                    <p class="flex items-center gap-4 text-primary">
+                                        <Icon icon="iconamoon:component-fill" font-size="15px" />
+                                        {verifyObject(object).name}
+                                    </p>
+                                {:else if object.type === 'rect'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
+                                    </p>
+                                {:else if object.type === 'circle'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon
+                                            icon="material-symbols:circle"
+                                            font-size="15px"
+                                        />Círculo
+                                    </p>
+                                {:else if object.type === 'path'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="ri:brush-fill" font-size="15px" />Desenho
+                                    </p>
+                                {:else if object.type === 'i-text'}
+                                    <article class="flex items-center gap-4">
+                                        <Icon icon="solar:text-bold" font-size="15px" />
+                                        <p
+                                            class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                                        >
+                                            {verifyObject(object).text}
                                         </p>
-                                    {:else if object.type === 'rect'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
-                                        </p>
-                                    {:else if object.type === 'circle'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon
-                                                icon="material-symbols:circle"
-                                                font-size="15px"
-                                            />Círculo
-                                        </p>
-                                    {:else if object.type === 'path'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="ri:brush-fill" font-size="15px" />Desenho
-                                        </p>
-                                    {:else if object.type === 'i-text'}
-                                        <article class="flex items-center gap-4">
-                                            <Icon icon="solar:text-bold" font-size="15px" />
-                                            <p
-                                                class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                                            >
-                                                {verifyObject(object).text}
-                                            </p>
-                                        </article>
-                                    {:else if object.type === 'polygon'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
-                                        </p>
-                                    {/if}
+                                    </article>
+                                {:else if object.type === 'polygon'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
+                                    </p>
                                 {/if}
                             {/each}
                         {:else}
@@ -737,6 +747,7 @@
 
     <main class={`${isAllowed ? 'w-full xl:w-3/4 2xl:w-4/5' : 'w-full'}`}>
         <ObjectMenu canvas={fabric} />
+        <ObjectInfo canvas={fabric} />
         <RightMenu
             bind:modalOpen
             canvas={fabric}

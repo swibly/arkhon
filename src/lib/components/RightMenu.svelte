@@ -9,7 +9,7 @@
         unlock,
         setInfo,
         changeMaterial,
-        changeObjectType
+        changeType
     } from '$lib/editor/objects';
     import { type FabricObject, type Canvas } from 'fabric';
     import { bringFront, sendBack, sendBackward, bringForward } from '$lib/editor/layers';
@@ -105,9 +105,7 @@
         }
     });
 
-    function showModal() {
-        console.log('Single object', singleObject);
-
+    function showModal() {        
         if (
             modalRef &&
             typeof singleObject === 'object' &&
@@ -169,6 +167,16 @@
         isModalOpen = false;
         modalOpen = false;
         modalRef.close();
+    }
+
+    function changeObjectMaterial(object: FabricObject[], material: string){
+        changeMaterial(canvas, object, material);
+        rightMenu.style.display = 'none';
+    }  
+
+    function changeObjectType(object: FabricObject[], type: string){
+        changeType(canvas, object, type)
+        rightMenu.style.display = 'none';
     }
 </script>
 
@@ -232,27 +240,27 @@
         </li>
         <li>
             <details>
-                <summary> Material </summary>
+                <summary> Material </summary>                
                 <ul>
-                    <li on:click={() => changeMaterial(getActive(canvas), 'cimento')}>
+                    <li on:click={() => {changeObjectMaterial(getActive(canvas), 'cimento')}}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Cimento</a>
                     </li>
 
-                    <li on:click={() => changeMaterial(getActive(canvas), 'azulejo')}>
+                    <li on:click={() => changeObjectMaterial(getActive(canvas), 'azulejo')}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Azulejo</a>
                     </li>
 
-                    <li on:click={() => changeMaterial(getActive(canvas), 'porcelanato')}>
+                    <li on:click={() => changeObjectMaterial(getActive(canvas), 'porcelanato')}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm"
                             >Porcelanato</a
                         >
                     </li>
 
-                    <li on:click={() => changeMaterial(getActive(canvas), 'madeira')}>
+                    <li on:click={() => changeObjectMaterial(getActive(canvas), 'madeira')}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Madeira</a>
                     </li>
 
-                    <li on:click={() => changeMaterial(getActive(canvas), 'cerâmica')}>
+                    <li on:click={() => changeObjectMaterial(getActive(canvas), 'cerâmica')}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Cerâmica</a>
                     </li>
                 </ul>

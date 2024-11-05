@@ -498,7 +498,7 @@ export function setInfo(
     object.setCoords();
 }
 
-export function changeMaterial(objects: FabricObject[], material: string) {
+export function changeMaterial(canvas: Canvas, objects: FabricObject[], material: string) {
     for (const obj of objects) {
         // @ts-ignore
         if (!obj.isComponent) {
@@ -507,9 +507,12 @@ export function changeMaterial(objects: FabricObject[], material: string) {
             });
         }
     }
+
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
 }
 
-export function changeObjectType(objects: FabricObject[], type: string) {
+export function changeType(canvas: Canvas, objects: FabricObject[], type: string) {
     for (const obj of objects) {
         // @ts-ignore
         if (!obj.isComponent) {
@@ -518,4 +521,7 @@ export function changeObjectType(objects: FabricObject[], type: string) {
             });
         }
     }
+
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
 }

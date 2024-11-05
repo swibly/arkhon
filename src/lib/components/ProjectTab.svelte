@@ -1,13 +1,13 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
     import { type Canvas, type FabricObject } from 'fabric';
-    import { centerView, startDraw, stopDraw, toPNG } from '$lib/editor/canvas';
+    import { centerView, startDraw, stopDraw, toJPEG, toPNG, toSVG } from '$lib/editor/canvas';
     import { stopLine, resetOpacity, verifyObject } from '$lib/editor/objects';
     import { enhance } from '$app/forms';
     import type { Project } from '$lib/projects';
     import { spawn } from '$lib/toast';
-    import { onMount } from 'svelte';
-    import { canvasCalculation } from '$lib/editor/calculation';
+    import { onMount, tick } from 'svelte';
+    import { canvasCalculation } from '$lib/editor/calculation';    
 
     export let canvas: Canvas;
     export let width: number;
@@ -20,6 +20,7 @@
     let loading: boolean = false;
 
     let modalRef: HTMLDialogElement;
+    let saveModalRef: HTMLDialogElement;
     let buttonCalculation: HTMLElement;
     let results: object;
     let displayComponents: Array<FabricObject>;
@@ -29,7 +30,7 @@
         h: height
     };
 
-    onMount(() => {
+    onMount(() => {        
         buttonCalculation.addEventListener('mousedown', () => {
             results = canvasCalculation(canvas);
             displayComponents = [];
@@ -57,14 +58,53 @@
     function calculation() {
         modalRef.showModal();
     }
+
+    function openSaveModal() {
+        saveModalRef.showModal();
+    }
+
+    function saveProject(canvas: Canvas, type: string) {
+        if (type === 'png') {
+            toPNG(
+                canvas,
+                quadSize.w,
+                quadSize.h,
+                canvas.viewportTransform.slice()[4],
+                canvas.viewportTransform.slice()[5]
+            );
+
+            spawn({ message: 'Canvas baixado.' });
+        }
+
+        if (type === 'jpeg') {
+            toJPEG(
+                canvas,
+                quadSize.w,
+                quadSize.h,
+                canvas.viewportTransform.slice()[4],
+                canvas.viewportTransform.slice()[5]
+            );
+
+            spawn({ message: 'Canvas baixado.' });
+        }
+
+        if (type === 'svg') {
+            toSVG(canvas);
+
+            spawn({ message: 'SVG copiado para área de transferência.' });
+        }
+
+        saveModalRef.close();
+    }
 </script>
 
 <main
-    class={`absolute z-50 w-1/3 h-8 bg-secondary ${isAllowed ? 'flex items-center justify-between' : 'grid place-items-center'} mt-4 shadow-lg rounded-lg left-1/2 -translate-x-1/3`}
+    class={`hidden sm:flex absolute z-50 w-1/3 h-8 bg-secondary ${
+        isAllowed ? 'flex items-center justify-between' : 'grid place-items-center'
+    } mt-4 shadow-lg rounded-lg left-0 right-0 mx-auto gap-8`}
 >
-    <div class={`${isAllowed ? 'block' : 'hidden'} flex ml-4 gap-4`}>
+    <div class={`${isAllowed ? 'hidden xl:flex' : 'hidden'} ml-4 gap-4`}>
         <button
-            class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -80,7 +120,6 @@
             /></button
         >
         <button
-            class="hidden xl:block"
             on:click={() => startDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -96,7 +135,6 @@
             /></button
         >
         <button
-            class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -112,7 +150,6 @@
             /></button
         >
         <button
-            class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -127,7 +164,6 @@
             /></button
         >
         <button
-            class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -142,7 +178,6 @@
             /></button
         >
         <button
-            class="hidden xl:block"
             on:click={() => stopDraw(canvas)}
             on:click={() => stopLine(canvas)}
             on:click={() => {
@@ -159,11 +194,11 @@
         >
     </div>
     <h1
-        class="text-lg text-center text-white font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
+        class="text-lg text-center mx-auto xl:mx-auto text-white font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
     >
         {data.name}
     </h1>
-    <div class={`${isAllowed ? 'block' : 'hidden'} dropdown`}>
+    <div class={`${isAllowed ? 'hidden xl:flex' : 'hidden'} dropdown`}>
         <div tabindex="0" role="button" class="btn btn-secondary btn-sm">
             <Icon icon="icon-park-outline:more" font-size="18px" class="text-white" />
         </div>
@@ -228,16 +263,7 @@
                 </form>
             </li>
             <li>
-                <button
-                    on:click={() =>
-                        toPNG(
-                            canvas,
-                            quadSize.w,
-                            quadSize.h,
-                            canvas.viewportTransform.slice()[4],
-                            canvas.viewportTransform.slice()[5]
-                        )}
-                >
+                <button on:click={() => openSaveModal()}>
                     <Icon icon="material-symbols:download" font-size="20px" class="text-white" />
                 </button>
             </li>
@@ -267,7 +293,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {#if results}
+                        {#if results && displayComponents.length > 0}
                             {#each displayComponents as component, index (component)}
                                 <tr>
                                     <th class="text-center">{index + 1}</th>
@@ -286,6 +312,12 @@
                                     >
                                 </tr>
                             {/each}
+                        {:else}
+                            <tr>
+                                <td colspan="5" class="text-center font-semibold"
+                                    >Nenhum componente foi registrado na planta</td
+                                >
+                            </tr>
                         {/if}
                     </tbody>
                 </table>
@@ -304,7 +336,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {#if results}
+                        {#if results && verifyObject(results).objects.length > 0}
                             {#each verifyObject(results).objects as object, index (object)}
                                 <tr>
                                     <th class="text-center">{index + 1}</th>
@@ -331,6 +363,12 @@
                                     >
                                 </tr>
                             {/each}
+                        {:else}
+                            <tr>
+                                <td colspan="5" class="text-center font-semibold"
+                                    >Nenhuma estrutura foi registrada na planta</td
+                                >
+                            </tr>
                         {/if}
                     </tbody>
                 </table>
@@ -348,5 +386,47 @@
                 {/if}
             </section>
         </main>
+    </div>
+</dialog>
+
+<dialog id="my_modal_3" class="modal" bind:this={saveModalRef}>
+    <div class="modal-box w-full max-w-2xl grid place-items-center overflow-auto">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <section class="w-full flex flex-col justify-center items-center">
+            <h1 class="text-center font-semibold text-xl">Salvar como...</h1>
+            <div class="divider w-11/12 mx-auto" />
+            <section class="grid grid-cols-3 place-items-center gap-8">
+                <article class="flex flex-col justify-center items-center gap-y-4">
+                    <div class="bg-secondary w-24 h-24 grid place-items-center rounded-full">
+                        <Icon icon="teenyicons:jpg-solid" class="text-6xl text-white" />
+                    </div>
+                    <button
+                        class="w-40 btn btn-secondary btn-sm text-center text-white font-semibold text-md rounded-lg"
+                        on:click={() => saveProject(canvas, 'jpeg')}>Exportar para JPEG</button
+                    >
+                </article>
+                <article class="flex flex-col justify-center items-center gap-y-4">
+                    <div class="bg-secondary w-24 h-24 grid place-items-center rounded-full">
+                        <Icon icon="teenyicons:png-solid" class="text-6xl text-white" />
+                    </div>
+                    <button
+                        class="w-40 btn btn-secondary btn-sm text-center text-white font-semibold text-md rounded-lg"
+                        on:click={() => saveProject(canvas, 'png')}>Exportar para PNG</button
+                    >
+                </article>
+                <article class="flex flex-col justify-center items-center gap-y-4">
+                    <div class="bg-secondary w-24 h-24 grid place-items-center rounded-full">
+                        <Icon icon="teenyicons:svg-solid" class="text-6xl text-white" />
+                    </div>
+                    <button
+                        class="w-40 btn btn-secondary btn-sm text-center text-white font-semibold text-md rounded-lg"
+                        on:click={() => saveProject(canvas, 'svg')}>Exportar para SVG</button
+                    >
+                </article>
+            </section>
+        </section>
     </div>
 </dialog>

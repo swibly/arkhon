@@ -1,136 +1,123 @@
 <script lang="ts">
-    import { addInfoText, getActive } from '$lib/editor/objects';
-    import { IText, type Canvas, type FabricObject } from 'fabric';
-    import { onMount } from 'svelte';
+    import { getActive } from '$lib/editor/objects';
+    import { type Canvas } from 'fabric';
+    import { onMount, tick } from 'svelte';
 
-    let objectInfo: HTMLElement;
-    let top: string;
-    let left: string;
+    export let canvas: Canvas;
+
+    let objectMenu: HTMLElement;
     let width: number;
     let height: number;
-    let text: FabricObject;
+    let isComponent: boolean;
+    let isGroup: boolean;
+    let material: string;
+    let structureType: string;
 
-    export let fabric: Canvas;
+    onMount(async () => {
+        objectMenu.style.display = 'none';
 
-    onMount(() => {      
-        console.log(fabric);
-        
-        // if (canvas) {
-        //     addInfoText(canvas);
+        await tick();
 
-        //     canvas.on('selection:created', () => {
-        //         console.log('P');
-        //     });
+        if (canvas) {
+            canvas.on('object:modified', () => {
+                console.log('A');
+            });
 
-        //     addEventListener('mousedown', () => {
-        //         canvas.on('mouse:down', () => {
-        //             console.log('M');
-        //         });
-        //     });
-        // }
+            canvas.on('selection:created', () => {
+                if (getActive(canvas).length > 0) {
+                    width =
+                        Math.round(getActive(canvas)[0].width * getActive(canvas)[0].scaleX) / 100;
+                    height =
+                        Math.round(getActive(canvas)[0].height * getActive(canvas)[0].scaleY) / 100;
 
-        // addEventListener('load', () => {
-        //     console.log('D');
+                    isComponent = false;
+                    isGroup = false;
 
-        //     canvas.on('selection:created', () => {
-        //         top = getActive(canvas)[0].top.toFixed(0);
-        //         left = getActive(canvas)[0].left.toFixed(0);
-        //         width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-        //         height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
+                    if (getActive(canvas).length > 1) {
+                        isGroup = true;
+                        //@ts-ignore
+                    } else if (getActive(canvas)[0].isComponent) {
+                        isComponent = true;
+                    } else if (
+                        getActive(canvas).length === 1 &&
+                        // @ts-ignore
+                        getActive(canvas)[0]._objects !== undefined &&
+                        // @ts-ignore
+                        getActive(canvas)[0]._objects.length > 0
+                    ) {
+                        isGroup = true;
+                    } else {
+                        material =
+                            //@ts-ignore
+                            getActive(canvas)[0].material.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].material.slice(1);
 
-        //         text.set({
-        //             text: `${top}, ${left}`,
-        //             top: Number(top) + height + 20,
-        //             left:
-        //                 Number(top) > 999 || Number(left) > 999
-        //                     ? Number(left) + (width / 2 - 35)
-        //                     : Number(top) > 99 || Number(left) > 99
-        //                     ? Number(left) + (width / 2 - 25)
-        //                     : Number(left) + (width / 2 - 15),
-        //             opacity: 1
-        //         });
+                        structureType =
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.slice(1);
+                    }
 
-        //         if (objectInfo) {
-        //             objectInfo.style.display = 'flex';
-        //         }
-        //     });
+                    objectMenu.style.display = 'block';
+                }
+            });
 
-        //     canvas.on('selection:updated', () => {
-        //         top = getActive(canvas)[0].top.toFixed(0);
-        //         left = getActive(canvas)[0].left.toFixed(0);
-        //         width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-        //         height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
+            canvas.on('selection:updated', () => {
+                if (getActive(canvas).length > 0) {
+                    width =
+                        Math.round(getActive(canvas)[0].width * getActive(canvas)[0].scaleX) / 100;
+                    height =
+                        Math.round(getActive(canvas)[0].height * getActive(canvas)[0].scaleY) / 100;
 
-        //         text.set({
-        //             text: `${top}, ${left}`,
-        //             top: Number(top) + height + 20,
-        //             left:
-        //                 Number(top) > 999 || Number(left) > 999
-        //                     ? Number(left) + (width / 2 - 35)
-        //                     : Number(top) > 99 || Number(left) > 99
-        //                     ? Number(left) + (width / 2 - 25)
-        //                     : Number(left) + (width / 2 - 15),
-        //             opacity: 1
-        //         });
-        //     });
+                    isComponent = false;
+                    isGroup = false;
 
-        //     canvas.on('selection:cleared', () => {
-        //         if (objectInfo) {
-        //             objectInfo.style.display = 'none';
-        //         }
+                    if (getActive(canvas).length > 1) {
+                        isGroup = true;
+                    } //@ts-ignore
+                    else if (getActive(canvas)[0].isComponent) {
+                        isComponent = true;
+                    } else {
+                        material =
+                            //@ts-ignore
+                            getActive(canvas)[0].material.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].material.slice(1);
 
-        //         text.set({
-        //             opacity: 0
-        //         });
-        //     });
+                        structureType =
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.slice(1);
+                    }
 
-        //     canvas.on('mouse:move', () => {
-        //         if (getActive(canvas).length > 0) {
-        //             top = getActive(canvas)[0].top.toFixed(0);
-        //             left = getActive(canvas)[0].left.toFixed(0);
-        //             width =
-        //                 getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-        //             height =
-        //                 getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
+                    objectMenu.style.display = 'block';
+                }
+            });
 
-        //             if (text) {
-        //                 text.set({
-        //                     text: `${top}, ${left}`,
-        //                     top: Number(top) + height + 20,
-        //                     left:
-        //                         Number(top) > 999 || Number(left) > 999
-        //                             ? Number(left) + (width / 2 - 35)
-        //                             : Number(top) > 99 || Number(left) > 99
-        //                             ? Number(left) + (width / 2 - 25)
-        //                             : Number(left) + (width / 2 - 15),
-        //                     opacity: 1
-        //                 });
-        //             }
-        //         }
-        //     });
-        // });
+            canvas.on('selection:cleared', () => {
+                isComponent = false;
+                isGroup = false;
 
-        // addEventListener('mousemove', () => {
-        // //     if (getActive(canvas).length > 0) {
-        // //         top = getActive(canvas)[0].top.toFixed(0);
-        // //         left = getActive(canvas)[0].left.toFixed(0);
-        // //         width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-        // //         height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
-
-        // //         if (text) {
-        // //             text.set({
-        // //                 text: `${top}, ${left}`,
-        // //                 top: Number(top) + height + 20,
-        // //                 left:
-        // //                     Number(top) > 999 || Number(left) > 999
-        // //                         ? Number(left) + (width / 2 - 35)
-        // //                         : Number(top) > 99 || Number(left) > 99
-        // //                         ? Number(left) + (width / 2 - 25)
-        // //                         : Number(left) + (width / 2 - 15),
-        // //                 opacity: 1
-        // //             });
-        // //         }
-        // //     }
-        // // });
+                objectMenu.style.display = 'none';
+            });
+        }
     });
 </script>
+
+<section
+    class="absolute z-50 w-40 bg-secondary text-center text-white text-sm font-semibold rounded-lg right-0 mr-4 py-2 mt-4"
+    bind:this={objectMenu}
+>
+    <h1>
+        {!isGroup ? `${width}m, ${height}m` : ''}
+    </h1>
+    <h1>
+        {isComponent ? 'Componente' : isGroup ? 'Grupo' : `Material: ${material}`}
+    </h1>
+    <h1>
+        {!isComponent && !isGroup ? `Estrutura: ${structureType}` : ''}
+    </h1>
+</section>

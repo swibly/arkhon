@@ -1,10 +1,16 @@
-import { PencilBrush, Point, Path, type Canvas, FabricObject } from 'fabric';
+import { PencilBrush, Point, Path, type Canvas, type FabricObject } from 'fabric';
 import { add } from './objects';
 
 export function centerView(canvas: Canvas, width: number, height: number): void {
-    canvas.setZoom(0.7);
-
-    canvas.absolutePan(new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2));
+    if (innerWidth < 1280) {
+        canvas.setZoom(0.4);
+        canvas.absolutePan(new Point(0, 0));
+    } else {
+        canvas.setZoom(0.7);
+        canvas.absolutePan(
+            new Point(-canvas.width / 2 + width / 2, -canvas.height / 2 + height / 2)
+        );
+    }
 }
 
 export function renderAll(canvas: Canvas): void {
@@ -61,18 +67,18 @@ export function drawGrid(canvas: Canvas, grid: number, width: number, height: nu
 export function resize(canvas: Canvas, width: number, height: number, isAllowed: boolean) {
     if (width >= 1536) {
         canvas.setDimensions({
-            width: (isAllowed ? width - width / 5 : width),
-            height: height - 85
+            width: isAllowed ? width - 290 : width,
+            height: height - 90
         });
     } else if (width >= 1280) {
         canvas.setDimensions({
-            width: (isAllowed ? width - width / 4 : width),
-            height: height - (height / 100) * 5.5
+            width: isAllowed ? width - 256 : width,
+            height: height - 90
         });
     } else {
         canvas.setDimensions({
             width: width,
-            height: height - (height / 100) * 5.5
+            height: height - 90
         });
     }
 }
@@ -88,15 +94,15 @@ export function toPNG(
     viewportWidth: number,
     viewportHeight: number
 ) {
-    centerView(canvas, width, height);
+    canvas.absolutePan(new Point(0, 0));
 
     let dataURL = canvas.toDataURL({
         multiplier: 1,
         format: 'png',
-        top: -height / 2,
-        left: -width / 2,
-        width: width,
-        height: height
+        top: 0,
+        left: 0,
+        width: width - (width / 3 - 100),
+        height: height - (height / 3 - 100)
     });
 
     canvas.viewportTransform[4] = viewportWidth;
@@ -108,4 +114,48 @@ export function toPNG(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+export function toJPEG(
+    canvas: Canvas,
+    width: number,
+    height: number,
+    viewportWidth: number,
+    viewportHeight: number
+) {
+    canvas.absolutePan(new Point(0, 0));
+
+    let dataURL = canvas.toDataURL({
+        multiplier: 1,
+        quality: 1,
+        format: 'jpeg',
+        top: 0,
+        left: 0,
+        width: width - (width / 3 - 100),
+        height: height - (height / 3 - 100)
+    });
+
+    canvas.viewportTransform[4] = viewportWidth;
+    canvas.viewportTransform[5] = viewportHeight;
+
+    const link = document.createElement('a');
+    link.download = 'canvas.jpg';
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+export function toSVG(canvas: Canvas) {
+    canvas.absolutePan(new Point(0, 0));
+
+    let svg = canvas.toSVG();
+
+    const textArea = document.createElement('textarea');
+    textArea.value = svg;
+
+    document.body.appendChild(textArea);
+    textArea.select();
+    navigator.clipboard.writeText(textArea.value);
+    document.body.removeChild(textArea);
 }
