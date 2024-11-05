@@ -6,7 +6,12 @@ import {
     getAllUserComponents,
     getPublicComponents,
     createComponent,
-    editComponent
+    editComponent,
+    getComponentInfo,
+    putComponentinTrash,
+    getAllComponentsinTrash,
+    buyComponent,
+    publishComponent
 } from '$lib/component';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { getUserByToken } from '$lib/user';
@@ -46,7 +51,7 @@ export const actions: Actions = {
         const content = data.get('content');
         const budget = data.get('price');
         const arkhoins = data.get('arkhoins');
-        const isPublic = data.get('isPublic');
+        const isPublic = String(data.get('isPublic')) === 'false' ? false : true;
 
         const json = {
             Name: String(name),
@@ -56,36 +61,46 @@ export const actions: Actions = {
             Budget: Number(budget)
         };
 
-        await createComponent(jwt, json, Boolean(isPublic));
+        await createComponent(jwt, json, isPublic);
+
         let components = await getAllUserComponents(jwt, String(user?.username), '1');
         let allComponents = await getAllUserComponents(
             jwt,
             String(user?.username),
             components.total_pages
         );
+
+        let lastComponent = allComponents.data[(allComponents.total_records % 10) - 1];
+
         return {
-            lastComponent: allComponents.data[(allComponents.total_records % 10) - 1]
+            lastComponent: lastComponent
         };
     },
 
-    edit: async function ({ cookies, request }) {
+    edit: async function ({ cookies, request, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         let data = await request.formData();
-        let name = data.get('name');
-        let description = data.get('description');
+        let canvas = data.get('json');
+        let id = Number(data.get('id'));
+        let name = String(data.get('newName'));
+        let description = String(data.get('newDescription'));
         let content = JSON.parse(JSON.stringify(data.get('content')));
-        let budget = data.get('price');
-        let arkhoins = data.get('arkhoins');        
+        let budget = Number(data.get('newPrice'));
+        let arkhoins = Number(data.get('newArkhoins'));
+        let isPublic = String(data.get('newPublic')) === 'false' ? false : true;
 
         const json = {
-            Name: String(name),
-            Description: String(description),
-            Content: JSON.parse(JSON.stringify(content)),
-            Price: Number(arkhoins),
-            Budget: Number(budget)
+            Name: name,
+            Description: description,
+            Content: content,
+            Price: arkhoins,
+            Budget: budget,
+            Public: isPublic
         };
 
-        // editComponent();
+        await editComponent(jwt, json, id);
+
+        await saveProjectContent(jwt, parseInt(params.project), JSON.parse(String(canvas)));
     },
 
     get: async function ({ cookies, request }) {
@@ -104,13 +119,38 @@ export const actions: Actions = {
         };
     },
 
-    reset: async function ({ cookies, request }) {
+    reset: async function ({ cookies }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
         let user = await getUserByToken(jwt);
 
         return {
             component: await getPublicComponents(jwt, '1'),
             allOwnedComponents: await getAllUserComponents(jwt, String(user?.username), '1')
+        };
+    },
+
+    delete: async function ({ cookies, request }) {
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        const data = await request.formData();
+        const id = data.get('id');
+
+        await putComponentinTrash(jwt, Number(id));
+
+        return {
+            trash: await getAllComponentsinTrash(jwt)
+        };
+    },
+
+    buy: async function ({ cookies, request }) {
+        const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
+        let user = await getUserByToken(jwt);
+        const data = await request.formData();
+        const id = data.get('id');
+
+        await buyComponent(jwt, Number(id));
+
+        return {
+            usersComponent: await getAllUserComponents(jwt, String(user?.username), '4')
         };
     }
 };

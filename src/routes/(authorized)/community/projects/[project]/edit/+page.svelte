@@ -1,6 +1,6 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
         drawGrid,
@@ -27,15 +27,16 @@
         verifyObject
     } from '$lib/editor/objects';
     import RightMenu from '$lib/components/RightMenu.svelte';
-    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
-    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
     import ProjectTab from '$lib/components/ProjectTab.svelte';
     import type { PageServerData } from './$types';
     import type { User } from '$lib/user';
     import type { Project } from '$lib/projects';
     import type { Component } from '$lib/component';
     import ComponentCard from '$lib/components/ComponentCard.svelte';
-    import ComponentPagination from '$lib/components/ComponentPagination.svelte';    
+    import ComponentPagination from '$lib/components/ComponentPagination.svelte';
+    import ObjectMenu from '$lib/components/ObjectMenu.svelte';
+    import type { Pagination } from '$lib/utils';
+    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -54,8 +55,16 @@
     let circle: FabricObject;
     let loadCount: number = 0;
     let asideObjects: Array<FabricObject> = [];
-    let allComponents: Array<Component>;
-    let ownedComponents: Array<Component>;
+    let allComponents: Pagination<Component>;
+    let ownedComponents: Pagination<Component>;
+
+    let redoStack: Array<object> = [];
+    let undoStack: Array<object> = [];
+
+    let isTexting: boolean = false;
+    let isAllowed: boolean;
+    let modalOpen: boolean;
+
     const quadSize = {
         w: data.project.width * 100,
         h: data.project.height * 100
@@ -63,41 +72,41 @@
 
     function setActiveButton(value: String) {
         activeButton = value;
-    }    
+    }
 
-    $: console.log(data.allOwnedComponents);
+    onMount(() => {
+        if (data.project.owner_username === data.user.username) {
+            isAllowed = true;
+        } else {
+            if (data.project.allowed_users.length === 0) {
+                isAllowed = false;
+            } else {
+                data.project.allowed_users.forEach((user) => {
+                    if (user.username === data.user.username && user.allow_edit) {
+                        isAllowed = true;
+                    } else {
+                        isAllowed = false;
+                    }
+                });
+            }
+        }
 
-    onMount(function () {
-        allComponents = data.component.data;
-        ownedComponents = data.allOwnedComponents.data;
+        allComponents = data.component;
+        ownedComponents = data.allOwnedComponents;
+
+        // console.log('Owned', data.allOwnedComponents);
+        // console.log("All", allComponents.data.filter((component) => component.owner_username !== data.user.username && !component.bought))
 
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
         });
 
-        loadCanvas(fabric, data.content);
+        if (data.content) {
+            loadCanvas(fabric, data.content);
+        }
 
-        rect = new Rect({
-            width: 100,
-            height: 100,
-            top: quadSize.h / 2 - 50,
-            left: quadSize.w / 2 - 50,
-            fill: 'white',
-            opacity: 0,
-            selectable: false
-        });
-
-        circle = new Circle({
-            radius: 60,
-            top: quadSize.h / 2 - 50,
-            left: quadSize.w / 2 - 50,
-            fill: 'white',
-            opacity: 0,
-            selectable: false
-        });
-
-        resize(fabric, innerWidth, innerHeight);
+        resize(fabric, innerWidth, innerHeight, isAllowed);
         centerView(fabric, quadSize.w, quadSize.h);
 
         fabric.on('after:render', () => {
@@ -106,7 +115,7 @@
             if (fabric.getObjects().length !== asideObjects.length) {
                 asideObjects = [];
 
-                let items = fabric.getObjects();
+                let items = fabric.getObjects().slice(3);
 
                 for (const obj of items) {
                     asideObjects.push(obj);
@@ -114,6 +123,25 @@
             }
 
             if (loadCount === 1) {
+                rect = new Rect({
+                    width: 100,
+                    height: 100,
+                    top: quadSize.h / 2 - 50,
+                    left: quadSize.w / 2 - 50,
+                    fill: 'white',
+                    opacity: 0,
+                    selectable: false
+                });
+
+                circle = new Circle({
+                    radius: 60,
+                    top: quadSize.h / 2 - 50,
+                    left: quadSize.w / 2 - 50,
+                    fill: 'white',
+                    opacity: 0,
+                    selectable: false
+                });
+
                 drawGrid(fabric, 100, quadSize.w, quadSize.h);
 
                 fabric.add(rect);
@@ -124,19 +152,25 @@
 
                 rect.excludeFromExport = true;
                 circle.excludeFromExport = true;
+
+                if (!isAllowed) {
+                    fabric.selection = false;
+                    fabric.skipTargetFind = true;
+                    fabric.forEachObject((obj) => {
+                        obj.selectable = false;
+                        obj.evented = false;
+                    });
+                }
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {            
+        fabric.on('mouse:down', function ({ e }) {
             if (fabric.getActiveObject()) {
                 mode = 'select';
 
                 resetOpacity(fabric, rect);
                 resetOpacity(fabric, circle);
             }
-
-            console.log("Page owned", data.allOwnedComponents);
-            console.log("Page all", data.component);
 
             if (e.altKey) {
                 fabric.isDrawingMode = false;
@@ -248,6 +282,27 @@
             e.stopPropagation();
         });
 
+        addEventListener('touchstart', (e) => {
+            fabric.isDrawingMode = false;
+            mode = 'select';
+
+            lastPosX = fabric.getViewportPoint(e).x;
+            lastPosY = fabric.getViewportPoint(e).y;
+
+            fabric.selection = false;
+            fabric.isDrawingMode = false;
+        });
+
+        addEventListener('touchmove', (e) => {
+            let vpt = fabric.viewportTransform;
+
+            vpt[4] += fabric.getViewportPoint(e).x - lastPosX;
+            vpt[5] += fabric.getViewportPoint(e).y - lastPosY;
+            fabric.requestRenderAll();
+            lastPosX = fabric.getViewportPoint(e).x;
+            lastPosY = fabric.getViewportPoint(e).y;
+        });
+
         fabric.on('object:rotating', function ({ e, target }) {
             target.snapAngle = ~~e.shiftKey * 15;
         });
@@ -259,7 +314,17 @@
             }
         });
 
+        fabric.on('object:added', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
+            }
+        });
+
         fabric.on('object:modified', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
+            }
+
             if (fabric.getActiveObject()!.type === 'i-text') {
                 asideObjects = [];
 
@@ -271,8 +336,25 @@
             }
         });
 
+        fabric.on('object:removed', () => {
+            if (loadCount > 1) {
+                saveState(fabric);
+            }
+        });
+
+        fabric.on('text:editing:entered', () => {
+            isTexting = true;
+        });
+
+        fabric.on('text:editing:exited', () => {
+            isTexting = false;
+        });
+
         addEventListener('resize', function () {
-            resize(fabric, innerWidth, innerHeight);
+            resize(fabric, innerWidth, innerHeight, isAllowed);
+            if (innerWidth < 1280) {
+                isAllowed = true;
+            }
         });
 
         addEventListener('keydown', async (e) => {
@@ -286,168 +368,250 @@
                 mode = 'select';
             }
 
-            if (e.key == 'Delete') {
-                removeGroup(fabric, ...getActive(fabric));
-                remove(fabric, ...getActive(fabric));
-                renderAll(fabric);
-            }
-
-            if (e.ctrlKey && e.key == 'x') {
-                e.preventDefault();
-
-                if (fabric.getActiveObject()) {
-                    _clipboard = await copy(fabric);
-                    copiedObjects = getActive(fabric);
-                }
-
-                removeGroup(fabric, ...getActive(fabric));
-                remove(fabric, ...getActive(fabric));
-                renderAll(fabric);
-            }
-
-            if (e.ctrlKey && e.key == 'a') {
-                e.preventDefault();
-
-                fabric.discardActiveObject();
-                var sel = new ActiveSelection(
-                    fabric.getObjects().filter((e) => e.selectable),
-                    {
-                        canvas: fabric
-                    }
-                );
-                fabric.setActiveObject(sel);
-                fabric.renderAll();
-            }
-
-            if (e.ctrlKey && e.key == 'c') {
-                if (fabric.getActiveObject()) {
-                    _clipboard = await copy(fabric);
-                    copiedObjects = getActive(fabric);
-                }
-            }
-
-            if (e.ctrlKey && e.key == 'v') {
-                paste(fabric, _clipboard, copiedObjects);
-            }
-
-            if (e.ctrlKey && e.key == 'd') {
-                e.preventDefault();
-
-                let objs = fabric.getActiveObjects();
-
-                for (const obj of objs) {
-                    let clonedObj = await obj.clone();
-
-                    fabric.discardActiveObject();
-                    clonedObj.set({
-                        left: obj.left + 10,
-                        top: obj.top + 10
-                    });
-
-                    fabric.add(clonedObj);
-                    fabric.setActiveObject(clonedObj);
-                    fabric.requestRenderAll();
-                }
-            }
-
             if (
                 (getActive(fabric).length === 1 && getActive(fabric)[0].type !== 'i-text') ||
-                getActive(fabric).length !== 1
+                (!isTexting && isAllowed)
             ) {
-                if (e.key === 'p') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    startDraw(fabric);
-                    if (mode !== 'paint') {
-                        mode = 'paint';
-                    } else {
-                        stopDraw(fabric);
-                        mode = 'select';
+                if (!modalOpen) {
+                    if (e.key == 'Delete') {
+                        removeGroup(fabric, ...getActive(fabric));
+                        remove(fabric, ...getActive(fabric));
+                        renderAll(fabric);
                     }
-                }
 
-                if (e.key == 's') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
+                    if (e.ctrlKey && e.key == 'x') {
+                        e.preventDefault();
 
-                    mode = 'select';
+                        if (fabric.getActiveObject()) {
+                            _clipboard = await copy(fabric);
+                            copiedObjects = getActive(fabric);
 
-                    fabric.renderAll();
-                }
+                            getActive(fabric).forEach((item) => {
+                                // @ts-ignore
+                                if (item.objects !== undefined) {
+                                    removeGroup(fabric, item);
+                                } else {
+                                    remove(fabric, ...getActive(fabric));
+                                }
+                            });
+                        }
 
-                if (e.key == 't') {
-                    resetOpacity(fabric, rect);
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
-
-                    if (mode !== 'text') {
-                        mode = 'text';
-                    } else {
-                        mode = 'select';
+                        renderAll(fabric);
                     }
-                }
 
-                if (e.key == 'q') {
-                    resetOpacity(fabric, circle);
-                    stopLine(fabric);
-                    stopDraw(fabric);
+                    if (e.ctrlKey && e.key == 'a') {
+                        e.preventDefault();
 
-                    if (mode !== 'rect') {
-                        mode = 'rect';
-                    } else {
-                        mode = 'select';
+                        fabric.discardActiveObject();
+                        var sel = new ActiveSelection(
+                            fabric.getObjects().filter((e) => e.selectable),
+                            {
+                                canvas: fabric
+                            }
+                        );
+                        fabric.setActiveObject(sel);
+                        fabric.renderAll();
+                    }
+
+                    if (e.ctrlKey && e.key == 'c' && !isTexting) {
+                        if (fabric.getActiveObject()) {
+                            _clipboard = await copy(fabric);
+                            copiedObjects = getActive(fabric);
+                        }
+                    }
+
+                    if (e.ctrlKey && e.key == 'v' && !isTexting) {
+                        if (_clipboard !== undefined && copiedObjects !== undefined) {
+                            paste(fabric, _clipboard, copiedObjects);
+                        }
+                    }
+
+                    if (e.ctrlKey && e.key == 'd') {
+                        e.preventDefault();
+
+                        let objs = fabric.getActiveObjects();
+
+                        for (const obj of objs) {
+                            let clonedObj = await obj.clone();
+
+                            fabric.discardActiveObject();
+                            clonedObj.set({
+                                left: obj.left + 10,
+                                top: obj.top + 10
+                            });
+
+                            fabric.add(clonedObj);
+                            fabric.setActiveObject(clonedObj);
+                            fabric.requestRenderAll();
+                        }
+                    }
+
+                    if (e.ctrlKey && e.key == 'z') {
+                        e.preventDefault();
+
+                        undo(fabric);
+                    }
+
+                    if (e.ctrlKey && e.key == 'y') {
+                        e.preventDefault();
+
+                        redo(fabric);
+                    }
+
+                    if (e.key === 'p') {
                         resetOpacity(fabric, rect);
-                    }
-                }
-
-                if (!e.ctrlKey && e.key == 'c') {
-                    resetOpacity(fabric, rect);
-                    stopLine(fabric);
-                    stopDraw(fabric);
-
-                    if (mode !== 'circle') {
-                        mode = 'circle';
-                    } else {
-                        mode = 'select';
                         resetOpacity(fabric, circle);
-                    }
-                }
-
-                if (e.key == 'l') {
-                    resetOpacity(fabric, circle);
-                    resetOpacity(fabric, rect);
-                    stopDraw(fabric);
-
-                    if (mode !== 'line') {
-                        mode = 'line';
-                    } else {
-                        mode = 'select';
                         stopLine(fabric);
+                        startDraw(fabric);
+                        if (mode !== 'paint') {
+                            mode = 'paint';
+                        } else {
+                            stopDraw(fabric);
+                            mode = 'select';
+                        }
                     }
-                }
 
-                if (mode === 'line') {
-                    if (e.key == 'd') {
-                        addLine(fabric);
+                    if (e.key == 's') {
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
                         stopLine(fabric);
+                        stopDraw(fabric);
 
                         mode = 'select';
+
+                        fabric.renderAll();
                     }
 
-                    fabric.renderAll();
+                    if (e.key == 't') {
+                        resetOpacity(fabric, rect);
+                        resetOpacity(fabric, circle);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'text') {
+                            mode = 'text';
+                        } else {
+                            mode = 'select';
+                        }
+                    }
+
+                    if (e.key == 'q') {
+                        resetOpacity(fabric, circle);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'rect') {
+                            mode = 'rect';
+                        } else {
+                            mode = 'select';
+                            resetOpacity(fabric, rect);
+                        }
+                    }
+
+                    if (!e.ctrlKey && e.key == 'c') {
+                        resetOpacity(fabric, rect);
+                        stopLine(fabric);
+                        stopDraw(fabric);
+
+                        if (mode !== 'circle') {
+                            mode = 'circle';
+                        } else {
+                            mode = 'select';
+                            resetOpacity(fabric, circle);
+                        }
+                    }
+
+                    if (e.key == 'l') {
+                        resetOpacity(fabric, circle);
+                        resetOpacity(fabric, rect);
+                        stopDraw(fabric);
+
+                        if (mode !== 'line') {
+                            mode = 'line';
+                        } else {
+                            mode = 'select';
+                            stopLine(fabric);
+                        }
+                    }
+
+                    if (mode === 'line') {
+                        if (e.key == 'd') {
+                            addLine(fabric);
+                            stopLine(fabric);
+
+                            mode = 'select';
+                        }
+
+                        fabric.renderAll();
+                    }
                 }
             }
         });
     });
+
+    function saveState(canvas: Canvas) {
+        redoStack = [];
+        undoStack.push(
+            canvas.toObject([
+                'name',
+                'price',
+                'isComponent',
+                'isPublic',
+                'description',
+                'id',
+                'arkhoins',
+                'material',
+                'structureType',
+                'owner'
+            ])
+        );
+    }
+
+    function undo(canvas: Canvas) {
+        let lastState;
+        let prevState;
+
+        if (undoStack.length > 0) {
+            if (undoStack.length > 1) {
+                lastState = undoStack[undoStack.length - 2];
+                prevState = undoStack.pop();
+
+                if (prevState !== undefined) {
+                    redoStack.push(prevState);
+                }
+            } else {
+                lastState = data.content;
+                prevState = undoStack.pop();
+
+                if (prevState !== undefined) {
+                    redoStack.push(prevState);
+                }
+            }
+
+            loadCanvas(canvas, lastState);
+            canvas.requestRenderAll();
+            loadCount = 0;
+        }
+    }
+
+    function redo(canvas: Canvas) {
+        let lastState;
+
+        if (redoStack.length > 0) {
+            lastState = redoStack[redoStack.length - 1];
+            redoStack.pop();
+
+            undoStack.push(lastState);
+            loadCanvas(canvas, lastState);
+            canvas.requestRenderAll();
+            loadCount = 0;
+        }
+    }
 </script>
 
-<main class="flex h-full">
-    <aside class="w-0 xl:w-1/4 2xl:w-1/5 bg-base-100 scrollbar-thin">
-        <nav class="text-center mt-4 grid grid-cols-3 place-items-center gap-2">
+<main class="flex h-[90vh] -m-4 overflow-hidden">
+    <aside class={`${isAllowed ? 'block' : 'hidden'} w-0 xl:w-64 2xl:w-72 bg-base-100`}>
+        <nav class="text-center mt-4 hidden xl:grid grid-cols-3 place-items-center gap-2">
             <button
                 class={`text-sm sm:text-base transition duration-150 ease-in-out ${
                     activeButton === 'project'
@@ -482,67 +646,46 @@
             </button>
         </nav>
         <div class="divider" />
-        <main>
+        <main class="w-full h-full overflow-y-auto">
             {#if activeButton == 'project'}
-                <details class="dropdown w-full">
-                    <summary
-                        class="text-white btn w-full bg-secondary hover:bg-base-300 hover:border hover:border-secondary rounded-none"
-                        >Andar 1</summary
-                    >
-                    <div
-                        class="p-2 shadow menu dropdown-content z-[1] bg-base-300 w-full border-2 border-secondary"
-                    >
-                        <button class="flex items-center gap-4 btn bg-base-300 border-0"
-                            ><Icon icon="typcn:plus" font-size="20px" /> Adicionar mais um andar</button
-                        >
-                    </div>
-                </details>
-
-                <div class="divider" />
-
                 <main class="flex flex-col justify-center mx-8 mt-4">
                     <h1 class="text-xl font-bold text-center">Objetos</h1>
                     <section class="mt-4 mx-4 w-5/6">
-                        {#if asideObjects.length > 4}
-                            {#each asideObjects as object, index (object)}
-                                {#if index > 3}
-                                    {#if verifyObject(object).isComponent}
-                                        <p class="flex items-center gap-4">
-                                            <Icon
-                                                icon="iconamoon:component-fill"
-                                                font-size="15px"
-                                            />
-                                            {verifyObject(object).name}
+                        {#if asideObjects.length > 0}
+                            {#each asideObjects as object}
+                                {#if verifyObject(object).isComponent}
+                                    <p class="flex items-center gap-4 text-primary">
+                                        <Icon icon="iconamoon:component-fill" font-size="15px" />
+                                        {verifyObject(object).name}
+                                    </p>
+                                {:else if object.type === 'rect'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
+                                    </p>
+                                {:else if object.type === 'circle'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon
+                                            icon="material-symbols:circle"
+                                            font-size="15px"
+                                        />Círculo
+                                    </p>
+                                {:else if object.type === 'path'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="ri:brush-fill" font-size="15px" />Desenho
+                                    </p>
+                                {:else if object.type === 'i-text'}
+                                    <article class="flex items-center gap-4">
+                                        <Icon icon="solar:text-bold" font-size="15px" />
+                                        <p
+                                            class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                                        >
+                                            {verifyObject(object).text}
                                         </p>
-                                    {:else if object.type === 'rect'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="bi:square-fill" font-size="15px" /> Retângulo
-                                        </p>
-                                    {:else if object.type === 'circle'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon
-                                                icon="material-symbols:circle"
-                                                font-size="15px"
-                                            />Círculo
-                                        </p>
-                                    {:else if object.type === 'path'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="ri:brush-fill" font-size="15px" />Desenho
-                                        </p>
-                                    {:else if object.type === 'i-text'}
-                                        <article class="flex items-center gap-4">
-                                            <Icon icon="solar:text-bold" font-size="15px" />
-                                            <p
-                                                class="overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                                            >
-                                                {verifyObject(object).text}
-                                            </p>
-                                        </article>
-                                    {:else if object.type === 'polygon'}
-                                        <p class="flex items-center gap-4">
-                                            <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
-                                        </p>
-                                    {/if}
+                                    </article>
+                                {:else if object.type === 'polygon'}
+                                    <p class="flex items-center gap-4">
+                                        <Icon icon="vaadin:line-h" font-size="15px" /> Polígono
+                                    </p>
                                 {/if}
                             {/each}
                         {:else}
@@ -558,22 +701,20 @@
                     <ComponentPagination
                         bind:allComponents
                         bind:ownedComponents
-                        pagination={{
-                            data: ownedComponents,
-                            total_records: data.component.total_records,
-                            total_pages: data.component.total_pages,
-                            current_page: data.component.current_page,
-                            next_page: data.component.next_page,
-                            previous_page: data.component.previous_page
-                        }}
-                        data={data.project}
+                        {data}
                         componentData={data.allOwnedComponents}
                         type={'owned'}
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
-                        {#each ownedComponents as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} />
+                        {#each ownedComponents.data as component, index (component)}
+                            <ComponentCard
+                                componentInfo={component}
+                                type="component"
+                                canvas={fabric}
+                                data={data.project}
+                                user={data.user}
+                            />
                         {/each}
                     </section>
                 </main>
@@ -583,26 +724,20 @@
                     <ComponentPagination
                         bind:allComponents
                         bind:ownedComponents
-                        pagination={{
-                            data: allComponents.filter(
-                                (component) =>
-                                    component.owner_username !== data.user.username &&
-                                    !component.bought
-                            ),
-                            total_records: data.component.total_records,
-                            total_pages: data.component.total_pages,
-                            current_page: data.component.current_page,
-                            next_page: data.component.next_page,
-                            previous_page: data.component.previous_page
-                        }}
-                        data={data.project}
+                        {data}
                         componentData={data.component}
                         type={'store'}
                     />
 
                     <section class="grid grid-cols-2 place-items-center gap-3">
-                        {#each allComponents.filter((component) => component.owner_username !== data.user.username && !component.bought) as component, index (component)}
-                            <ComponentCard name={component.name} content={component.content} />
+                        {#each allComponents.data as component, index (component)}
+                            <ComponentCard
+                                componentInfo={component}
+                                type="store"
+                                canvas={fabric}
+                                data={data.project}
+                                user={data.user}
+                            />
                         {/each}
                     </section>
                 </main>
@@ -610,10 +745,16 @@
         </main>
     </aside>
 
-    <main class="w-full xl:w-3/4 2xl:w-4/5">
+    <main class={`${isAllowed ? 'w-full xl:w-3/4 2xl:w-4/5' : 'w-full'}`}>
         <ObjectMenu canvas={fabric} />
         <ObjectInfo canvas={fabric} />
-        <RightMenu canvas={fabric} data={data.project} />
+        <RightMenu
+            bind:modalOpen
+            canvas={fabric}
+            data={data.project}
+            {isAllowed}
+            user={data.user}
+        />
         <ProjectTab
             bind:mode
             canvas={fabric}
@@ -621,6 +762,7 @@
             height={quadSize.h}
             cursors={[rect, circle]}
             data={data.project}
+            {isAllowed}
         />
         <canvas bind:this={canvas} />
     </main>

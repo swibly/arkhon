@@ -1,119 +1,123 @@
 <script lang="ts">
     import { getActive } from '$lib/editor/objects';
-    import { IText, type Canvas, type FabricObject } from 'fabric';
-    import { onMount } from 'svelte';
-
-    let objectInfo: HTMLElement;
-    let top: string;
-    let left: string;
-    let width: number;
-    let height: number;
-    let text: FabricObject;
+    import { type Canvas } from 'fabric';
+    import { onMount, tick } from 'svelte';
 
     export let canvas: Canvas;
 
-    onMount(() => {
-        addEventListener('load', () => {
-            text = new IText('', {
-                width: 50,
-                height: 50,
-                fill: null,
-                stroke: '#0175AF',
-                strokeWidth: 2,
-                strokeUniform: true,
-                lockSkewingX: true,
-                lockSkewingY: true,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockRotation: true,
-                lockScalingFlip: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                selectable: false,
-                fontFamily: 'sans-serif',
-                fontSize: 14,
-                opacity: 0,
-                textAlign: 'center',                                
+    let objectMenu: HTMLElement;
+    let width: number;
+    let height: number;
+    let isComponent: boolean;
+    let isGroup: boolean;
+    let material: string;
+    let structureType: string;
+
+    onMount(async () => {
+        objectMenu.style.display = 'none';
+
+        await tick();
+
+        if (canvas) {
+            canvas.on('object:modified', () => {
+                console.log('A');
             });
 
-            canvas.add(text);
-
-            canvas.moveObjectTo(text, 3);
-
-            text.excludeFromExport = true;
-
             canvas.on('selection:created', () => {
-                top = getActive(canvas)[0].top.toFixed(0);
-                left = getActive(canvas)[0].left.toFixed(0);
-                width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-                height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
+                if (getActive(canvas).length > 0) {
+                    width =
+                        Math.round(getActive(canvas)[0].width * getActive(canvas)[0].scaleX) / 100;
+                    height =
+                        Math.round(getActive(canvas)[0].height * getActive(canvas)[0].scaleY) / 100;
 
-                text.set({
-                    text: `${top}, ${left}`,
-                    top: Number(top) + height + 20,
-                    left:
-                        Number(top) > 999 || Number(left) > 999
-                            ? Number(left) + (width / 2 - 35)
-                            : Number(top) > 99 || Number(left) > 99
-                            ? Number(left) + (width / 2 - 25)
-                            : Number(left) + (width / 2 - 15),
-                    opacity: 1
-                });
+                    isComponent = false;
+                    isGroup = false;
 
-                if (objectInfo) {
-                    objectInfo.style.display = 'flex';
+                    if (getActive(canvas).length > 1) {
+                        isGroup = true;
+                        //@ts-ignore
+                    } else if (getActive(canvas)[0].isComponent) {
+                        isComponent = true;
+                    } else if (
+                        getActive(canvas).length === 1 &&
+                        // @ts-ignore
+                        getActive(canvas)[0]._objects !== undefined &&
+                        // @ts-ignore
+                        getActive(canvas)[0]._objects.length > 0
+                    ) {
+                        isGroup = true;
+                    } else {
+                        material =
+                            //@ts-ignore
+                            getActive(canvas)[0].material.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].material.slice(1);
+
+                        structureType =
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.slice(1);
+                    }
+
+                    objectMenu.style.display = 'block';
                 }
             });
 
             canvas.on('selection:updated', () => {
-                top = getActive(canvas)[0].top.toFixed(0);
-                left = getActive(canvas)[0].left.toFixed(0);
-                width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-                height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
+                if (getActive(canvas).length > 0) {
+                    width =
+                        Math.round(getActive(canvas)[0].width * getActive(canvas)[0].scaleX) / 100;
+                    height =
+                        Math.round(getActive(canvas)[0].height * getActive(canvas)[0].scaleY) / 100;
 
-                text.set({
-                    text: `${top}, ${left}`,
-                    top: Number(top) + height + 20,
-                    left:
-                        Number(top) > 999 || Number(left) > 999
-                            ? Number(left) + (width / 2 - 35)
-                            : Number(top) > 99 || Number(left) > 99
-                            ? Number(left) + (width / 2 - 25)
-                            : Number(left) + (width / 2 - 15),
-                    opacity: 1
-                });                
+                    isComponent = false;
+                    isGroup = false;
+
+                    if (getActive(canvas).length > 1) {
+                        isGroup = true;
+                    } //@ts-ignore
+                    else if (getActive(canvas)[0].isComponent) {
+                        isComponent = true;
+                    } else {
+                        material =
+                            //@ts-ignore
+                            getActive(canvas)[0].material.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].material.slice(1);
+
+                        structureType =
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.charAt(0).toUpperCase() +
+                            //@ts-ignore
+                            getActive(canvas)[0].structureType.slice(1);
+                    }
+
+                    objectMenu.style.display = 'block';
+                }
             });
 
             canvas.on('selection:cleared', () => {
-                if (objectInfo) {
-                    objectInfo.style.display = 'none';
-                }
+                isComponent = false;
+                isGroup = false;
 
-                text.set({
-                    opacity: 0
-                });
+                objectMenu.style.display = 'none';
             });
-        });
-
-        addEventListener('mousemove', () => {
-            if (getActive(canvas).length > 0) {
-                top = getActive(canvas)[0].top.toFixed(0);
-                left = getActive(canvas)[0].left.toFixed(0);
-                width = getActive(canvas)[0].aCoords.br.x - getActive(canvas)[0].aCoords.bl.x - 3;
-                height = getActive(canvas)[0].aCoords.br.y - getActive(canvas)[0].aCoords.tr.y - 3;
-
-                text.set({
-                    text: `${top}, ${left}`,
-                    top: Number(top) + height + 20,
-                    left:
-                        Number(top) > 999 || Number(left) > 999
-                            ? Number(left) + (width / 2 - 35)
-                            : Number(top) > 99 || Number(left) > 99
-                            ? Number(left) + (width / 2 - 25)
-                            : Number(left) + (width / 2 - 15),
-                    opacity: 1
-                });
-            }
-        });
+        }
     });
 </script>
+
+<section
+    class="absolute z-50 w-40 bg-secondary text-center text-white text-sm font-semibold rounded-lg right-0 mr-4 py-2 mt-4"
+    bind:this={objectMenu}
+>
+    <h1>
+        {!isGroup ? `${width}m, ${height}m` : ''}
+    </h1>
+    <h1>
+        {isComponent ? 'Componente' : isGroup ? 'Grupo' : `Material: ${material}`}
+    </h1>
+    <h1>
+        {!isComponent && !isGroup ? `Estrutura: ${structureType}` : ''}
+    </h1>
+</section>
