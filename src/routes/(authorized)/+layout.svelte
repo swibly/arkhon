@@ -24,10 +24,7 @@
         <div class="divider divider-horizontal mx-1 max-sm:hidden" />
 
         <nav class="max-sm:hidden space-x-2">
-            <a
-                href="/profile/{data.user.username}"
-                class="btn btn-sm btn-primary"
-            >
+            <a href="/profile/{data.user.username}" class="btn btn-sm btn-primary">
                 <Icon icon="mdi:user" />
                 Perfil
             </a>
@@ -62,6 +59,16 @@
                         <a href="/notifications">
                             <Icon icon="mdi:bell" />
                             Notificações
+
+                            {#if data.user.unread_notifications > 0}
+                                <p class="badge badge-error badge-outline">
+                                    {#if data.user.unread_notifications > 99}
+                                        +99
+                                    {:else}
+                                        {data.user.unread_notifications}
+                                    {/if}
+                                </p>
+                            {/if}
                         </a>
                     </li>
                 {/if}
