@@ -14,7 +14,9 @@ export const actions: Actions = {
     clone: async function ({ cookies, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;
 
-        await forkProject(jwt, parseInt(params.project));
+        return {
+            ...(await forkProject(jwt, parseInt(params.project)))
+        };
     },
     unlink: async function ({ cookies, params }) {
         const jwt = cookies.get(JWT_TOKEN_COOKIE_NAME)!;

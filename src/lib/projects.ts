@@ -369,13 +369,15 @@ export async function unpublishProject(token: string, projectID: number) {
 
 export async function forkProject(token: string, projectID: number) {
     try {
-        await axios.post(
+        const res = await axios.post(
             `/v1/projects/${projectID}/fork`,
             {},
             {
                 headers: { Authorization: token }
             }
         );
+
+        return res.data as { message: string; project: number };
     } catch (error) {
         console.error(error);
         // TODO: Add error handling

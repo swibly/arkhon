@@ -165,12 +165,15 @@
             use:enhance={async function () {
                 loadingClone = true;
 
-                return ({ update }) => {
+                return ({ result }) => {
                     loadingClone = false;
 
-                    spawn({ message: 'Projeto clonado. Verifique seus projetos!' });
+                    if (result.status === 200) {
+                        spawn({ message: 'Projeto clonado. Verifique seus projetos!' });
 
-                    return update({ reset: false });
+                        // @ts-ignore
+                        goto(`/community/projects/${result.data.project}`);
+                    }
                 };
             }}
         >
