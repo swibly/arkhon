@@ -35,6 +35,7 @@ export type User = {
     language: 'en' | 'pt' | 'ru';
     permissions: string[];
     pfp: string;
+    unread_notifications: number;
 };
 
 export type UserProjectPermissions = {
