@@ -31,16 +31,15 @@
 </svelte:head>
 
 {#if data.error}
-    <main
-        class="w-full min-h-[90dvh] flex flex-col justify-center items-center max-w-xl mx-auto p-4"
-    >
+    <main class="w-full min-h-screen flex flex-col justify-center items-center max-w-xl mx-auto">
         <section class="flex items-center gap-4">
-            <Icon icon="mingcute:sad-line" class="size-48 text-error max-md:size-28" />
+            <Icon icon="mingcute:sad-line" class="size-28 text-error max-md:size-28" />
 
             <div>
                 <p class="text-sm" aria-hidden>Ah, não!</p>
-                <h1 class="text-7xl font-black text-error max-md:text-4xl">Erro 404</h1>
-                <p class="w-full text-end text-sm" aria-hidden>Not Found</p>
+                <h1 class="text-3xl font-black text-error max-md:text-2xl">
+                    Desabilitado ou Inexistente
+                </h1>
             </div>
         </section>
 
@@ -48,7 +47,8 @@
 
         <p class="text-center">
             <span>
-                {data.error}
+                Pode ser que este usuário não exista ou que apenas desabilitou os outros de verem
+                seu perfil.
             </span>
 
             <br />
@@ -64,20 +64,10 @@
             </button>
         </p>
 
-        <div>
-            <a
-                href="/profile/{logged.username}"
-                class="btn btn-primary mt-8 max-sm:btn-sm sm:btn-wide"
-            >
-                <Icon icon="mdi:user" />
-                Ir para meu perfil
-            </a>
-
-            <a href="/home" class="btn btn-secondary mt-8 max-sm:btn-sm sm:btn-wide">
-                <Icon icon="ic:baseline-home" />
-                Página Principal
-            </a>
-        </div>
+        <a href="/home" class="btn btn-primary mt-8 max-sm:btn-sm sm:btn-wide">
+            <Icon icon="ic:baseline-home" />
+            Página Principal
+        </a>
     </main>
 {:else}
     <Profile {logged} {lookup} {isFollowing} {paths} {ghostPath}>
