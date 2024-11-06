@@ -266,7 +266,7 @@ export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>,
         lockSkewingX: true,
         lockSkewingY: true,
         fontFamily: 'sans-serif',
-        editingCursorColor: 'red'
+        cursorColor: `gray`
     });
 
     add(canvas, itext);
