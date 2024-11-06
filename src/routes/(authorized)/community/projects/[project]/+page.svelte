@@ -6,10 +6,13 @@
     import type { User } from '$lib/user';
     import type { LayoutServerData } from './$types';
     import { goto } from '$app/navigation';
+    import Attention from '$lib/components/Attention.svelte';
 
     export let data: LayoutServerData & { user: User };
 
     let leaveDialog: HTMLDialogElement;
+    let cloneDialog: HTMLDialogElement;
+    let unlinkDialog: HTMLDialogElement;
     let loadingFavorite = false;
 
     $: project = data.project;
@@ -130,65 +133,16 @@
 
     <article class="flex items-center justify-center gap-1 my-4">
         {#if project.fork !== null && (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0)}
-            <form
-                method="POST"
-                action="?/unlink"
-                use:enhance={async function () {
-                    loadingUnlink = true;
-
-                    return ({ update }) => {
-                        loadingUnlink = false;
-
-                        spawn({ message: 'Projeto desvinculado do original.' });
-
-                        return update({ reset: false });
-                    };
-                }}
-            >
-                {#if loadingUnlink}
-                    <button type="button" class="btn btn-sm" disabled>
-                        <span class="loading loading-spinner loading-md" />
-                        Carregando...
-                    </button>
-                {:else}
-                    <button class="btn btn-sm">
-                        <Icon icon="mingcute:unlink-fill" />
-                        Desvincular
-                    </button>
-                {/if}
-            </form>
+            <button class="btn btn-sm" on:click={() => unlinkDialog.show()}>
+                <Icon icon="mingcute:unlink-fill" />
+                Desvincular
+            </button>
         {/if}
 
-        <form
-            method="POST"
-            action="?/clone"
-            use:enhance={async function () {
-                loadingClone = true;
-
-                return ({ result }) => {
-                    loadingClone = false;
-
-                    if (result.status === 200) {
-                        spawn({ message: 'Projeto clonado. Verifique seus projetos!' });
-
-                        // @ts-ignore
-                        goto(`/community/projects/${result.data.project}`);
-                    }
-                };
-            }}
-        >
-            {#if loadingClone}
-                <button type="button" class="btn btn-sm" disabled>
-                    <span class="loading loading-spinner loading-md" />
-                    Carregando...
-                </button>
-            {:else}
-                <button class="btn btn-sm btn-primary">
-                    <Icon icon="fa-solid:clone" />
-                    Clonar
-                </button>
-            {/if}
-        </form>
+        <button type="button" class="btn btn-sm btn-primary" on:click={() => cloneDialog.show()}>
+            <Icon icon="fa-solid:clone" />
+            Clonar
+        </button>
 
         {#if (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_delete === true).length > 0) && project.deleted_at === null}
             <form
@@ -390,8 +344,13 @@
 
     <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-2 mt-4">
         <a href="/community/projects/{project.id}/edit" class="btn btn-sm btn-primary">
-            <Icon icon="mdi:eye" />
-            Ir para o editor
+            {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_edit === true).length > 0}
+                <Icon icon="mdi:pencil" />
+                Editar planta baixa
+            {:else}
+                <Icon icon="mdi:eye" />
+                Ver planta baixa
+            {/if}
         </a>
 
         {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0}
@@ -414,3 +373,122 @@
         {/if}
     </p>
 </div>
+
+<dialog bind:this={cloneDialog} class="modal">
+    <div class="modal-box max-w-xl shadow-none flex flex-col gap-2">
+        <span class="text-xl font-bold">Você deseja clonar o projeto?</span>
+
+        <p>
+            Ao clonar este projeto, uma cópia exata será criada em seu perfil. Por padrão, o projeto
+            permanecerá privado. Caso o projeto original não seja público, a cópia também não poderá
+            ser tornada pública.
+        </p>
+
+        <div class="divider divider-start divider-end" />
+
+        <div class="flex gap-1 justify-center">
+            <form
+                method="POST"
+                action="?/clone"
+                use:enhance={async function () {
+                    loadingClone = true;
+
+                    return ({ result }) => {
+                        cloneDialog.close();
+                        loadingClone = false;
+
+                        if (result.status === 200) {
+                            spawn({ message: 'Projeto clonado. Verifique seus projetos!' });
+
+                            // @ts-ignore
+                            goto(`/community/projects/${result.data.project}`);
+                        }
+                    };
+                }}
+            >
+                {#if loadingClone}
+                    <button type="button" class="btn btn-wide btn-sm" disabled>
+                        <span class="loading loading-spinner loading-md" />
+                        Carregando...
+                    </button>
+                {:else}
+                    <button class="btn btn-sm btn-wide btn-primary">
+                        <Icon icon="fa-solid:clone" />
+                        Clonar
+                    </button>
+                {/if}
+            </form>
+
+            <form method="dialog">
+                <button class="btn btn-sm btn-wide btn-error">
+                    <Icon icon="material-symbols:close" />
+                    Cancelar
+                </button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop backdrop-grayscale backdrop:transition-all">
+        <button class="cursor-default">close</button>
+    </form>
+</dialog>
+
+{#if project.fork !== null && (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0)}
+    <dialog bind:this={unlinkDialog} class="modal">
+        <div class="modal-box max-w-xl shadow-none flex flex-col gap-2">
+            <span class="text-xl font-bold">
+                Você deseja desvincular-se do projeto original?
+            </span>
+
+            <Attention type="danger">
+                Ao desvincular esta planta baixa do projeto original, ela se tornará um projeto
+                independente. Isso significa que não receberá mais atualizações ou revisões futuras
+                feitas no projeto principal. Além disso, qualquer ajuste ou melhoria que você fizer
+                nesta cópia não será refletido no projeto original, impactando a consistência entre
+                os projetos.
+            </Attention>
+
+            <div class="divider divider-start divider-end" />
+
+            <div class="flex gap-1 justify-center">
+                <form
+                    method="POST"
+                    action="?/unlink"
+                    use:enhance={async function () {
+                        loadingUnlink = true;
+
+                        return ({ update }) => {
+                            unlinkDialog.close();
+                            loadingUnlink = false;
+
+                            spawn({ message: 'Projeto desvinculado do original.' });
+
+                            return update({ reset: false });
+                        };
+                    }}
+                >
+                    {#if loadingUnlink}
+                        <button type="button" class="btn btn-wide btn-sm" disabled>
+                            <span class="loading loading-spinner loading-md" />
+                            Carregando...
+                        </button>
+                    {:else}
+                        <button class="btn btn-wide btn-sm">
+                            <Icon icon="mingcute:unlink-fill" />
+                            Desvincular
+                        </button>
+                    {/if}
+                </form>
+
+                <form method="dialog">
+                    <button class="btn btn-sm btn-wide btn-error">
+                        <Icon icon="material-symbols:close" />
+                        Cancelar
+                    </button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop backdrop-grayscale backdrop:transition-all">
+            <button class="cursor-default">close</button>
+        </form>
+    </dialog>
+{/if}

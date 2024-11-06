@@ -23,7 +23,7 @@
     <title>Comunidade - Swibly Arkhon</title>
 </svelte:head>
 
-<div class="flex max-sm:flex-col gap-4">
+<div class="flex max-sm:flex-col max-sm:items-center gap-4">
     <aside class="sm:pr-4 sm:border-r sm:border-r-base-200 w-full max-w-96">
         <form
             method="POST"
@@ -135,7 +135,7 @@
         </form>
     </aside>
 
-    <section class="w-full">
+    <section class="w-full max-sm:w-fit">
         {#if projectSearch !== undefined}
             {#if projectSearch.total_records === 0}
                 <p class="italic opacity-50">Nenhum projeto encontrado.</p>
