@@ -107,6 +107,7 @@
                     name="budget-min"
                     placeholder="Preço mínimo"
                     labels={{ topLeft: 'Mínimo' }}
+                    value="0"
                     options={{
                         mask: [
                             {
@@ -131,6 +132,7 @@
                     name="budget-max"
                     placeholder="Preço máximo"
                     labels={{ topLeft: 'Máximo' }}
+                    value="0"
                     options={{
                         mask: [
                             {
@@ -160,6 +162,7 @@
                     name="area-min"
                     placeholder="Área mínima"
                     labels={{ topLeft: 'Mínimo (em m²)' }}
+                    value="0"
                     options={{
                         mask: [
                             {
@@ -184,6 +187,7 @@
                     name="area-max"
                     placeholder="Área máximo"
                     labels={{ topLeft: 'Máximo (em m²)' }}
+                    value="0"
                     options={{
                         mask: [
                             {
