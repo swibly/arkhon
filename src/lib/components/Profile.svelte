@@ -168,6 +168,7 @@
                         </button>
                     </form>
                 {/if}
+                <!--
                 <form
                     action="/profile/{lookup.username}?/report"
                     method="POST"
@@ -178,6 +179,7 @@
                         Reportar e bloquear
                     </button>
                 </form>
+                -->
             {:else}
                 <a href="/settings" class="w-full btn btn-sm">
                     <Icon icon="mdi:cog" />
@@ -311,6 +313,7 @@
                             </button>
                         </form>
                     {/if}
+                    <!--
                     <form
                         action="/profile/{lookup.username}?/report"
                         method="POST"
@@ -322,6 +325,7 @@
                             Reportar e bloquear
                         </button>
                     </form>
+                    -->
                 {:else}
                     <a href="/settings" class="w-full btn btn-sm">
                         <Icon icon="mdi:cog" />
