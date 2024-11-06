@@ -1,8 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
-    import { onMount } from 'svelte';
     import type { LayoutServerData } from './$types';
     import Icon from '@iconify/svelte';
     import Profile from '$lib/components/Profile.svelte';
@@ -11,15 +9,6 @@
 
     $: paths = $page.url.pathname.split('/').slice(1);
     $: ghostPath = '';
-
-    onMount(() => {
-        if (data.error !== undefined) {
-            spawn({
-                status: 'error',
-                message: data.error
-            });
-        }
-    });
 
     $: lookup = data.lookup! as User;
     $: logged = data.user;
@@ -33,12 +22,12 @@
 {#if data.error}
     <main class="w-full min-h-screen flex flex-col justify-center items-center max-w-xl mx-auto">
         <section class="flex items-center gap-4">
-            <Icon icon="mingcute:sad-line" class="size-28 text-error max-md:size-28" />
+            <Icon icon="mingcute:sad-line" class="size-28 text-error max-md:size-28 shrink-0" />
 
             <div>
                 <p class="text-sm" aria-hidden>Ah, não!</p>
                 <h1 class="text-3xl font-black text-error max-md:text-2xl">
-                    Desabilitado ou Inexistente
+                    {data.error}
                 </h1>
             </div>
         </section>
