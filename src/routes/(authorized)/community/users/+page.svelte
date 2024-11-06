@@ -15,6 +15,8 @@
 
     $: ascending = false;
 
+    let orderBy: string = 'order_created';
+
     $: userSearch = undefined as PaginationType<User> | undefined;
 </script>
 
@@ -43,22 +45,32 @@
 
                 <button
                     type="button"
-                    class="border-b-2 border-base-200"
+                    class="border-b-2 text-sm border-base-200"
                     class:border-primary={ascending}
-                    class:text-base-200={!ascending}
                     on:click={() => (ascending = true)}
                 >
-                    Crescente
+                    {#if orderBy === 'order_created'}
+                        Mais antigo ao mais novo
+                    {:else if orderBy === 'alphabetic'}
+                        A - Z
+                    {:else}
+                        Menor para o maior
+                    {/if}
                 </button>
 
                 <button
                     type="button"
-                    class="border-b-2 border-base-200"
+                    class="border-b-2 text-sm border-base-200"
                     class:border-primary={!ascending}
-                    class:text-base-200={ascending}
                     on:click={() => (ascending = false)}
                 >
-                    Decrescente
+                    {#if orderBy === 'order_created'}
+                        Mais novo ao mais antigo
+                    {:else if orderBy === 'alphabetic'}
+                        Z - A
+                    {:else}
+                        Maior para o menor
+                    {/if}
                 </button>
             </article>
 
@@ -74,7 +86,7 @@
                 <div class="label">
                     <span class="label-text">Ordenar por</span>
                 </div>
-                <select name="order" class="select select-sm select-bordered w-full">
+                <select name="order" bind:value={orderBy} class="select select-sm select-bordered w-full">
                     <option value="alphabetic">Ordem Alfabética</option>
                     <option value="order_created" selected>Data de criação</option>
                 </select>

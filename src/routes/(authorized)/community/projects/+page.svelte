@@ -16,6 +16,8 @@
 
     $: ascending = false;
 
+    let orderBy: string = 'order_created';
+
     $: projectSearch = undefined as PaginationType<Project> | undefined;
 </script>
 
@@ -44,22 +46,32 @@
 
                 <button
                     type="button"
-                    class="border-b-2 border-base-200"
+                    class="border-b-2 text-sm border-base-200"
                     class:border-primary={ascending}
-                    class:text-base-200={!ascending}
                     on:click={() => (ascending = true)}
                 >
-                    Crescente
+                    {#if orderBy === 'order_created'}
+                        Mais antigo ao mais novo
+                    {:else if orderBy === 'alphabetic'}
+                        A - Z
+                    {:else}
+                        Menor para o maior
+                    {/if}
                 </button>
 
                 <button
                     type="button"
-                    class="border-b-2 border-base-200"
+                    class="border-b-2 text-sm border-base-200"
                     class:border-primary={!ascending}
-                    class:text-base-200={ascending}
                     on:click={() => (ascending = false)}
                 >
-                    Decrescente
+                    {#if orderBy === 'order_created'}
+                        Mais novo ao mais antigo
+                    {:else if orderBy === 'alphabetic'}
+                        Z - A
+                    {:else}
+                        Maior para o menor
+                    {/if}
                 </button>
             </article>
 
@@ -75,7 +87,11 @@
                 <div class="label">
                     <span class="label-text">Ordenar por</span>
                 </div>
-                <select name="order" class="select select-sm select-bordered w-full">
+                <select
+                    name="order"
+                    bind:value={orderBy}
+                    class="select select-sm select-bordered w-full"
+                >
                     <option value="alphabetic">Ordem Alfabética</option>
                     <option value="favorites">Mais favoritos</option>
                     <option value="clones">Mais clones</option>
@@ -91,17 +107,49 @@
                     name="budget-min"
                     placeholder="Preço mínimo"
                     labels={{ topLeft: 'Mínimo' }}
-                    type="number"
-                    min="0"
-                    max="1000000000000"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'R$ num',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000000000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
                 <Input
                     name="budget-max"
                     placeholder="Preço máximo"
                     labels={{ topLeft: 'Máximo' }}
-                    type="number"
-                    min="0"
-                    max="1000000000000"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'R$ num',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000000000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
 
@@ -112,17 +160,49 @@
                     name="area-min"
                     placeholder="Área mínima"
                     labels={{ topLeft: 'Mínimo (em m²)' }}
-                    type="number"
-                    min="0"
-                    max="1000000"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num m²',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
                 <Input
                     name="area-max"
                     placeholder="Área máximo"
                     labels={{ topLeft: 'Máximo (em m²)' }}
-                    type="number"
-                    min="0"
-                    max="1000000"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num m²',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
 

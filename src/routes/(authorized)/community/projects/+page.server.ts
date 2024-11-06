@@ -23,11 +23,11 @@ export const actions: Actions = {
         const ascending = data.get('ascending')?.toString();
         const order = data.get('order')?.toString();
 
-        const budgetMin = data.get('budget-min')?.toString();
-        const budgetMax = data.get('budget-max')?.toString();
+        const budgetMin = data.get('budget-min')?.toString().replaceAll(/[^\d]/gi, '');
+        const budgetMax = data.get('budget-max')?.toString().replaceAll(/[^\d]/gi, '');
 
-        const areaMin = data.get('area-min')?.toString();
-        const areaMax = data.get('area-max')?.toString();
+        const areaMin = data.get('area-min')?.toString().replaceAll(/[^\d]/gi, '');
+        const areaMax = data.get('area-max')?.toString().replaceAll(/[^\d]/gi, '');
 
         if (name !== undefined && name.trim() !== '') {
             search.name = name;
