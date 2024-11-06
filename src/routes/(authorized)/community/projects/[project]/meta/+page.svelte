@@ -9,6 +9,7 @@
     import Attention from '$lib/components/Attention.svelte';
     import { getComparison } from '$lib/utils';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -77,8 +78,8 @@
         const widthInput = document.querySelector('input[name="width"]') as HTMLInputElement;
         const heightInput = document.querySelector('input[name="height"]') as HTMLInputElement;
 
-        width = ~~widthInput.value;
-        height = ~~heightInput.value;
+        width = ~~widthInput.value.replaceAll(/[^\d]/gi, '');
+        height = ~~heightInput.value.replaceAll(/[^\d]/gi, '');
         comparison = getComparison(width, height);
 
         for (const input of document.querySelectorAll<HTMLInputElement>('input')) {
@@ -88,14 +89,14 @@
         }
 
         widthInput.oninput = (e) => {
-            width = ~~(e.target as HTMLInputElement).value || 30;
+            width = ~~(e.target as HTMLInputElement).value.replaceAll(/[^\d]/gi, '') || 30;
             comparison = getComparison(width, height);
 
             unsavedChanges = true;
         };
 
         heightInput.oninput = (e) => {
-            height = ~~(e.target as HTMLInputElement).value || 30;
+            height = ~~(e.target as HTMLInputElement).value.replaceAll(/[^\d]/gi, '') || 30;
             comparison = getComparison(width, height);
 
             unsavedChanges = true;
@@ -171,7 +172,7 @@
                         duration: 7000
                     });
 
-                    return update({ reset: true });
+                    return update({ reset: false });
                 }
 
                 unsavedChanges = false;
@@ -180,7 +181,9 @@
                     message: 'Projeto salvo!'
                 });
 
-                return await update({ reset: false });
+                await update({ reset: true });
+
+                goto(`/community/projects/${data.project.id}`);
             };
         }}
     >
@@ -239,26 +242,56 @@
                 <Input
                     name="width"
                     icon="akar-icons:width"
-                    type="number"
                     placeholder="30"
-                    labels={{ topLeft: 'Largura (em metros)' }}
-                    min={1}
-                    max={1000}
-                    error={errorField === 'width'}
-                    defaultValue={data.project.width.toString()}
+                    labels={{ topLeft: 'Largura', bottomLeft: 'Padrão: 30 metros' }}
+                    value={data.project.width.toString()}
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num metros',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
             <div class="grow">
                 <Input
                     name="height"
                     icon="akar-icons:height"
-                    type="number"
                     placeholder="30"
-                    labels={{ topLeft: 'Altura (em metros)' }}
-                    min={1}
-                    max={1000}
-                    error={errorField === 'height'}
-                    defaultValue={data.project.height.toString()}
+                    labels={{ topLeft: 'Altura', bottomLeft: 'Padrão: 30 metros' }}
+                    value={data.project.height.toString()}
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num metros',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
         </div>
@@ -276,12 +309,28 @@
         <Input
             name="budget"
             icon="mdi:dollar"
-            type="number"
-            step="1"
             placeholder="0"
+            value={data.project.budget.toString()}
             labels={{ topLeft: 'Orçamento' }}
-            min={0}
-            defaultValue={data.project.budget.toString()}
+            options={{
+                mask: [
+                    {
+                        mask: 'R$ num',
+                        lazy: false,
+                        fix: true,
+                        blocks: {
+                            num: {
+                                mask: Number,
+                                scale: 0,
+                                thousandsSeparator: '.',
+                                mapToRadix: ['.'],
+                                min: 0,
+                                max: 1000000000
+                            }
+                        }
+                    }
+                ]
+            }}
         />
 
         <Attention type="tip">

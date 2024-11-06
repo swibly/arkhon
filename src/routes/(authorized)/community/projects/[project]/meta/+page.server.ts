@@ -41,6 +41,14 @@ export const actions: Actions = {
             data.delete('banner');
         }
 
+        const width = data.get('width')!.toString().replaceAll(/[^\d]/gi, '');
+        const height = data.get('height')!.toString().replaceAll(/[^\d]/gi, '');
+        const budget = data.get('budget')!.toString().replaceAll(/[^\d]/gi, '');
+
+        data.set('width', width);
+        data.set('height', height);
+        data.set('budget', budget);
+
         try {
             const response = await updateProject(
                 cookies.get(JWT_TOKEN_COOKIE_NAME)!,

@@ -268,22 +268,56 @@
                 <Input
                     name="width"
                     icon="akar-icons:width"
-                    type="number"
                     placeholder="30"
-                    labels={{ topLeft: 'Largura (em metros)' }}
-                    min={1}
-                    max={1000}
+                    labels={{ topLeft: 'Largura', bottomLeft: 'Padrão: 30 metros' }}
+                    value="30"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num metros',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
             <div class="grow">
                 <Input
                     name="height"
                     icon="akar-icons:height"
-                    type="number"
                     placeholder="30"
-                    labels={{ topLeft: 'Altura (em metros)' }}
-                    min={1}
-                    max={1000}
+                    labels={{ topLeft: 'Altura', bottomLeft: 'Padrão: 30 metros' }}
+                    value="30"
+                    options={{
+                        mask: [
+                            {
+                                mask: 'num metros',
+                                lazy: false,
+                                fix: true,
+                                blocks: {
+                                    num: {
+                                        mask: Number,
+                                        scale: 0,
+                                        thousandsSeparator: '.',
+                                        mapToRadix: ['.'],
+                                        min: 0,
+                                        max: 1000
+                                    }
+                                }
+                            }
+                        ]
+                    }}
                 />
             </div>
         </div>
@@ -301,12 +335,28 @@
         <Input
             name="budget"
             icon="mdi:dollar"
-            type="number"
-            step="1"
             placeholder="0"
+            value="0"
             labels={{ topLeft: 'Orçamento' }}
-            min={0}
-            max={1000000000000}
+            options={{
+                mask: [
+                    {
+                        mask: 'R$ num',
+                        lazy: false,
+                        fix: true,
+                        blocks: {
+                            num: {
+                                mask: Number,
+                                scale: 0,
+                                thousandsSeparator: '.',
+                                mapToRadix: ['.'],
+                                min: 0,
+                                max: 1000000000
+                            }
+                        }
+                    }
+                ]
+            }}
         />
 
         <Attention type="tip">
