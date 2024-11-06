@@ -156,9 +156,9 @@
 <dialog bind:this={deleteDialog} class="modal -top-10">
     <div class="modal-box bg-transparent shadow-none flex flex-col gap-2">
         <form action="/settings?/deleteAccount" method="POST">
-            <button class="btn btn-error hover:animate-shake">
+            <button class="btn btn-error w-full hover:animate-shake">
                 <Icon icon="pepicons-pop:leave" />
-                Deletar PERMANENTEMENTE minha conta e TODOS os meus projetos.
+                Deletar PERMANENTEMENTE minha conta
             </button>
         </form>
 
