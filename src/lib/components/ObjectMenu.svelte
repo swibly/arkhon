@@ -15,7 +15,7 @@
 
     let objectMenu: HTMLElement;
 
-    export let canvas: Canvas;    
+    export let canvas: Canvas;
 
     let opacitySlider: HTMLInputElement;
     let strokeSlider: HTMLInputElement;
@@ -25,7 +25,7 @@
 
     onMount(async () => {
         await tick();
-        if (canvas) {            
+        if (canvas) {
             canvas.on('selection:created', () => {
                 if (getActive(canvas).length > 1) {
                     mixed = true;
@@ -89,8 +89,45 @@
         class="w-full h-8 bg-primary flex items-center justify-center cursor-drag handler rounded-t-lg"
     >
         <Icon icon="stash:drag-squares-horizontal-solid" class="text-white text-xl" />
-    </div>
-    <p class="text-md pt-2 font-bold -mt-1">Borda</p>
+    </div>    
+    <p class="text-md font-bold mt-2">Fundo</p>
+    <section class="flex items-center gap-2 pt-2">
+        <button
+            class="w-3 h-3 -mt-1 font-bold"
+            on:click={() => changeFill(canvas, 'null', ...getActive(canvas))}
+            ><Icon icon="material-symbols:close" /></button
+        >
+        <button
+            class="w-3 h-3 bg-white rounded"
+            on:click={() => changeFill(canvas, 'white', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-gray-500 rounded"
+            on:click={() => changeFill(canvas, 'gray', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-red-400 rounded"
+            on:click={() => changeFill(canvas, 'red', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-green-400 rounded"
+            on:click={() => changeFill(canvas, 'green', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-blue-400 rounded"
+            on:click={() => changeFill(canvas, 'blue', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-pink-400 rounded"
+            on:click={() => changeFill(canvas, 'pink', ...getActive(canvas))}
+        />
+        <button
+            class="w-3 h-3 bg-yellow-400 rounded"
+            on:click={() => changeFill(canvas, 'yellow', ...getActive(canvas))}
+        />
+    </section>
+    <div class="divider w-36 mx-auto" />
+    <p class="text-md pt-2 font-bold -mt-4">Borda</p>
     <section class="flex items-center gap-2 pt-2">
         <button
             class="w-3 h-3 font-bold -mt-1"
@@ -139,52 +176,14 @@
             bind:this={strokeSlider}
             on:input={() => (strokeValue = changeStroke(canvas, strokeSlider))}
             class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
-        />
-        <div class="divider" />
-    </section>
-    <div class="divider w-36 mx-auto -mt-4" />
-    <p class="text-md font-bold -mt-4">Fundo</p>
-    <section class="flex items-center gap-2 pt-2">
-        <button
-            class="w-3 h-3 -mt-1 font-bold"
-            on:click={() => changeFill(canvas, 'null', ...getActive(canvas))}
-            ><Icon icon="material-symbols:close" /></button
-        >
-        <button
-            class="w-3 h-3 bg-white rounded"
-            on:click={() => changeFill(canvas, 'white', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-gray-500 rounded"
-            on:click={() => changeFill(canvas, 'gray', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-red-400 rounded"
-            on:click={() => changeFill(canvas, 'red', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-green-400 rounded"
-            on:click={() => changeFill(canvas, 'green', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-blue-400 rounded"
-            on:click={() => changeFill(canvas, 'blue', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-pink-400 rounded"
-            on:click={() => changeFill(canvas, 'pink', ...getActive(canvas))}
-        />
-        <button
-            class="w-3 h-3 bg-yellow-400 rounded"
-            on:click={() => changeFill(canvas, 'yellow', ...getActive(canvas))}
-        />
+        />        
     </section>
     <div class="divider w-36 mx-auto" />
-    <p class="text-center text-md font-bold -mt-4">Opacidade</p>
+    <p class="text-center text-md font-bold -mt-2">Opacidade</p>
     <p class={`${mixed ? 'block' : 'hidden'} text-center text-md font-bold text-secondary`}>
         Mixed
     </p>
-    <section class="flex gap-2 pt-2">
+    <section class="flex gap-2">
         <input
             type="range"
             min="0"
@@ -192,7 +191,7 @@
             value={opacityValue}
             bind:this={opacitySlider}
             on:input={() => (opacityValue = changeOpacity(canvas, opacitySlider))}
-            class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36`}
+            class={`range range-xs ${mixed ? 'range-primary' : 'range-secondary'} w-36 mt-2`}
         />
         <div class="divider" />
     </section>

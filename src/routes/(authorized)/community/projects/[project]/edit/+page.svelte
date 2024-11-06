@@ -156,7 +156,7 @@
                 rect.excludeFromExport = true;
                 circle.excludeFromExport = true;
 
-                if (!isAllowed) {
+                if (!isAllowed || innerWidth < 1280) {
                     fabric.selection = false;
                     fabric.skipTargetFind = true;
                     fabric.forEachObject((obj) => {
@@ -186,12 +186,6 @@
             isDragging = false;
             isPressingKey = false;
             fabric.selection = true;
-        });
-
-        addEventListener('keydown', (e) => {
-            if (e.key == ' ') {
-                isPressingKey = true;
-            }
         });
 
         fabric.on('mouse:down', function ({ e }) {
@@ -354,6 +348,8 @@
             }
         });
 
+        // fabric.on('object')
+
         fabric.on('text:editing:entered', () => {
             isTexting = true;
         });
@@ -364,18 +360,16 @@
 
         addEventListener('resize', function () {
             resize(fabric, innerWidth, innerHeight, isAllowed);
-            if (innerWidth < 1280) {
-                isAllowed = true;
-            }
         });
 
         addEventListener('keydown', async (e) => {
-            if (e.altKey) {
+            if (e.key == ' ') {
                 resetOpacity(fabric, rect);
                 resetOpacity(fabric, circle);
                 stopLine(fabric);
                 startDraw(fabric);
 
+                isPressingKey = true;
                 fabric.isDrawingMode = false;
                 mode = 'select';
             }
@@ -385,6 +379,62 @@
                 (!isTexting && isAllowed)
             ) {
                 if (!modalOpen) {
+                    if (e.key == 'ArrowRight' && getActive(fabric).length > 0) {
+                        let objs = getActive(fabric);
+
+                        objs.forEach((obj) => {
+                            obj.set({
+                                left: obj.left + 1
+                            });
+
+                            obj.setCoords();
+
+                            fabric.requestRenderAll();
+                        });
+                    }
+
+                    if (e.key == 'ArrowLeft' && getActive(fabric).length > 0) {
+                        let objs = getActive(fabric);
+
+                        objs.forEach((obj) => {
+                            obj.set({
+                                left: obj.left - 1
+                            });
+
+                            obj.setCoords();
+
+                            fabric.requestRenderAll();
+                        });
+                    }
+
+                    if (e.key == 'ArrowUp' && getActive(fabric).length > 0) {
+                        let objs = getActive(fabric);
+
+                        objs.forEach((obj) => {
+                            obj.set({
+                                top: obj.top - 1
+                            });
+
+                            obj.setCoords();
+
+                            fabric.requestRenderAll();
+                        });
+                    }
+
+                    if (e.key == 'ArrowDown' && getActive(fabric).length > 0) {
+                        let objs = getActive(fabric);
+
+                        objs.forEach((obj) => {
+                            obj.set({
+                                top: obj.top + 1
+                            });
+
+                            obj.setCoords();
+
+                            fabric.requestRenderAll();
+                        });
+                    }
+
                     if (e.key == 'Delete') {
                         removeGroup(fabric, ...getActive(fabric));
                         remove(fabric, ...getActive(fabric));
