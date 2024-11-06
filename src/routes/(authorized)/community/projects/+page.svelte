@@ -110,16 +110,16 @@
             <div class="grid grid-cols-2 gap-2">
                 <Input
                     name="area-min"
-                    placeholder="Mínimo"
-                    labels={{ topLeft: 'Mínimo' }}
+                    placeholder="Área mínima"
+                    labels={{ topLeft: 'Mínimo (em m²)' }}
                     type="number"
                     min="0"
                     max="1000000"
                 />
                 <Input
                     name="area-max"
-                    placeholder="Máximo"
-                    labels={{ topLeft: 'Máximo' }}
+                    placeholder="Área máximo"
+                    labels={{ topLeft: 'Máximo (em m²)' }}
                     type="number"
                     min="0"
                     max="1000000"
