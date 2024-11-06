@@ -1,1 +1,5 @@
-<h1>Hello, world!</h1>
+<script>
+    import { goto } from '$app/navigation';
+
+    goto('/community');
+</script>
