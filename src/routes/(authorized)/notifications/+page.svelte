@@ -33,9 +33,12 @@
         <Pagination pagination={data} />
     </div>
 
-    <section class="space-y-4">
+    <section class="space-y-4 mt-8">
+        {#if data.total_records === 0}
+            <p class="italic opacity-50">Nenhuma notificação pendente.</p>
+        {/if}
         {#each data.data as notification}
-            <article class="p-4 border rounded-lg space-y-4">
+            <article class="p-4 border border-base-200 rounded-lg space-y-4">
                 <nav class="flex flex-wrap items-center gap-1">
                     <p class="badge badge-primary gap-1">
                         <Icon icon="material-symbols:category" />
