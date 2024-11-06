@@ -73,8 +73,26 @@
                 if (rightMenu && !isModalOpen) {
                     rightMenu.style.display = 'block';
                     rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > canvas.width + 160) + 'px';
-                    rightMenu.style.top = e.pageY - 250 * ~~(e.pageY > canvas.height - 150) + 'px';
+                    rightMenu.style.top = e.pageY - 250 * ~~(e.pageY > canvas.height - 150) + 'px';                    
                 }
+
+                const resize = new ResizeObserver((entries) => {
+                    for (let entry of entries) {
+                        console.log('mouse', e.pageY);
+                        console.log('entry', entry.contentRect.height);
+                        console.log('canvas', canvas.height);
+
+                        if (e.pageY + entry.contentRect.height > canvas.height) {
+                            rightMenu.style.overflow = 'auto'; // Ativa o overflow
+                            rightMenu.style.height = '244px'; // Define uma altura fixa
+                        } else {
+                            rightMenu.style.overflow = 'visible'; // Remove o overflow
+                            rightMenu.style.height = 'auto'; // Deixa a altura automática
+                        }
+                    }
+                });
+
+                resize.observe(rightMenu);
             });
 
             addEventListener('mousedown', (e) => {
@@ -105,7 +123,7 @@
         }
     });
 
-    function showModal() {        
+    function showModal() {
         if (
             modalRef &&
             typeof singleObject === 'object' &&
@@ -169,21 +187,18 @@
         modalRef.close();
     }
 
-    function changeObjectMaterial(object: FabricObject[], material: string){
+    function changeObjectMaterial(object: FabricObject[], material: string) {
         changeMaterial(canvas, object, material);
         rightMenu.style.display = 'none';
-    }  
+    }
 
-    function changeObjectType(object: FabricObject[], type: string){
-        changeType(canvas, object, type)
+    function changeObjectType(object: FabricObject[], type: string) {
+        changeType(canvas, object, type);
         rightMenu.style.display = 'none';
     }
 </script>
 
-<article
-    bind:this={rightMenu}
-    class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 mt-2 z-50"
->
+<article bind:this={rightMenu} class="absolute hidden bg-base-300 shadow-md rounded-lg w-48 z-50">
     <ul role="menu" aria-labelledby="menu-button" class="menu vertical div space-y-2">
         <li>
             <details>
@@ -240,9 +255,13 @@
         </li>
         <li>
             <details>
-                <summary> Material </summary>                
+                <summary> Material </summary>
                 <ul>
-                    <li on:click={() => {changeObjectMaterial(getActive(canvas), 'cimento')}}>
+                    <li
+                        on:click={() => {
+                            changeObjectMaterial(getActive(canvas), 'cimento');
+                        }}
+                    >
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Cimento</a>
                     </li>
 

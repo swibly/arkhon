@@ -43,14 +43,17 @@
     // Váriaveis e todo o funcionamento do canvas
 
     let activeButton: String = 'project';
+
     let canvas: HTMLCanvasElement;
     let fabric: Canvas;
+
     let _clipboard: FabricObject;
     let copiedObjects: FabricObject[];
     let mode: string = 'select';
     let lastPosX: number;
     let lastPosY: number;
     let isDragging: boolean;
+    let isPressingKey: boolean;
     let rect: FabricObject;
     let circle: FabricObject;
     let loadCount: number = 0;
@@ -164,15 +167,8 @@
             }
         });
 
-        fabric.on('mouse:down', function ({ e }) {
-            if (fabric.getActiveObject()) {
-                mode = 'select';
-
-                resetOpacity(fabric, rect);
-                resetOpacity(fabric, circle);
-            }
-
-            if (e.altKey) {
+        addEventListener('mousedown', (e) => {
+            if (isPressingKey || e.button === 1) {
                 fabric.isDrawingMode = false;
                 mode = 'select';
 
@@ -182,6 +178,28 @@
                 isDragging = true;
                 fabric.selection = false;
                 fabric.isDrawingMode = false;
+            }
+        });
+
+        addEventListener('mouseup', () => {
+            fabric.setViewportTransform(fabric.viewportTransform);
+            isDragging = false;
+            isPressingKey = false;
+            fabric.selection = true;
+        });
+
+        addEventListener('keydown', (e) => {
+            if (e.key == ' ') {
+                isPressingKey = true;
+            }
+        });
+
+        fabric.on('mouse:down', function ({ e }) {
+            if (fabric.getActiveObject()) {
+                mode = 'select';
+
+                resetOpacity(fabric, rect);
+                resetOpacity(fabric, circle);
             }
 
             if (mode === 'select') {
@@ -250,12 +268,6 @@
 
                 fabric.requestRenderAll();
             }
-        });
-
-        fabric.on('mouse:up', function () {
-            fabric.setViewportTransform(fabric.viewportTransform);
-            isDragging = false;
-            fabric.selection = true;
         });
 
         fabric.on('mouse:wheel', function ({ e }) {
