@@ -24,11 +24,11 @@
         <div class="divider divider-horizontal mx-1 max-sm:hidden" />
 
         <nav class="max-sm:hidden space-x-2">
-            <a href="/profile/{data.user.username}" class="btn btn-sm btn-primary">
+            <a href="/profile/{data.user.username}" class="link link-primary inline-flex items-center gap-1">
                 <Icon icon="mdi:user" />
                 Perfil
             </a>
-            <a href="/community" class="btn btn-sm btn-secondary">
+            <a href="/community" class="link link-secondary inline-flex items-center gap-1">
                 <Icon icon="fluent:people-community-12-filled" />
                 Comunidade
             </a>
@@ -83,23 +83,9 @@
                 <div class="divider my-1" />
 
                 <li>
-                    <a href="/community/new" class="text-secondary">
+                    <a href="/community/new" class="text-primary">
                         <Icon icon="mdi:plus" />
                         Novo projeto
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/profile/{data.user.username}/projects">
-                        <Icon icon="eos-icons:project" />
-                        Meus projetos
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/profile/{data.user.username}/favorites">
-                        <Icon icon="mdi:heart" />
-                        Meus favoritos
                     </a>
                 </li>
 
@@ -107,38 +93,6 @@
                     <a href="/profile/{data.user.username}/trash" class="text-error">
                         <Icon icon="mdi:trash" />
                         Lixeira
-                    </a>
-                </li>
-
-                <div class="divider my-1" />
-
-                <li>
-                    <a href="/community">
-                        <Icon icon="fluent:people-community-12-filled" />
-                        Comunidade
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/community/store">
-                        <Icon icon="mdi:store" />
-                        Loja
-                    </a>
-                </li>
-
-                <div class="divider my-1" />
-
-                <li>
-                    <a href="/faq">
-                        <Icon icon="mingcute:question-fill" />
-                        FAQ
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/support">
-                        <Icon icon="streamline:customer-support-1-solid" />
-                        Suporte
                     </a>
                 </li>
 
