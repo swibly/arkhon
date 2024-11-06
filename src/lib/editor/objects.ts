@@ -259,13 +259,14 @@ export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>,
         height: 100,
         top: points[0].y - 25,
         left: points[0].x - 165,
-        fill: null,
-        stroke: 'white',
+        fill: 'white',
+        stroke: 'black',
         strokeWidth: 2,
         strokeUniform: true,
         lockSkewingX: true,
         lockSkewingY: true,
-        fontFamily: 'sans-serif'
+        fontFamily: 'sans-serif',
+        editingCursorColor: 'red'
     });
 
     add(canvas, itext);
@@ -279,8 +280,8 @@ export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>)
         height: 100,
         top: points[0].y - 50,
         left: points[0].x - 50,
-        fill: null,
-        stroke: 'green',
+        fill: 'white',
+        stroke: 'gray',
         strokeWidth: 3,
         strokeUniform: true,
         lockSkewingX: true,
@@ -305,8 +306,8 @@ export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }
         radius: 60,
         top: points[0].y - 50,
         left: points[0].x - 50,
-        fill: null,
-        stroke: 'green',
+        fill: 'white',
+        stroke: 'gray',
         strokeWidth: 3,
         strokeUniform: true,
         lockSkewingX: true,
@@ -333,8 +334,8 @@ export function addPoints(canvas: Canvas, points: { x: number; y: number }) {
         fontSize: 25,
         top: points.y - 5,
         left: points.x - 5,
-        fill: 'green',
-        stroke: 'green',
+        fill: 'black',
+        stroke: 'gray',
         strokeWidth: 3,
         strokeUniform: true,
         fontFamily: 'sans-serif',
@@ -356,8 +357,8 @@ export function addPoints(canvas: Canvas, points: { x: number; y: number }) {
 
 export function addLine(canvas: Canvas) {
     const line = new Polygon(capturedPoints, {
-        fill: 'green',
-        stroke: 'green',
+        fill: 'white',
+        stroke: 'gray',
         strokeWidth: 2,
         originX: 'center',
         originY: 'center'

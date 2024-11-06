@@ -7,7 +7,7 @@
     import type { Project } from '$lib/projects';
     import { spawn } from '$lib/toast';
     import { onMount, tick } from 'svelte';
-    import { canvasCalculation } from '$lib/editor/calculation';    
+    import { canvasCalculation } from '$lib/editor/calculation';
 
     export let canvas: Canvas;
     export let width: number;
@@ -22,6 +22,8 @@
     let modalRef: HTMLDialogElement;
     let saveModalRef: HTMLDialogElement;
     let buttonCalculation: HTMLElement;
+    let saveButton: HTMLButtonElement;
+
     let results: object;
     let displayComponents: Array<FabricObject>;
 
@@ -30,7 +32,14 @@
         h: height
     };
 
-    onMount(() => {        
+    onMount(() => {
+        addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key == 's') {
+                e.preventDefault();
+                saveButton.click();
+            }
+        });
+
         buttonCalculation.addEventListener('mousedown', () => {
             results = canvasCalculation(canvas);
             displayComponents = [];
@@ -99,7 +108,7 @@
 </script>
 
 <main
-    class={`hidden sm:flex absolute z-50 w-1/3 h-8 bg-secondary ${
+    class={`flex absolute z-50 w-60 sm:w-1/3 h-8 bg-secondary ${
         isAllowed ? 'flex items-center justify-between' : 'grid place-items-center'
     } mt-4 shadow-lg rounded-lg left-0 right-0 mx-auto gap-8`}
 >
@@ -194,7 +203,7 @@
         >
     </div>
     <h1
-        class="text-lg text-center mx-auto xl:mx-auto text-white font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
+        class="w-40 sm:w-36 md:w-48 lg:w-full text-md sm:text-lg text-center mx-auto xl:mx-auto text-white font-semibold overflow-hidden text-ellipsis whitespace-nowrap"
     >
         {data.name}
     </h1>
@@ -256,7 +265,7 @@
                     {#if loading}
                         <span class="loading loading-spinner loading-sm" />
                     {:else}
-                        <button type="submit" class="w-full">
+                        <button type="submit" class="w-full" bind:this={saveButton}>
                             <Icon icon="material-symbols:save" class="size-5 mx-auto text-white" />
                         </button>
                     {/if}
