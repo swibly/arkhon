@@ -1,5 +1,6 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
+    import { imask } from '@imask/svelte';
 
     export let defaultValue: string = '';
     $: value = defaultValue;
@@ -9,6 +10,7 @@
     export let required: boolean = false;
     export let maxSize: number = 0;
     export let resizeable: boolean = false;
+    export let options: any = undefined;
 
     export let labels: {
         topLeft?: string;
@@ -88,7 +90,25 @@
                 {/if}
                 {textShow}
 
-                <input {name} {placeholder} {required} class="grow" bind:value {...$$restProps} />
+                {#if options !== undefined}
+                    <input
+                        {name}
+                        {placeholder}
+                        {required}
+                        class="grow"
+                        {...$$restProps}
+                        use:imask={options}
+                    />
+                {:else}
+                    <input
+                        {name}
+                        {placeholder}
+                        {required}
+                        class="grow"
+                        bind:value
+                        {...$$restProps}
+                    />
+                {/if}
             </label>
         {/if}
 

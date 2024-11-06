@@ -45,9 +45,10 @@
     ],
     "type": "module",
     "dependencies": {
+        "@imask/svelte": "^7.6.1",
+        "@neodrag/svelte": "^2.0.6",
         "axios": "^1.7.7",
         "fabric": "^6.4.3",
-        "js-cookie": "^3.0.5",
-        "@neodrag/svelte": "^2.0.6"
+        "js-cookie": "^3.0.5"
     }
 }
