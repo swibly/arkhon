@@ -42,13 +42,13 @@ export function removeGroup(canvas: Canvas, ...objects: FabricObject[]) {
     }
 }
 
-export function group(canvas: Canvas): FabricObject {
-    const group = new Group(getActive(canvas));
+export function group(canvas: Canvas) {
+    canvas.remove(...getActive(canvas));
+
+    const group = new Group(getActive(canvas));    
 
     canvas.add(group);
     canvas.discardActiveObject();
-
-    return group;
 }
 
 export async function ungroup(canvas: Canvas): Promise<void> {
@@ -60,7 +60,7 @@ export async function ungroup(canvas: Canvas): Promise<void> {
         for (const item of objs.removeAll()) {
             let obj = await remove(canvas, item)[0].clone();
 
-            add(canvas, obj);
+            add(canvas, obj);            
 
             // @ts-ignore
             if (item.isComponent) {
@@ -94,7 +94,13 @@ export async function ungroup(canvas: Canvas): Promise<void> {
                     lockMovementY: item.lockMovementY,
                     lockScalingX: item.lockScalingX,
                     lockScalingY: item.lockScalingY,
-                    lockRotation: item.lockRotation
+                    lockRotation: item.lockRotation,
+                    // @ts-ignore
+                    isComponent: item.isComponent,
+                    // @ts-ignore
+                    material: item.material,
+                    // @ts-ignore
+                    structureType: item.structureType
                 });
             }
         }
@@ -270,6 +276,9 @@ export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>,
     });
 
     add(canvas, itext);
+
+    canvas.setActiveObject(itext);
+    itext.enterEditing();
 
     renderAll(canvas);
 }

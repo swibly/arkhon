@@ -97,9 +97,6 @@
         allComponents = data.component;
         ownedComponents = data.allOwnedComponents;
 
-        // console.log('Owned', data.allOwnedComponents);
-        // console.log("All", allComponents.data.filter((component) => component.owner_username !== data.user.username && !component.bought))
-
         fabric = new Canvas(canvas, {
             selection: true,
             preserveObjectStacking: true
@@ -115,7 +112,7 @@
         fabric.on('after:render', () => {
             loadCount++;
 
-            if (fabric.getObjects().length !== asideObjects.length) {
+            if (fabric.getObjects().length !== asideObjects.length && !isTexting) {
                 asideObjects = [];
 
                 let items = fabric.getObjects().slice(3);
@@ -151,10 +148,11 @@
                 fabric.add(circle);
                 fabric.moveObjectTo(rect, 1);
                 fabric.moveObjectTo(circle, 2);
-                fabric.moveObjectTo(fabric.getObjects()[3], 4);
+                fabric.moveObjectTo(fabric.getObjects()[3], 3);
 
                 rect.excludeFromExport = true;
                 circle.excludeFromExport = true;
+                fabric.imageSmoothingEnabled = false;
 
                 if (!isAllowed || innerWidth < 1280) {
                     fabric.selection = false;
@@ -164,6 +162,8 @@
                         obj.evented = false;
                     });
                 }
+
+                console.log(fabric.toObject());
             }
         });
 
@@ -204,10 +204,11 @@
                 addText(
                     fabric,
                     [{ x: fabric.getScenePoint(e).x, y: fabric.getScenePoint(e).y }],
-                    'Toque aqui para digitar'
+                    ''
                 );
 
                 fabric.set({ selection: false });
+                mode = 'select';
             }
 
             if (mode === 'rect') {
@@ -247,7 +248,7 @@
                 rect.set({
                     top: fabric.getScenePoint(e).y - 50,
                     left: fabric.getScenePoint(e).x - 50,
-                    opacity: 0.1
+                    opacity: 0.5
                 });
 
                 fabric.requestRenderAll();
@@ -257,7 +258,7 @@
                 circle.set({
                     top: fabric.getScenePoint(e).y - 50,
                     left: fabric.getScenePoint(e).x - 50,
-                    opacity: 0.1
+                    opacity: 0.5
                 });
 
                 fabric.requestRenderAll();
@@ -311,6 +312,7 @@
 
         fabric.on('object:rotating', function ({ e, target }) {
             target.snapAngle = ~~e.shiftKey * 15;
+            target.set('hoverCursor', 'move');
         });
 
         fabric.on('object:moving', function ({ e, target }) {
@@ -334,7 +336,7 @@
             if (fabric.getActiveObject()!.type === 'i-text') {
                 asideObjects = [];
 
-                let items = fabric.getObjects();
+                let items = fabric.getObjects().slice(3);
 
                 for (const obj of items) {
                     asideObjects.push(obj);
@@ -347,8 +349,6 @@
                 saveState(fabric);
             }
         });
-
-        // fabric.on('object')
 
         fabric.on('text:editing:entered', () => {
             isTexting = true;
@@ -825,6 +825,8 @@
             cursors={[rect, circle]}
             data={data.project}
             {isAllowed}
+            {rect}
+            {circle}
         />
         <canvas bind:this={canvas} />
     </main>
