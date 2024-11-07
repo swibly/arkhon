@@ -21,10 +21,10 @@
     let svgPortrait: HTMLElement;
     let modalRef: HTMLDialogElement;
     let componentCard: HTMLElement;
-    let component: FabricObject;        
+    let component: FabricObject;    
 
     onMount(() => {
-        componentCard.addEventListener('mousedown', () => {
+        componentCard.addEventListener('mousedown', () => {                 
             isSelected = true;
 
             canvas.on('mouse:down', ({ e }) => {
@@ -309,8 +309,7 @@
                     // @ts-ignore
                     formData.set('id', componentInfo.id);
 
-                    return (result) => {
-                        console.log(result);
+                    return (result) => {                        
                         modalRef.close();
                         spawn({ message: 'Componente adquirido.' });
                     };
@@ -340,10 +339,12 @@
                     <button
                         type="submit"
                         class={`btn btn-sm btn-primary ${
-                            componentInfo.owner_username === user.username ? 'btn-disabled' : ''
+                            componentInfo.owner_username === user.username || componentInfo.bought
+                                ? 'btn-disabled'
+                                : ''
                         } w-11/12 mt-4`}
                     >
-                        {#if componentInfo.owner_username === user.username}
+                        {#if componentInfo.bought || componentInfo.owner_username === user.username}
                             Você já possui esse componente
                         {:else}
                             <Icon icon="mdi:cart" />

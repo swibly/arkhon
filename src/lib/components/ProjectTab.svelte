@@ -2,7 +2,14 @@
     import Icon from '@iconify/svelte';
     import { type Canvas, type FabricObject } from 'fabric';
     import { centerView, startDraw, stopDraw, toJPEG, toPNG, toSVG } from '$lib/editor/canvas';
-    import { stopLine, resetOpacity, verifyObject } from '$lib/editor/objects';
+    import {
+        stopLine,
+        resetOpacity,
+        verifyObject,
+        addRect,
+        addCircle,
+        addText
+    } from '$lib/editor/objects';
     import { enhance } from '$app/forms';
     import type { Project } from '$lib/projects';
     import { spawn } from '$lib/toast';
@@ -16,53 +23,127 @@
     export let mode: string;
     export let data: Project;
     export let isAllowed: boolean;
+    export let rect: FabricObject;
+    export let circle: FabricObject;
 
     let loading: boolean = false;
+    let isAutoSave: boolean;
 
     let modalRef: HTMLDialogElement;
     let saveModalRef: HTMLDialogElement;
     let buttonCalculation: HTMLElement;
     let saveButton: HTMLButtonElement;
 
+    let isDragging: boolean;
+    let rectButton: HTMLElement;
+    let circleButton: HTMLElement;
+    let textButton: HTMLElement;
+
+    let pointerX: number;
+    let pointerY: number;
+
     let results: object;
     let displayComponents: Array<FabricObject>;
+    let limitBudget: number;
+    let projectBudget: number;
 
     let quadSize = {
         w: width,
         h: height
     };
 
-    onMount(() => {
-        addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key == 's') {
-                e.preventDefault();
-                saveButton.click();
-            }
-        });
+    onMount(async () => {
+        await tick();
+        if (canvas) {
+            setInterval(autoSave, 10000);
 
-        buttonCalculation.addEventListener('mousedown', () => {
-            results = canvasCalculation(canvas);
-            displayComponents = [];
+            canvas.on('mouse:move', ({ e }) => {
+                if (isDragging) {
+                    pointerX = canvas.getScenePoint(e).x;
+                    pointerY = canvas.getScenePoint(e).y;
+                }
+            });
 
-            for (const item of verifyObject(results).components) {
-                if (verifyObject(results).duplicatedComponents[item.id] > 1) {
-                    for (const trueItems of displayComponents) {
-                        // @ts-ignore
-                        if (trueItems.id === item.id) {
-                            displayComponents.splice(
-                                displayComponents.indexOf(trueItems),
-                                displayComponents.indexOf(trueItems)
-                            );
+            rectButton.addEventListener('mousedown', () => {
+                resetOpacity(canvas, circle);
+
+                isDragging = true;
+                mode = 'rect';
+            });
+
+            circleButton.addEventListener('mousedown', () => {
+                resetOpacity(canvas, rect);
+
+                isDragging = true;
+                mode = 'circle';
+            });
+
+            textButton.addEventListener('mousedown', () => {
+                resetOpacity(canvas, rect);
+                resetOpacity(canvas, circle);
+
+                isDragging = true;
+                mode = 'text';
+            });
+
+            addEventListener('mouseup', () => {
+                if (mode === 'rect' && isDragging) {
+                    addRect(canvas, [{ x: pointerX, y: pointerY }]);
+                }
+
+                if (mode === 'circle' && isDragging) {
+                    addCircle(canvas, [{ x: pointerX, y: pointerY }]);
+                }
+
+                if (mode === 'text' && isDragging) {
+                    addText(canvas, [{ x: pointerX, y: pointerY }], '');
+                    mode = 'select';
+                }
+
+                isDragging = false;
+            });
+
+            addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key == 's') {
+                    e.preventDefault();
+                    saveButton.click();
+                }
+            });
+
+            buttonCalculation.addEventListener('mousedown', () => {
+                results = canvasCalculation(canvas);
+                displayComponents = [];
+
+                //@ts-ignore
+                projectBudget = results.budget;
+                limitBudget = data.budget;
+
+                for (const item of verifyObject(results).components) {
+                    if (verifyObject(results).duplicatedComponents[item.id] > 1) {
+                        for (const trueItems of displayComponents) {
+                            // @ts-ignore
+                            if (trueItems.id === item.id) {
+                                displayComponents.splice(
+                                    displayComponents.indexOf(trueItems),
+                                    displayComponents.indexOf(trueItems)
+                                );
+                            }
+
+                            displayComponents.push(item);
                         }
-
+                    } else {
                         displayComponents.push(item);
                     }
-                } else {
-                    displayComponents.push(item);
                 }
-            }
-        });
+            });
+        }
     });
+
+    function autoSave() {
+        saveButton.click();
+
+        isAutoSave = true;
+    }
 
     function calculation() {
         modalRef.showModal();
@@ -108,7 +189,7 @@
 </script>
 
 <main
-    class={`flex absolute z-50 w-60 sm:w-1/3 h-8 bg-secondary ${
+    class={`flex absolute z-30 w-60 sm:w-1/3 h-8 bg-secondary ${
         isAllowed ? 'flex items-center justify-between' : 'grid place-items-center'
     } mt-4 shadow-lg rounded-lg left-0 right-0 mx-auto gap-8`}
 >
@@ -152,6 +233,7 @@
                 resetOpacity(canvas, cursors[0]);
                 resetOpacity(canvas, cursors[1]);
             }}
+            bind:this={textButton}
             ><Icon
                 icon="solar:text-bold"
                 font-size="20px"
@@ -166,6 +248,7 @@
 
                 resetOpacity(canvas, cursors[1]);
             }}
+            bind:this={rectButton}
             ><Icon
                 icon="bi:square-fill"
                 font-size="20px"
@@ -180,6 +263,7 @@
 
                 resetOpacity(canvas, cursors[0]);
             }}
+            bind:this={circleButton}
             ><Icon
                 icon="material-symbols:circle"
                 font-size="20px"
@@ -234,7 +318,7 @@
                 <form
                     action={`/community/projects/${data.id}/edit?/save`}
                     method="POST"
-                    class="block p-0 w-full"
+                    class="p-0 w-full flex justify-center items-center"
                     use:enhance={function ({ formData }) {
                         loading = true;
 
@@ -258,12 +342,17 @@
 
                         return () => {
                             loading = false;
-                            spawn({ message: 'Salvo com sucesso' });
+
+                            if (!isAutoSave) {
+                                spawn({ message: 'Salvo com sucesso' });
+                            }
+
+                            isAutoSave = false;
                         };
                     }}
                 >
                     {#if loading}
-                        <span class="loading loading-spinner loading-sm" />
+                        <span class="loading loading-spinner loading-sm text-white text-center" />
                     {:else}
                         <button type="submit" class="w-full" bind:this={saveButton}>
                             <Icon icon="material-symbols:save" class="size-5 mx-auto text-white" />
@@ -394,6 +483,17 @@
                     </h1>
                 {/if}
             </section>
+
+            {#if projectBudget > limitBudget}
+                <section
+                    class="w-11/12 bg-error h-8 rounded-lg flex flex-col justify-center item-center mt-4"
+                >
+                    <h1 class="text-center text-white font-semibold">
+                        O valor da sua planta ultrapassou o orçamento proposto em R${(projectBudget -
+                            limitBudget).toFixed(2)}
+                    </h1>
+                </section>
+            {/if}
         </main>
     </div>
 </dialog>

@@ -75,24 +75,6 @@
                     rightMenu.style.left = e.pageX - 200 * ~~(e.pageX > canvas.width + 160) + 'px';
                     rightMenu.style.top = e.pageY - 250 * ~~(e.pageY > canvas.height - 150) + 'px';
                 }
-
-                // const resize = new ResizeObserver((entries) => {
-                //     for (let entry of entries) {
-                //         console.log('mouse', e.pageY);
-                //         console.log('entry', entry.contentRect.height);
-                //         console.log('canvas', canvas.height);
-
-                //         if (e.pageY + entry.contentRect.height > canvas.height) {
-                //             rightMenu.style.overflow = 'auto'; // Ativa o overflow
-                //             rightMenu.style.height = '244px'; // Define uma altura fixa
-                //         } else {
-                //             rightMenu.style.overflow = 'visible'; // Remove o overflow
-                //             rightMenu.style.height = 'auto'; // Deixa a altura automática
-                //         }
-                //     }
-                // });
-
-                // resize.observe(rightMenu);
             });
 
             addEventListener('mousedown', (e) => {

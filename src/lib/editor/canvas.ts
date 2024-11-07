@@ -55,7 +55,8 @@ export function drawGrid(canvas: Canvas, grid: number, width: number, height: nu
         strokeUniform: true,
         selectable: false,
         evented: false,
-        objectCaching: false
+        objectCaching: false,
+        opacity: 0.5
     });
 
     add(canvas, path);

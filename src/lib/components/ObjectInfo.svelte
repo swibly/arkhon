@@ -34,9 +34,7 @@
                     isComponent = false;
                     isGroup = false;
                     isText = false;
-                    isPath = false;
-
-                    console.log(object.type);
+                    isPath = false;                    
 
                     if (getActive(canvas).length > 1) {
                         isGroup = true;
