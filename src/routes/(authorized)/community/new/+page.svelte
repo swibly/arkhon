@@ -93,13 +93,16 @@
     $: errorField = '';
 
     onMount(() => {
-        (document.querySelector('input[name="width"]') as HTMLInputElement).oninput = (e) => {
-            width = ~~(e.target as HTMLInputElement).value || 30;
+        const widthInput = document.querySelector('input[name="width"]') as HTMLInputElement;
+        const heightInput = document.querySelector('input[name="height"]') as HTMLInputElement;
+
+        widthInput.oninput = (e) => {
+            width = ~~(e.target as HTMLInputElement).value.replaceAll(/[^\d]/gi, '') || 30;
             comparison = getComparison(width, height);
         };
 
-        (document.querySelector('input[name="height"]') as HTMLInputElement).oninput = (e) => {
-            height = ~~(e.target as HTMLInputElement).value || 30;
+        heightInput.oninput = (e) => {
+            height = ~~(e.target as HTMLInputElement).value.replaceAll(/[^\d]/gi, '') || 30;
             comparison = getComparison(width, height);
         };
     });
