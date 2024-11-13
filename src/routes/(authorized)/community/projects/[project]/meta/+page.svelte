@@ -8,11 +8,11 @@
     import Icon from '@iconify/svelte';
     import Attention from '$lib/components/Attention.svelte';
     import { getComparison } from '$lib/utils';
-    import { onMount } from 'svelte';
+    import { onMount } from 'svelte';    
 
     export let data: PageServerData & { user: User; project: Project };
 
-    let loadingPublish = false;
+    let loadingPublish = false;    
 
     let publishDialog: HTMLDialogElement;
     let privateDialog: HTMLDialogElement;
@@ -366,7 +366,7 @@
                                     return update();
                                 }
 
-                                spawn({ message: 'Projeto publicado com sucesso!' });
+                                spawn({ message: 'Projeto publicado com sucesso!' });  
 
                                 return update();
                             };
