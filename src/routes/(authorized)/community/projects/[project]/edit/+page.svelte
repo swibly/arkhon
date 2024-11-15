@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Canvas } from 'fabric';
+    import { BaseBrush, Canvas, PencilBrush } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -28,28 +28,35 @@
     $: (function () {
         if (canvas === undefined) return;
 
+        function disableAll(enable: boolean = false) {
+            canvas.discardActiveObject();
+            canvas.selection = enable;
+            canvas.isDrawingMode = false;
+            for (const object of canvas.getObjects()) {
+                if (object.selectable === false && object.evented === false) continue;
+                setPermissionsForObject(object, enable);
+            }
+        }
+
         switch ($tool) {
             case Tool.Polygon:
             case Tool.Selection:
-                canvas.discardActiveObject();
-                canvas.selection = true;
-                for (const object of canvas.getObjects()) {
-                    if (object.selectable === false && object.evented === false) continue;
-                    setPermissionsForObject(object, true);
-                }
+                disableAll(true);
                 break;
+
+            case Tool.Brush:
+                disableAll(false);
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush = new PencilBrush(canvas);
+                canvas.freeDrawingBrush.width = 10;
+                break;
+
             case Tool.Hand:
             case Tool.Text:
             case Tool.Line:
-            case Tool.Brush:
             case Tool.Square:
             case Tool.Circle:
-                canvas.discardActiveObject();
-                canvas.selection = false;
-                for (const object of canvas.getObjects()) {
-                    if (object.selectable === false && object.evented === false) continue;
-                    setPermissionsForObject(object, false);
-                }
+                disableAll(false);
                 break;
         }
     })();
@@ -118,8 +125,26 @@
                 case 'h':
                     tool.set(Tool.Hand);
                     break;
+                case 's':
+                    tool.set(Tool.Selection);
+                    break;
                 case 'b':
                     tool.set(Tool.Brush);
+                    break;
+                case 't':
+                    tool.set(Tool.Text);
+                    break;
+                case 'l':
+                    tool.set(Tool.Line);
+                    break;
+                case 'q':
+                    tool.set(Tool.Square);
+                    break;
+                case 'c':
+                    tool.set(Tool.Circle);
+                    break;
+                case 'p':
+                    tool.set(Tool.Polygon);
                     break;
             }
         }
