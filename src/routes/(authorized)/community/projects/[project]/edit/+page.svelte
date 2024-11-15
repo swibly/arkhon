@@ -4,15 +4,22 @@
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
     import type { User } from '$lib/user';
-    import { renderFromData, centerView, getCanvasObjects } from '$lib/editor/utils';
+    import {
+        renderFromData,
+        centerView,
+        getCanvasObjects,
+        setPermissionsForObject
+    } from '$lib/editor/utils';
     import { loadEventListeners } from '$lib/editor/eventListeners';
-    import { tool, Tool } from '$lib/stores/tool';
+    import { tool, Tool, tools } from '$lib/stores/tool';
     import CanvasItem from '$lib/components/editor/CanvasItem.svelte';
     import { hasPermissions } from '$lib/utils';
+    import Icon from '@iconify/svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
     let body: HTMLDivElement;
+    let header: HTMLDivElement;
     let aside: HTMLDivElement;
     let canvasContainer: HTMLDivElement;
     let canvas: Canvas;
@@ -23,10 +30,27 @@
 
         switch ($tool) {
             case Tool.Hand:
+                canvas.discardActiveObject();
                 canvas.selection = false;
+                for (const object of canvas.getObjects()) {
+                    if (object.selectable === false && object.evented === false) continue;
+                    setPermissionsForObject(object, false);
+                }
+                break;
+            case Tool.Selection:
+                canvas.discardActiveObject();
+                canvas.selection = true;
+                for (const object of canvas.getObjects()) {
+                    if (object.selectable === false && object.evented === false) continue;
+                    setPermissionsForObject(object, true);
+                }
                 break;
             case Tool.Brush:
-                canvas.selection = true;
+                canvas.discardActiveObject();
+                for (const object of canvas.getObjects()) {
+                    if (object.selectable === false && object.evented === false) continue;
+                    setPermissionsForObject(object, false);
+                }
                 break;
         }
     })();
@@ -54,7 +78,7 @@
 
         canvas.setDimensions({
             width: body.clientWidth - aside.clientWidth,
-            height: body.clientHeight
+            height: body.clientHeight - header.clientHeight
         });
     }
 
@@ -109,16 +133,39 @@
     <title>Editando {data.project.name} - Swibly Arkhon</title>
 </svelte:head>
 
-<div bind:this={body} class="flex w-full h-[calc(100vh-89px-2rem)]">
-    <div bind:this={aside} class="pr-4 w-60">
-        <h2 class="text-secondary">{data.project.name}</h2>
+<div bind:this={body} class="flex flex-col w-full h-[calc(100vh-89px-2rem)]">
+    <div bind:this={header} class="flex items-center pb-4 border-b border-base-200">
+        <h2 class="text-primary font-semibold">{data.project.name}</h2>
 
-        <ul class="menu menu-xs rounded-lg w-full max-w-xs">
-            {#each objects as object}
-                <CanvasItem {canvas} {...object} />
-            {/each}
-        </ul>
+        <div class="divider divider-horizontal divider-start divider-end mx-1" />
+
+        {#if hasPermissions(data.user, data.project, ['allow_edit'])}
+            <section>
+                {#each tools as toolObject}
+                    <div class="tooltip tooltip-bottom" data-tip={toolObject.name}>
+                        <button
+                            class="btn btn-sm btn-square"
+                            class:btn-secondary={$tool === toolObject.tool}
+                            class:btn-ghost={$tool !== toolObject.tool}
+                            on:click={() => ($tool = toolObject.tool)}
+                        >
+                            <Icon icon={toolObject.icon} class="text-lg" />
+                        </button>
+                    </div>
+                {/each}
+            </section>
+        {/if}
     </div>
 
-    <div bind:this={canvasContainer} />
+    <div class="flex">
+        <div bind:this={aside} class="pr-4 border-r border-base-200 w-60 shrink-0">
+            <ul class="menu menu-xs rounded-lg w-full max-w-xs">
+                {#each objects as object}
+                    <CanvasItem {canvas} {...object} />
+                {/each}
+            </ul>
+        </div>
+
+        <div bind:this={canvasContainer} />
+    </div>
 </div>

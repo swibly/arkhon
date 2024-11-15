@@ -10,24 +10,29 @@ export async function renderFromData(
     const loadedCanvas = await canvas.loadFromJSON(data.content ?? {});
 
     if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
+        canvas.selection = false;
         loadedCanvas.forEachObject((object) => {
-            canvas.selection = false;
-            object.lockMovementX = true;
-            object.lockMovementY = true;
-            object.lockRotation = true;
-            object.lockScalingX = true;
-            object.lockScalingY = true;
-            object.lockSkewingX = true;
-            object.lockSkewingY = true;
-            object.lockScalingFlip = true;
-            object.hasControls = false;
-            object.hoverCursor = 'default';
+            setPermissionsForObject(object, false, true);
         });
     }
 
     drawGrid(canvas, data);
 
     canvas.requestRenderAll();
+}
+
+export function setPermissionsForObject(object: FabricObject, allowEdit: boolean, showBorders: boolean = false) {
+    object.lockMovementX = !allowEdit;
+    object.lockMovementY = !allowEdit;
+    object.lockRotation = !allowEdit;
+    object.lockScalingX = !allowEdit;
+    object.lockScalingY = !allowEdit;
+    object.lockSkewingX = !allowEdit;
+    object.lockSkewingY = !allowEdit;
+    object.lockScalingFlip = !allowEdit;
+    object.hasControls = allowEdit;
+    object.hasBorders = showBorders;
+    object.hoverCursor = !allowEdit ? 'default' : null;
 }
 
 export function centerView(
