@@ -4,6 +4,7 @@
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
     import type { User } from '$lib/user';
+    import { hasPermissions } from '$lib/utils';
 
     export let data: LayoutServerData & { user: User };
 
@@ -17,7 +18,7 @@
         <Icon icon="mdi:alert" />
         Este projeto está na lixeira do dono. Você pode estar vendo uma versão antiga.
 
-        {#if data.user.id === data.project.owner_id || data.project.allowed_users.filter((x) => x.id === data.user.id && x.allow_delete === true).length > 0}
+        {#if hasPermissions(data.user, data.project, ['allow_delete'])}
             <form
                 action="/community/projects/{data.project.id}?/restore"
                 method="POST"

@@ -1,6 +1,7 @@
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
-import { Canvas, Line } from 'fabric';
+import { hasPermissions } from '$lib/utils';
+import { Canvas, Group, Line, Point } from 'fabric';
 
 export async function renderFromData(
     canvas: Canvas,
@@ -8,19 +9,9 @@ export async function renderFromData(
 ) {
     const loadedCanvas = await canvas.loadFromJSON(data.content ?? {});
 
-    if (
-        data.user.id !== data.project.owner_id &&
-        !data.project.allowed_users.some((x) => x.id === data.user.id && x.allow_edit)
-    ) {
+    if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
         loadedCanvas.forEachObject((object) => {
-            object.lockMovementX = true;
-            object.lockMovementY = true;
-            object.lockRotation = true;
-            object.lockScalingX = true;
-            object.lockScalingY = true;
-            object.lockSkewingX = true;
-            object.lockSkewingY = true;
-            object.hasControls = false;
+            object.selectable = false;
             object.hoverCursor = 'default';
         });
     }
@@ -33,12 +24,11 @@ export async function renderFromData(
         lines.push(
             new Line([x, 0, x, data.project.height * gridSize], {
                 stroke: '#A3A3A3',
-                strokeWidth: 2,
-                selectable: false,
-                evented: false,
+                strokeWidth: 1,
                 strokeUniform: true,
-                opacity: 1,
-                excludeFromExport: true
+                opacity: 0.5,
+                selectable: false,
+                evented: false
             })
         );
     }
@@ -48,16 +38,36 @@ export async function renderFromData(
         lines.push(
             new Line([0, y, data.project.width * gridSize, y], {
                 stroke: '#A3A3A3',
-                strokeWidth: 2,
-                selectable: false,
-                evented: false,
+                strokeWidth: 1,
                 strokeUniform: true,
-                opacity: 1,
-                excludeFromExport: true
+                opacity: 0.5,
+                selectable: false,
+                evented: false
             })
         );
     }
 
-    canvas.add(...lines);
+    const lineGroup = new Group(lines, {
+        selectable: false,
+        evented: false,
+        excludeFromExport: true
+    });
+
+    canvas.add(lineGroup);
+    canvas.sendObjectToBack(lineGroup);
     canvas.requestRenderAll();
+}
+
+export function centerView(canvas: Canvas, data: { project: Project }) {
+    let zoom = canvas.getZoom();
+
+    canvas.setZoom(1);
+
+    const viewWidth = canvas.width / zoom;
+    const viewHeight = canvas.height / zoom;
+    const x = (data.project.width * 100) / 2 - viewWidth / 2;
+    const y = (data.project.height * 100) / 2 - viewHeight / 2;
+
+    canvas.absolutePan(new Point({ x: x, y: y }));
+    canvas.setZoom(zoom);
 }
