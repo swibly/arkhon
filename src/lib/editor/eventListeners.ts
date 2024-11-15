@@ -41,7 +41,7 @@ export function loadEventListeners(canvas: Canvas) {
         zoom *= 0.999 ** delta;
 
         if (zoom > 3) zoom = 3;
-        if (zoom < 0.3) zoom = 0.3;
+        if (zoom < 0.1) zoom = 0.1;
 
         canvas.zoomToPoint(new Point({ x: event.offsetX, y: event.offsetY }), zoom);
 

@@ -37,24 +37,6 @@
 
     $: objects = getCanvasObjects(canvas);
 
-    function formatCanvasObject(object: CanvasObject): string {
-        const { name, type, children } = object;
-
-        if (children && children.length > 0) {
-            const items = children.map(formatCanvasObject).join('');
-            return `<li>
-                        <details open>
-                            <summary>${name}</summary>
-                            <ul>
-                                ${items}
-                            </ul>
-                        </details>
-                    </li>`;
-        } else {
-            return `<li><a>${name}</a></li>`;
-        }
-    }
-
     function updateCanvasDimensions() {
         if (!canvas) return;
 
