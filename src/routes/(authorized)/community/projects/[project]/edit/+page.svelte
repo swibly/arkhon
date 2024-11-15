@@ -73,12 +73,10 @@
             imageSmoothingEnabled: false
         });
 
-        canvas.setZoom(0.5);
-
         updateCanvasDimensions();
 
         await renderFromData(canvas, data);
-        centerView(canvas, data);
+        centerView(canvas, data, 0);
 
         loadEventListeners(canvas);
 

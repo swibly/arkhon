@@ -1,7 +1,7 @@
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
-import { Canvas, FabricObject, Group, Path, Point } from 'fabric';
+import { Canvas, FabricObject, Group, Path, Point, util } from 'fabric';
 
 export async function renderFromData(
     canvas: Canvas,
@@ -11,7 +11,7 @@ export async function renderFromData(
 
     if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
         loadedCanvas.forEachObject((object) => {
-            object.selectable = false;
+            //object.selectable = false;
             object.hoverCursor = 'default';
         });
     }
@@ -21,18 +21,85 @@ export async function renderFromData(
     canvas.requestRenderAll();
 }
 
-export function centerView(canvas: Canvas, data: { project: Project }) {
-    let zoom = canvas.getZoom();
+export function centerView(
+    canvas: Canvas,
+    data: { project: { width: number; height: number } },
+    duration: number = 500
+) {
+    const currentZoom = canvas.getZoom();
+    const targetZoom = 1;
 
-    canvas.setZoom(1);
+    const viewWidth = canvas.width / targetZoom;
+    const viewHeight = canvas.height / targetZoom;
 
-    const viewWidth = canvas.width / zoom;
-    const viewHeight = canvas.height / zoom;
-    const x = (data.project.width * 100) / 2 - viewWidth / 2;
-    const y = (data.project.height * 100) / 2 - viewHeight / 2;
+    const targetX = (data.project.width * 100) / 2 - viewWidth / 2;
+    const targetY = (data.project.height * 100) / 2 - viewHeight / 2;
 
-    canvas.absolutePan(new Point({ x: x, y: y }));
-    canvas.setZoom(zoom);
+    const currentTransform = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+    const currentX = -currentTransform[4];
+    const currentY = -currentTransform[5];
+
+    util.animate({
+        startValue: 0,
+        endValue: 1,
+        duration,
+        easing: util.ease.easeInOutCubic,
+        onChange: (value: number) => {
+            const interpolatedZoom = currentZoom + (targetZoom - currentZoom) * value;
+
+            canvas.setZoom(interpolatedZoom);
+
+            const interpolatedX = currentX + (targetX - currentX) * value;
+            const interpolatedY = currentY + (targetY - currentY) * value;
+
+            canvas.absolutePan(new Point(interpolatedX, interpolatedY));
+        },
+        onComplete: () => {
+            canvas.setZoom(targetZoom);
+            canvas.absolutePan(new Point(targetX, targetY));
+        }
+    });
+}
+
+export function centerViewOnObject(canvas: Canvas, object: FabricObject, duration: number = 500) {
+    const currentZoom = canvas.getZoom();
+    const targetZoom = 1;
+
+    const boundingRect = object.getBoundingRect();
+
+    const vpw = canvas.width / targetZoom;
+    const vph = canvas.height / targetZoom;
+
+    const objectCenterX = (boundingRect.left + boundingRect.width / 2) * targetZoom;
+    const objectCenterY = (boundingRect.top + boundingRect.height / 2) * targetZoom;
+
+    const targetX = objectCenterX - vpw / 2;
+    const targetY = objectCenterY - vph / 2;
+
+    const currentTransform = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+    const currentX = -currentTransform[4];
+    const currentY = -currentTransform[5];
+
+    util.animate({
+        startValue: 0,
+        endValue: 1,
+        duration,
+        easing: util.ease.easeInOutCubic,
+        onChange: (value: number) => {
+            const interpolatedZoom = currentZoom + (targetZoom - currentZoom) * value;
+
+            canvas.setZoom(interpolatedZoom);
+
+            const interpolatedX = currentX + (targetX - currentX) * value;
+            const interpolatedY = currentY + (targetY - currentY) * value;
+
+            canvas.absolutePan(new Point(interpolatedX, interpolatedY));
+        },
+        onComplete: () => {
+            canvas.setZoom(targetZoom);
+            canvas.absolutePan(new Point(targetX, targetY));
+        }
+    });
 }
 
 function drawGrid(canvas: Canvas, data: { project: Project }) {
