@@ -1,19 +1,14 @@
 <script lang="ts">
-    import { Canvas, FabricObject } from 'fabric';
+    import { Canvas } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
     import type { User } from '$lib/user';
-    import {
-        renderFromData,
-        centerView,
-        getCanvasObjects,
-        type CanvasObject
-    } from '$lib/editor/utils';
+    import { renderFromData, centerView, getCanvasObjects } from '$lib/editor/utils';
     import { loadEventListeners } from '$lib/editor/eventListeners';
     import { tool, Tool } from '$lib/stores/tool';
-    import UserProfileCard from '$lib/components/UserProfileCard.svelte';
     import CanvasItem from '$lib/components/editor/CanvasItem.svelte';
+    import { hasPermissions } from '$lib/utils';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -21,6 +16,7 @@
     let aside: HTMLDivElement;
     let canvasContainer: HTMLDivElement;
     let canvas: Canvas;
+    let previousTool: Tool | null = null;
 
     $: (function () {
         if (canvas === undefined) return;
@@ -36,6 +32,22 @@
     })();
 
     $: objects = getCanvasObjects(canvas);
+
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === ' ') {
+            if (previousTool === null) {
+                previousTool = $tool;
+                tool.set(Tool.Hand);
+            }
+        }
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
+        if (event.key === ' ' && previousTool !== null) {
+            tool.set(previousTool);
+            previousTool = null;
+        }
+    }
 
     function updateCanvasDimensions() {
         if (!canvas) return;
@@ -55,6 +67,10 @@
             imageSmoothingEnabled: false
         });
 
+        if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
+            $tool = Tool.Hand;
+        }
+
         updateCanvasDimensions();
 
         await renderFromData(canvas, data);
@@ -72,15 +88,20 @@
 <svelte:window
     on:auxclick={() => centerView(canvas, data)}
     on:resize={updateCanvasDimensions}
+    on:keyup={handleKeyUp}
     on:keydown={function (event) {
-        switch (event.key) {
-            case 'h':
-                tool.set(Tool.Hand);
-                break;
-            case 'b':
-                tool.set(Tool.Brush);
-                break;
+        if (hasPermissions(data.user, data.project, ['allow_edit'])) {
+            switch (event.key) {
+                case 'h':
+                    tool.set(Tool.Hand);
+                    break;
+                case 'b':
+                    tool.set(Tool.Brush);
+                    break;
+            }
         }
+
+        handleKeyDown(event);
     }}
 />
 
@@ -90,21 +111,7 @@
 
 <div bind:this={body} class="flex w-full h-[calc(100vh-89px-2rem)]">
     <div bind:this={aside} class="pr-4 w-60">
-        <h2>{data.project.name}</h2>
-
-        <p class="flex gap-2">
-            Por:
-            <UserProfileCard
-                minified
-                selfID={data.user.id}
-                pfp={data.project.owner_pfp}
-                lastname={data.project.owner_lastname}
-                username={data.project.owner_username}
-                verified={data.project.owner_verified}
-                firstname={data.project.owner_firstname}
-                id={data.project.owner_id}
-            />
-        </p>
+        <h2 class="text-secondary">{data.project.name}</h2>
 
         <ul class="menu menu-xs rounded-lg w-full max-w-xs">
             {#each objects as object}

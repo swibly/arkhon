@@ -11,7 +11,16 @@ export async function renderFromData(
 
     if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
         loadedCanvas.forEachObject((object) => {
-            //object.selectable = false;
+            canvas.selection = false;
+            object.lockMovementX = true;
+            object.lockMovementY = true;
+            object.lockRotation = true;
+            object.lockScalingX = true;
+            object.lockScalingY = true;
+            object.lockSkewingX = true;
+            object.lockSkewingY = true;
+            object.lockScalingFlip = true;
+            object.hasControls = false;
             object.hoverCursor = 'default';
         });
     }
