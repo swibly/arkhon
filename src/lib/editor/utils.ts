@@ -213,3 +213,17 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
     const objects = canvas?.getObjects().filter((x) => x.selectable && x.evented) ?? [];
     return traverseObjects(objects);
 }
+
+export function updateCanvasDimensions(
+    canvas: Canvas,
+    body: HTMLElement,
+    aside: HTMLElement,
+    header: HTMLElement
+) {
+    if (!canvas) return;
+
+    canvas.setDimensions({
+        width: body.clientWidth - aside.clientWidth,
+        height: body.clientHeight - header.clientHeight
+    });
+}

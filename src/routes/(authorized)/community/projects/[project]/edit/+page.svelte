@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BaseBrush, Canvas, PencilBrush } from 'fabric';
+    import { Canvas, PencilBrush } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -8,7 +8,8 @@
         renderFromData,
         centerView,
         getCanvasObjects,
-        setPermissionsForObject
+        setPermissionsForObject,
+        updateCanvasDimensions
     } from '$lib/editor/utils';
     import { loadEventListeners } from '$lib/editor/eventListeners';
     import { tool, Tool, tools } from '$lib/stores/tool';
@@ -88,15 +89,6 @@
         }
     }
 
-    function updateCanvasDimensions() {
-        if (!canvas) return;
-
-        canvas.setDimensions({
-            width: body.clientWidth - aside.clientWidth,
-            height: body.clientHeight - header.clientHeight
-        });
-    }
-
     onMount(async function () {
         const canvasElement = document.createElement('canvas');
         canvasContainer.appendChild(canvasElement);
@@ -110,7 +102,7 @@
             $tool = Tool.Hand;
         }
 
-        updateCanvasDimensions();
+        updateCanvasDimensions(canvas, body, aside, header);
 
         await renderFromData(canvas, data);
         centerView(canvas, data, 0);
@@ -126,7 +118,7 @@
 
 <svelte:window
     on:auxclick={() => centerView(canvas, data)}
-    on:resize={updateCanvasDimensions}
+    on:resize={() => updateCanvasDimensions(canvas, body, aside, header)}
     on:keyup={handleKeyUp}
     on:keydown={function (event) {
         if (hasPermissions(data.user, data.project, ['allow_edit'])) {
@@ -176,10 +168,7 @@
                             class="btn btn-sm btn-square"
                             class:btn-secondary={$tool === toolObject.tool}
                             class:btn-ghost={$tool !== toolObject.tool}
-                            on:click={() => {
-                                $tool = toolObject.tool;
-                                console.log($tool);
-                            }}
+                            on:click={() => ($tool = toolObject.tool)}
                         >
                             <Icon icon={toolObject.icon} class="text-lg" />
                         </button>
