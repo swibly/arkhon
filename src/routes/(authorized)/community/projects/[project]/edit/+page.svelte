@@ -29,14 +29,7 @@
         if (canvas === undefined) return;
 
         switch ($tool) {
-            case Tool.Hand:
-                canvas.discardActiveObject();
-                canvas.selection = false;
-                for (const object of canvas.getObjects()) {
-                    if (object.selectable === false && object.evented === false) continue;
-                    setPermissionsForObject(object, false);
-                }
-                break;
+            case Tool.Polygon:
             case Tool.Selection:
                 canvas.discardActiveObject();
                 canvas.selection = true;
@@ -45,8 +38,13 @@
                     setPermissionsForObject(object, true);
                 }
                 break;
+            case Tool.Hand:
+            case Tool.Text:
             case Tool.Brush:
+            case Tool.Square:
+            case Tool.Circle:
                 canvas.discardActiveObject();
+                canvas.selection = false;
                 for (const object of canvas.getObjects()) {
                     if (object.selectable === false && object.evented === false) continue;
                     setPermissionsForObject(object, false);
@@ -134,20 +132,19 @@
 </svelte:head>
 
 <div bind:this={body} class="flex flex-col w-full h-[calc(100vh-89px-2rem)]">
-    <div bind:this={header} class="flex items-center pb-4 border-b border-base-200">
-        <h2 class="text-primary font-semibold">{data.project.name}</h2>
-
-        <div class="divider divider-horizontal divider-start divider-end mx-1" />
-
+    <div bind:this={header} class="flex items-center justify-between pb-4 border-b border-base-200">
         {#if hasPermissions(data.user, data.project, ['allow_edit'])}
-            <section>
+            <section class="space-x-1">
                 {#each tools as toolObject}
                     <div class="tooltip tooltip-bottom" data-tip={toolObject.name}>
                         <button
                             class="btn btn-sm btn-square"
                             class:btn-secondary={$tool === toolObject.tool}
                             class:btn-ghost={$tool !== toolObject.tool}
-                            on:click={() => ($tool = toolObject.tool)}
+                            on:click={() => {
+                                $tool = toolObject.tool;
+                                console.log($tool);
+                            }}
                         >
                             <Icon icon={toolObject.icon} class="text-lg" />
                         </button>
@@ -155,11 +152,20 @@
                 {/each}
             </section>
         {/if}
+
+        <h2 class="text-primary font-semibold">{data.project.name}</h2>
+
+        <button class="btn btn-ghost btn-sm" on:click={() => centerView(canvas, data)}>
+            <Icon icon="material-symbols:camera" />
+            Centralizar
+        </button>
     </div>
 
     <div class="flex">
         <div bind:this={aside} class="pr-4 border-r border-base-200 w-60 shrink-0">
-            <ul class="menu menu-xs rounded-lg w-full max-w-xs">
+            <ul
+                class="menu menu-xs rounded-lg flex-nowrap w-full max-w-xs max-h-[calc(100vh-138px-2rem)] overflow-auto"
+            >
                 {#each objects as object}
                     <CanvasItem {canvas} {...object} />
                 {/each}
