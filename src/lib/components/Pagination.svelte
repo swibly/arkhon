@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import type { Pagination } from '$lib/utils';
 
-    export let pagination: Pagination<any>;    
+    export let pagination: Pagination<any>;
 
     function setupURL(pageNumber: number) {
         const url = $page.url;

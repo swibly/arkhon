@@ -9,21 +9,21 @@ export enum Tool {
 export const tool = writable<Tool>(Tool.Selection);
 
 export const tools = [
-  {
-    name: 'Mover câmera',
-    icon: 'bxs:hand',
-    tool: Tool.Hand
-  },
-  {
-    name: 'Seleção',
-    icon: 'material-symbols:select',
-    tool: Tool.Selection
-  },
-  {
-    name: 'Pintura livre',
-    icon: 'material-symbols:brush',
-    tool: Tool.Brush
-  }
+    {
+        name: 'Mover câmera',
+        icon: 'bxs:hand',
+        tool: Tool.Hand
+    },
+    {
+        name: 'Seleção',
+        icon: 'material-symbols:select',
+        tool: Tool.Selection
+    },
+    {
+        name: 'Pintura livre',
+        icon: 'material-symbols:brush',
+        tool: Tool.Brush
+    }
 ];
 
 export function getTool(): Tool {

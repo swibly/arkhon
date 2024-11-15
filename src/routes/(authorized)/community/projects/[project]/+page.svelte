@@ -435,9 +435,7 @@
 {#if project.fork !== null && (data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0)}
     <dialog bind:this={unlinkDialog} class="modal">
         <div class="modal-box max-w-xl shadow-none flex flex-col gap-2">
-            <span class="text-xl font-bold">
-                Você deseja desvincular-se do projeto original?
-            </span>
+            <span class="text-xl font-bold"> Você deseja desvincular-se do projeto original? </span>
 
             <Attention type="danger">
                 Ao desvincular esta planta baixa do projeto original, ela se tornará um projeto

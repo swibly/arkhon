@@ -247,7 +247,7 @@
         <li>
             <details>
                 <summary class="gap-2">
-                    Material <Icon icon="icon-park-solid:material" class="text-md"/></summary
+                    Material <Icon icon="icon-park-solid:material" class="text-md" /></summary
                 >
                 <ul>
                     <li
@@ -280,7 +280,7 @@
         </li>
         <li>
             <details>
-                <summary class="gap-2"> Estrutura <Icon icon="mdi:wall" class="text-md"/></summary>
+                <summary class="gap-2"> Estrutura <Icon icon="mdi:wall" class="text-md" /></summary>
                 <ul>
                     <li on:click={() => changeObjectType(getActive(canvas), 'chão')}>
                         <a href="#" class="hover:bg-secondary block px-4 py-2 text-sm">Chão</a>

@@ -414,7 +414,6 @@
                                     return update();
                                 }
 
-
                                 spawn({ message: 'Projeto publicado com sucesso!' });
 
                                 return update();

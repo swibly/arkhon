@@ -52,7 +52,11 @@
 {:else}
     <li>
         <div class="flex items-center" class:text-primary={componentID !== undefined}>
-            <button class="flex text-start items-center gap-2 grow" on:click={select} on:dblclick={center}>
+            <button
+                class="flex text-start items-center gap-2 grow"
+                on:click={select}
+                on:dblclick={center}
+            >
                 {#if componentID}
                     <Icon icon="iconamoon:component-fill" />
                 {/if}

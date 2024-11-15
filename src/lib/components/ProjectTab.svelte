@@ -489,8 +489,9 @@
                     class="w-11/12 bg-error h-8 rounded-lg flex flex-col justify-center item-center mt-4"
                 >
                     <h1 class="text-center text-white font-semibold">
-                        O valor da sua planta ultrapassou o orçamento proposto em R${(projectBudget -
-                            limitBudget).toFixed(2)}
+                        O valor da sua planta ultrapassou o orçamento proposto em R${(
+                            projectBudget - limitBudget
+                        ).toFixed(2)}
                     </h1>
                 </section>
             {/if}

@@ -24,7 +24,10 @@
         <div class="divider divider-horizontal mx-1 max-sm:hidden" />
 
         <nav class="max-sm:hidden space-x-2">
-            <a href="/profile/{data.user.username}" class="link link-primary inline-flex items-center gap-1">
+            <a
+                href="/profile/{data.user.username}"
+                class="link link-primary inline-flex items-center gap-1"
+            >
                 <Icon icon="mdi:user" />
                 Perfil
             </a>

@@ -198,7 +198,7 @@
                                             });
                                         } else {
                                             spawn({
-                                              message: 'Usuário adicionado.'
+                                                message: 'Usuário adicionado.'
                                             });
                                         }
 

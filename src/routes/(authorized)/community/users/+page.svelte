@@ -86,7 +86,11 @@
                 <div class="label">
                     <span class="label-text">Ordenar por</span>
                 </div>
-                <select name="order" bind:value={orderBy} class="select select-sm select-bordered w-full">
+                <select
+                    name="order"
+                    bind:value={orderBy}
+                    class="select select-sm select-bordered w-full"
+                >
                     <option value="alphabetic">Ordem Alfabética</option>
                     <option value="order_created" selected>Data de criação</option>
                 </select>
