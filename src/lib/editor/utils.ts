@@ -33,6 +33,7 @@ export function setPermissionsForObject(
     }
 
     canvas.defaultCursor = cursor;
+    canvas.setCursor(canvas.defaultCursor);
 
     object.lockMovementX = !allowEdit;
     object.lockMovementY = !allowEdit;

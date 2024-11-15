@@ -197,12 +197,12 @@
             </button>
 
             {#if hasPermissions(data.user, data.project, ['allow_edit'])}
-                <button class="btn btn-ghost btn-sm" on:click={() => centerView(canvas, data)}>
+                <button class="btn btn-ghost btn-sm">
                     <Icon icon="ic:sharp-save-alt" />
                     Exportar
                 </button>
 
-                <button class="btn btn-secondary btn-sm" on:click={() => centerView(canvas, data)}>
+                <button class="btn btn-secondary btn-sm">
                     <Icon icon="material-symbols:save-sharp" />
                     Salvar
                 </button>
