@@ -12,7 +12,7 @@ export async function renderFromData(
     if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
         canvas.selection = false;
         loadedCanvas.forEachObject((object) => {
-            setPermissionsForObject(object, false, true);
+            setPermissionsForObject(canvas, object, false, true, 'grab');
         });
     }
 
@@ -22,13 +22,17 @@ export async function renderFromData(
 }
 
 export function setPermissionsForObject(
+    canvas: Canvas,
     object: FabricObject,
     allowEdit: boolean,
-    showBorders: boolean = false
+    showBorders: boolean = false,
+    cursor: string = 'default'
 ) {
     if (showBorders === false && allowEdit === true) {
         showBorders = true;
     }
+
+    canvas.defaultCursor = cursor;
 
     object.lockMovementX = !allowEdit;
     object.lockMovementY = !allowEdit;
@@ -40,7 +44,7 @@ export function setPermissionsForObject(
     object.lockScalingFlip = !allowEdit;
     object.hasControls = allowEdit;
     object.hasBorders = showBorders;
-    object.hoverCursor = !allowEdit ? 'default' : null;
+    object.hoverCursor = !allowEdit ? cursor : null;
 }
 
 export function centerView(

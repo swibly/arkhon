@@ -28,13 +28,13 @@
     $: (function () {
         if (canvas === undefined) return;
 
-        function disableAll(enable: boolean = false) {
+        function disableAll(enable: boolean = false, cursor: string = 'default') {
             canvas.discardActiveObject();
             canvas.selection = enable;
             canvas.isDrawingMode = false;
             for (const object of canvas.getObjects()) {
                 if (object.selectable === false && object.evented === false) continue;
-                setPermissionsForObject(object, enable);
+                setPermissionsForObject(canvas, object, enable, enable, cursor);
             }
         }
 
@@ -45,15 +45,24 @@
                 break;
 
             case Tool.Brush:
-                disableAll(false);
+                disableAll(false, 'crosshair');
                 canvas.isDrawingMode = true;
                 canvas.freeDrawingBrush = new PencilBrush(canvas);
                 canvas.freeDrawingBrush.width = 10;
                 break;
 
             case Tool.Hand:
+                disableAll(false, 'grab');
+                break;
+
             case Tool.Text:
+                disableAll(false, 'text');
+                break;
+
             case Tool.Line:
+                disableAll(false, 'crosshair');
+                break;
+
             case Tool.Square:
             case Tool.Circle:
                 disableAll(false);
