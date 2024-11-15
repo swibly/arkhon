@@ -40,6 +40,7 @@
                 break;
             case Tool.Hand:
             case Tool.Text:
+            case Tool.Line:
             case Tool.Brush:
             case Tool.Square:
             case Tool.Circle:
@@ -155,16 +156,30 @@
 
         <h2 class="text-primary font-semibold">{data.project.name}</h2>
 
-        <button class="btn btn-ghost btn-sm" on:click={() => centerView(canvas, data)}>
-            <Icon icon="material-symbols:camera" />
-            Centralizar
-        </button>
+        <section>
+            <button class="btn btn-ghost btn-sm" on:click={() => centerView(canvas, data)}>
+                <Icon icon="material-symbols:camera" />
+                Centralizar
+            </button>
+
+            {#if hasPermissions(data.user, data.project, ['allow_edit'])}
+                <button class="btn btn-ghost btn-sm" on:click={() => centerView(canvas, data)}>
+                    <Icon icon="ic:sharp-save-alt" />
+                    Exportar
+                </button>
+
+                <button class="btn btn-secondary btn-sm" on:click={() => centerView(canvas, data)}>
+                    <Icon icon="material-symbols:save-sharp" />
+                    Salvar
+                </button>
+            {/if}
+        </section>
     </div>
 
     <div class="flex">
         <div bind:this={aside} class="pr-4 border-r border-base-200 w-60 shrink-0">
             <ul
-                class="menu menu-xs rounded-lg flex-nowrap w-full max-w-xs max-h-[calc(100vh-138px-2rem)] overflow-auto"
+                class="menu menu-sm rounded-lg flex-nowrap w-full max-w-xs max-h-[calc(100vh-138px-2rem)] overflow-auto"
             >
                 {#each objects as object}
                     <CanvasItem {canvas} {...object} />
