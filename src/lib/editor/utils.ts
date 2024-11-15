@@ -21,7 +21,15 @@ export async function renderFromData(
     canvas.requestRenderAll();
 }
 
-export function setPermissionsForObject(object: FabricObject, allowEdit: boolean, showBorders: boolean = false) {
+export function setPermissionsForObject(
+    object: FabricObject,
+    allowEdit: boolean,
+    showBorders: boolean = false
+) {
+    if (showBorders === false && allowEdit === true) {
+        showBorders = true;
+    }
+
     object.lockMovementX = !allowEdit;
     object.lockMovementY = !allowEdit;
     object.lockRotation = !allowEdit;
