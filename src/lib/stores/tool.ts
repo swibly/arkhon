@@ -5,6 +5,7 @@ export enum Tool {
     Selection,
     Brush,
     Text,
+    Line,
     Square,
     Circle,
     Polygon
@@ -32,6 +33,11 @@ export const tools = [
         name: 'Texto',
         icon: 'ci:text',
         tool: Tool.Text
+    },
+    {
+        name: 'Linha',
+        icon: 'pepicons-pop:line-x',
+        tool: Tool.Line
     },
     {
         name: 'Quadrado',
