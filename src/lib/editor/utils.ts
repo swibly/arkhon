@@ -1,7 +1,7 @@
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
-import { Canvas, Group, Line, Point } from 'fabric';
+import { Canvas, Group, Line, Path, Point } from 'fabric';
 
 export async function renderFromData(
     canvas: Canvas,
@@ -16,45 +16,8 @@ export async function renderFromData(
         });
     }
 
-    const gridSize = 100;
-    const lines = [];
+    drawGrid(canvas, data);
 
-    for (let i = 0; i <= data.project.width; i++) {
-        const x = i * gridSize;
-        lines.push(
-            new Line([x, 0, x, data.project.height * gridSize], {
-                stroke: '#A3A3A3',
-                strokeWidth: 1,
-                strokeUniform: true,
-                opacity: 0.5,
-                selectable: false,
-                evented: false
-            })
-        );
-    }
-
-    for (let i = 0; i <= data.project.height; i++) {
-        const y = i * gridSize;
-        lines.push(
-            new Line([0, y, data.project.width * gridSize, y], {
-                stroke: '#A3A3A3',
-                strokeWidth: 1,
-                strokeUniform: true,
-                opacity: 0.5,
-                selectable: false,
-                evented: false
-            })
-        );
-    }
-
-    const lineGroup = new Group(lines, {
-        selectable: false,
-        evented: false,
-        excludeFromExport: true
-    });
-
-    canvas.add(lineGroup);
-    canvas.sendObjectToBack(lineGroup);
     canvas.requestRenderAll();
 }
 
@@ -70,4 +33,34 @@ export function centerView(canvas: Canvas, data: { project: Project }) {
 
     canvas.absolutePan(new Point({ x: x, y: y }));
     canvas.setZoom(zoom);
+}
+
+function drawGrid(canvas: Canvas, data: { project: Project }) {
+    const gridSize = 100;
+    const lines = [];
+
+    for (let i = 0; i <= data.project.width; i++) {
+        const x = i * gridSize;
+        lines.push(`M ${x} 0 L ${x} ${data.project.height * gridSize}`);
+    }
+
+    for (let i = 0; i <= data.project.height; i++) {
+        const y = i * gridSize;
+        lines.push(`M 0 ${y} L ${data.project.width * gridSize} ${y}`);
+    }
+
+    const lineGroup = new Path(lines.join(' '), {
+        fill: '',
+        stroke: '#A3A3A3',
+        strokeWidth: 2,
+        strokeUniform: true,
+        selectable: false,
+        evented: false,
+        objectCaching: false,
+        opacity: 0.5,
+        excludeFromExport: true
+    });
+
+    canvas.add(lineGroup);
+    canvas.sendObjectToBack(lineGroup);
 }
