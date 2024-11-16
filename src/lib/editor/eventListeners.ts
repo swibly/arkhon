@@ -1,4 +1,4 @@
-import { ActiveSelection, Canvas, Point } from 'fabric';
+import { ActiveSelection, Canvas, FabricObject, Point } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
 import { copyObjectsToClipboard, pasteObjectsFromClipboard } from './objects';
 import type { Project } from '$lib/projects';
@@ -129,6 +129,12 @@ export async function handleKeybinds(
             break;
         case 'p':
             setTool(Tool.Polygon);
+            break;
+        case 'Backspace':
+        case 'Delete':
+            canvas.remove(...canvas.getActiveObjects());
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
             break;
     }
 }
