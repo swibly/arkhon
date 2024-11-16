@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Canvas } from 'fabric';
+    import { Canvas, FabricObject } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -28,6 +28,7 @@
 
     $: applyCanvasPermissionsBasedOnTool(canvas, $tool);
     $: objects = getCanvasObjects(canvas);
+    $: currentActiveObjects = undefined as FabricObject[] | undefined;
 
     onMount(async function () {
         const canvasElement = document.createElement('canvas');
@@ -53,6 +54,10 @@
 
         canvas.on('object:added', () => (objects = getCanvasObjects(canvas)));
         canvas.on('object:removed', () => (objects = getCanvasObjects(canvas)));
+
+        canvas.on('selection:created', () => (currentActiveObjects = canvas.getActiveObjects()));
+        canvas.on('selection:updated', () => (currentActiveObjects = canvas.getActiveObjects()));
+        canvas.on('selection:cleared', () => (currentActiveObjects = canvas.getActiveObjects()));
     });
 </script>
 
@@ -72,7 +77,7 @@
     <Header bind:element={header} user={data.user} project={data.project} {canvas} />
 
     <div class="flex">
-        <ObjectList bind:element={aside} {canvas} {objects} />
+        <ObjectList bind:element={aside} {canvas} currentActiveObjects={currentActiveObjects} {objects} />
 
         <div bind:this={canvasContainer} />
     </div>
