@@ -1,3 +1,5 @@
+import { applyCanvasPermission } from '$lib/editor/permissions';
+import { Canvas, PencilBrush } from 'fabric';
 import { get, writable } from 'svelte/store';
 
 export enum Tool {
@@ -12,6 +14,7 @@ export enum Tool {
 }
 
 export const tool = writable<Tool>(Tool.Selection);
+export const previousTool = writable<Tool | undefined>(undefined);
 
 export const tools = [
     {
@@ -58,4 +61,51 @@ export const tools = [
 
 export function getTool(): Tool {
     return get(tool);
+}
+
+export function getPreviousTool(): Tool | undefined {
+    return get(previousTool);
+}
+
+export function setTool(selectedTool: Tool) {
+    tool.set(selectedTool);
+}
+
+export function setPreviousTool(selectedTool: Tool | undefined) {
+    previousTool.set(selectedTool);
+}
+
+export function applyCanvasPermissionsBasedOnTool(canvas: Canvas, currentTool: Tool) {
+    if (canvas === undefined) return;
+
+    switch (currentTool) {
+        case Tool.Polygon:
+        case Tool.Selection:
+            applyCanvasPermission(canvas, { selectable: true });
+            break;
+
+        case Tool.Brush:
+            applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });
+            canvas.isDrawingMode = true;
+            canvas.freeDrawingBrush = new PencilBrush(canvas);
+            canvas.freeDrawingBrush.width = 10;
+            break;
+
+        case Tool.Hand:
+            applyCanvasPermission(canvas, { selectable: false, cursor: 'grab' });
+            break;
+
+        case Tool.Text:
+            applyCanvasPermission(canvas, { selectable: false, cursor: 'text' });
+            break;
+
+        case Tool.Line:
+            applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });
+            break;
+
+        case Tool.Square:
+        case Tool.Circle:
+            applyCanvasPermission(canvas, { selectable: false });
+            break;
+    }
 }

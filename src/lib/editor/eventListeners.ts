@@ -1,7 +1,7 @@
 import { Canvas, Point } from 'fabric';
-import { getTool, Tool } from '$lib/stores/tool';
+import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
 
-export function loadEventListeners(canvas: Canvas) {
+export function loadCanvasEventListeners(canvas: Canvas) {
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
 
@@ -48,4 +48,31 @@ export function loadEventListeners(canvas: Canvas) {
         event.preventDefault();
         event.stopPropagation();
     });
+}
+
+export function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
+}
+
+let spaceBarPressed = false;
+
+export function handleSpaceBarPress(event: KeyboardEvent) {
+    if (event.key === ' ' && !spaceBarPressed) {
+        spaceBarPressed = true;
+
+        if (!getPreviousTool()) {
+            setPreviousTool(getTool());
+        }
+        setTool(Tool.Hand);
+    }
+}
+
+export function handleSpaceBarRelease(event: KeyboardEvent) {
+    if (event.key === ' ' && spaceBarPressed) {
+        spaceBarPressed = false;
+
+        if (getPreviousTool()) {
+            setTool(getPreviousTool()!);
+            setPreviousTool(undefined);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { centerViewOnObject, type CanvasObject } from '$lib/editor/utils';
+    import { centerViewOnObject } from '$lib/editor/camera';
+    import type { CanvasObject } from '$lib/editor/objects';
     import Icon from '@iconify/svelte';
     import { Canvas, FabricObject } from 'fabric';
 
