@@ -1,4 +1,4 @@
-import { Canvas, Point } from 'fabric';
+import { ActiveSelection, Canvas, Point } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
 import { copyObjectsToClipboard, pasteObjectsFromClipboard } from './objects';
 import type { Project } from '$lib/projects';
@@ -75,6 +75,21 @@ export async function handleKeybinds(
     if (getTool() !== Tool.Text && editingText === true) return;
 
     switch (event.key) {
+        case 'a':
+            if (event.ctrlKey) {
+                event.preventDefault();
+
+                canvas.discardActiveObject();
+
+                const objects = canvas
+                    .getObjects()
+                    .filter((object) => object.hasControls && object.evented);
+
+                canvas.setActiveObject(new ActiveSelection(objects, { canvas }));
+                canvas.requestRenderAll();
+                break;
+            }
+            break;
         case 'h':
             setTool(Tool.Hand);
             break;
