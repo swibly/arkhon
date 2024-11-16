@@ -4,10 +4,6 @@
 @tailwind variants;
 
 @layer base {
-    * {
-        @apply truncate;
-    }
-
     html {
         font-family: 'Inter', system-ui, sans-serif;
     }
