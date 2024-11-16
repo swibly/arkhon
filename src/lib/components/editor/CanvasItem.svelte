@@ -1,6 +1,7 @@
 <script lang="ts">
     import { centerViewOnObject } from '$lib/editor/camera';
-    import type { CanvasObject } from '$lib/editor/objects';
+    import { lockObject, type CanvasObject } from '$lib/editor/objects';
+    import { applyObjectPermissions } from '$lib/editor/permissions';
     import Icon from '@iconify/svelte';
     import { ActiveSelection, Canvas, FabricObject } from 'fabric';
 
@@ -14,6 +15,7 @@
 
     let open = false;
     $: visible = object.visible;
+    $: userLocked = object.get('userlock') ?? false;
 
     function select(event: MouseEvent) {
         if (event.shiftKey) {
@@ -28,7 +30,13 @@
         } else {
             canvas.setActiveObject(object);
         }
+
         canvas.requestRenderAll();
+    }
+
+    function toggleLock() {
+        userLocked = !userLocked;
+        lockObject(canvas, object, userLocked);
     }
 
     function center() {
@@ -43,7 +51,11 @@
     class:text-secondary-content={object.hasControls &&
         currentActiveObjects?.some((x) => x === object)}
 >
-    <button on:click={select} on:dblclick={center} class="block rounded-none focus:text-secondary-content">
+    <button
+        on:click={select}
+        on:dblclick={center}
+        class="block rounded-none focus:text-secondary-content group"
+    >
         {#if children === undefined || (children ?? []).length === 0}
             <div class="flex items-center rounded-none outline-1 outline-primary">
                 <button
@@ -69,19 +81,39 @@
                     </span>
                 </button>
 
-                <button
-                    class:opacity-50={visible}
-                    on:click={function () {
-                        object.visible = !object.visible;
-                        canvas.requestRenderAll();
-                    }}
-                >
-                    {#if visible}
-                        <Icon icon="mdi:eye" />
-                    {:else}
+                <section class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                    <button
+                        class:opacity-50={visible}
+                        on:click={function () {
+                            object.visible = !object.visible;
+                            canvas.requestRenderAll();
+                        }}
+                    >
+                        {#if visible}
+                            <Icon icon="mdi:eye" />
+                        {:else}
+                            <Icon icon="mdi:eye-off" />
+                        {/if}
+                    </button>
+
+                    <button class:opacity-50={!userLocked} on:click={toggleLock}>
+                        {#if userLocked}
+                            <Icon icon="material-symbols:lock" />
+                        {:else}
+                            <Icon icon="material-symbols:lock-open-right" />
+                        {/if}
+                    </button>
+                </section>
+
+                <section class="flex items-center gap-1 group-hover:hidden">
+                    {#if !visible}
                         <Icon icon="mdi:eye-off" />
                     {/if}
-                </button>
+
+                    {#if userLocked}
+                        <Icon icon="material-symbols:lock" />
+                    {/if}
+                </section>
             </div>
         {:else}
             <div class="flex items-center rounded-none outline-1 outline-primary">
@@ -95,27 +127,47 @@
                     </span>
                 </button>
 
-                <button
-                    class:opacity-50={visible}
-                    on:click={function () {
-                        object.visible = !object.visible;
-                        canvas.requestRenderAll();
-                    }}
-                >
-                    {#if visible}
-                        <Icon icon="mdi:eye" />
-                    {:else}
+                <section class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                    <button
+                        class:opacity-50={visible}
+                        on:click={function () {
+                            object.visible = !object.visible;
+                            canvas.requestRenderAll();
+                        }}
+                    >
+                        {#if visible}
+                            <Icon icon="mdi:eye" />
+                        {:else}
+                            <Icon icon="mdi:eye-off" />
+                        {/if}
+                    </button>
+
+                    <button class:opacity-50={!userLocked} on:click={toggleLock}>
+                        {#if userLocked}
+                            <Icon icon="material-symbols:lock" />
+                        {:else}
+                            <Icon icon="material-symbols:lock-open-right" />
+                        {/if}
+                    </button>
+
+                    <button on:click={() => (open = !open)}>
+                        {#if open}
+                            <Icon icon="eva:arrow-up-fill" />
+                        {:else}
+                            <Icon icon="eva:arrow-down-fill" />
+                        {/if}
+                    </button>
+                </section>
+
+                <section class="flex items-center gap-1 group-hover:hidden">
+                    {#if !visible}
                         <Icon icon="mdi:eye-off" />
                     {/if}
-                </button>
 
-                <button on:click={() => (open = !open)}>
-                    {#if open}
-                        <Icon icon="eva:arrow-up-fill" />
-                    {:else}
-                        <Icon icon="eva:arrow-down-fill" />
+                    {#if userLocked}
+                        <Icon icon="material-symbols:lock" />
                     {/if}
-                </button>
+                </section>
             </div>
             <ul hidden={!open}>
                 {#each children as child}

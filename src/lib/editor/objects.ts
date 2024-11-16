@@ -1,5 +1,6 @@
 import { getClipboard, setClipboard } from '$lib/stores/clipboard';
 import { ActiveSelection, Canvas, FabricObject, Group } from 'fabric';
+import { applyObjectPermissions } from './permissions';
 
 export interface CanvasObject {
     object: FabricObject;
@@ -91,4 +92,13 @@ export async function pasteObjectsFromClipboard(canvas: Canvas) {
 
     canvas.setActiveObject(cloned);
     canvas.requestRenderAll();
+}
+
+export function lockObject(canvas: Canvas, object: FabricObject, lock: boolean) {
+    object.set('userlock', lock);
+
+    applyObjectPermissions(canvas, object, {
+        selectable: !lock,
+        bordered: true
+    });
 }

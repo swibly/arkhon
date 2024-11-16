@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Canvas, FabricObject } from 'fabric';
+    import { ActiveSelection, Canvas, FabricObject } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -55,8 +55,30 @@
         canvas.on('object:added', () => (objects = getCanvasObjects(canvas)));
         canvas.on('object:removed', () => (objects = getCanvasObjects(canvas)));
 
-        canvas.on('selection:created', () => (currentActiveObjects = canvas.getActiveObjects()));
-        canvas.on('selection:updated', () => (currentActiveObjects = canvas.getActiveObjects()));
+        canvas.on('selection:created', ({ selected }) => {
+            const objects = selected.filter((object) => !(object.get('userlock') ?? false));
+
+            if (selected.some((object) => object.get('userlock') === true) && objects.length > 0) {
+                canvas.setActiveObject(new ActiveSelection(objects));
+            }
+
+            currentActiveObjects = objects;
+
+            canvas.requestRenderAll();
+        });
+
+        canvas.on('selection:updated', ({ selected }) => {
+            const objects = selected.filter((object) => !(object.get('userlock') ?? false));
+
+            if (selected.some((object) => object.get('userlock') === true) && objects.length > 0) {
+                canvas.setActiveObject(new ActiveSelection(objects));
+            }
+
+            currentActiveObjects = objects;
+
+            canvas.requestRenderAll();
+        });
+
         canvas.on('selection:cleared', () => (currentActiveObjects = canvas.getActiveObjects()));
     });
 </script>
@@ -77,7 +99,7 @@
     <Header bind:element={header} user={data.user} project={data.project} {canvas} />
 
     <div class="flex">
-        <ObjectList bind:element={aside} {canvas} currentActiveObjects={currentActiveObjects} {objects} />
+        <ObjectList bind:element={aside} {canvas} {currentActiveObjects} {objects} />
 
         <div bind:this={canvasContainer} />
     </div>
