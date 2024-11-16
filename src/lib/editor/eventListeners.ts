@@ -1,6 +1,9 @@
 import { Canvas, Point } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
 import { copyObjectsToClipboard, pasteObjectsFromClipboard } from './objects';
+import type { Project } from '$lib/projects';
+import type { User } from '$lib/user';
+import { hasPermissions } from '$lib/utils';
 
 let editingText = false;
 let spaceBarPressed = false;
@@ -62,7 +65,12 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     });
 }
 
-export async function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
+export async function handleKeybinds(
+    event: KeyboardEvent,
+    canvas: Canvas,
+    user: User,
+    project: Project
+) {
     // TODO: Check if user is typing in textbox
     if (getTool() !== Tool.Text && editingText === true) return;
 
@@ -86,7 +94,7 @@ export async function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
             setTool(Tool.Square);
             break;
         case 'c':
-            if (event.ctrlKey) {
+            if (event.ctrlKey && hasPermissions(user, project, ['allow_edit'])) {
                 copyObjectsToClipboard(canvas);
                 break;
             }
@@ -94,10 +102,11 @@ export async function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
             setTool(Tool.Circle);
             break;
         case 'v':
-            if (event.ctrlKey) {
+            if (event.ctrlKey && hasPermissions(user, project, ['allow_edit'])) {
                 await pasteObjectsFromClipboard(canvas);
                 break;
             }
+
             break;
         case 'p':
             setTool(Tool.Polygon);

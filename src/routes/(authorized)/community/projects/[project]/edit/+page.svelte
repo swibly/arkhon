@@ -62,7 +62,7 @@
     on:keyup={handleSpaceBarRelease}
 />
 
-<svelte:document on:keydown={(event) => handleKeybinds(event, canvas)} />
+<svelte:document on:keydown={(event) => handleKeybinds(event, canvas, data.user, data.project)} />
 
 <svelte:head>
     <title>Editando {data.project.name} - Swibly Arkhon</title>
