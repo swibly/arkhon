@@ -1,12 +1,12 @@
 <script lang="ts">
     import { centerViewOnObject } from '$lib/editor/camera';
     import { lockObject, type CanvasObject } from '$lib/editor/objects';
-    import { applyObjectPermissions } from '$lib/editor/permissions';
     import Icon from '@iconify/svelte';
     import { ActiveSelection, Canvas, FabricObject } from 'fabric';
 
     export let canvas: Canvas;
     export let currentActiveObjects: FabricObject[] | undefined = undefined;
+    export let showControls: boolean;
     export let object: FabricObject;
     export let name: string;
     export let type: string;
@@ -18,19 +18,18 @@
     $: userLocked = object.get('userlock') ?? false;
 
     function select(event: MouseEvent) {
-        if (event.shiftKey) {
-            let objects = canvas.getActiveObjects();
-            if (objects.some((o) => o === object)) {
-                objects = objects.filter((o) => o !== object);
-            } else {
-                objects.push(object);
-            }
+        if (!object.selectable || userLocked || !object.evented) return;
 
-            canvas.setActiveObject(new ActiveSelection(objects));
+        const selection = new ActiveSelection(canvas.getActiveObjects());
+
+        if (event.shiftKey) {
+            selection.add(object);
         } else {
-            canvas.setActiveObject(object);
+            selection.removeAll();
+            selection.add(object);
         }
 
+        canvas.setActiveObject(selection);
         canvas.requestRenderAll();
     }
 
@@ -45,111 +44,60 @@
 </script>
 
 <li
-    class="rounded-none"
-    class:bg-secondary={object.hasControls && currentActiveObjects?.some((x) => x === object)}
-    class:text-primary={componentID !== undefined}
-    class:text-secondary-content={object.hasControls &&
-        currentActiveObjects?.some((x) => x === object)}
+    class:bg-secondary={currentActiveObjects?.some((x) => x === object)}
+    class:text-secondary-content={currentActiveObjects?.some((x) => x === object)}
 >
-    <button
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-interactive-supports-focus -->
+    <div
+        role="button"
         on:click={select}
         on:dblclick={center}
-        class="block rounded-none focus:text-secondary-content group"
+        class="group"
+        class:text-primary={componentID}
     >
-        {#if children === undefined || (children ?? []).length === 0}
-            <div class="flex items-center rounded-none outline-1 outline-primary">
+        {#if componentID}
+            <Icon icon="iconamoon:component-fill" />
+        {:else if type === 'rect'}
+            <Icon icon="tdesign:rectangle" />
+        {:else if type === 'circle'}
+            <Icon icon="material-symbols:circle-outline" />
+        {:else if type === 'i-text'}
+            <Icon icon="ci:text" />
+        {:else if type === 'path'}
+            <Icon icon="streamline:pen-draw-solid" />
+        {:else}
+            <Icon icon="clarity:objects-solid" />
+        {/if}
+
+        <span>
+            {name}
+        </span>
+
+        {#if showControls}
+            <section class="hidden items-center gap-1 group-hover:flex">
                 <button
-                    class="flex text-start items-center gap-2 grow"
-                    class:text-primary={componentID !== undefined}
+                    class:opacity-50={visible}
+                    on:click={function () {
+                        object.visible = !object.visible;
+                        canvas.requestRenderAll();
+                    }}
                 >
-                    {#if componentID}
-                        <Icon icon="iconamoon:component-fill" />
-                    {:else if type === 'rect'}
-                        <Icon icon="tdesign:rectangle" />
-                    {:else if type === 'circle'}
-                        <Icon icon="material-symbols:circle-outline" />
-                    {:else if type === 'i-text'}
-                        <Icon icon="ci:text" />
-                    {:else if type === 'path'}
-                        <Icon icon="streamline:pen-draw-solid" />
+                    {#if visible}
+                        <Icon icon="mdi:eye" />
                     {:else}
-                        <Icon icon="clarity:objects-solid" />
-                    {/if}
-
-                    <span class="line-clamp-1">
-                        {name}
-                    </span>
-                </button>
-
-                <section class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-                    <button
-                        class:opacity-50={visible}
-                        on:click={function () {
-                            object.visible = !object.visible;
-                            canvas.requestRenderAll();
-                        }}
-                    >
-                        {#if visible}
-                            <Icon icon="mdi:eye" />
-                        {:else}
-                            <Icon icon="mdi:eye-off" />
-                        {/if}
-                    </button>
-
-                    <button class:opacity-50={!userLocked} on:click={toggleLock}>
-                        {#if userLocked}
-                            <Icon icon="material-symbols:lock" />
-                        {:else}
-                            <Icon icon="material-symbols:lock-open-right" />
-                        {/if}
-                    </button>
-                </section>
-
-                <section class="flex items-center gap-1 group-hover:hidden">
-                    {#if !visible}
                         <Icon icon="mdi:eye-off" />
                     {/if}
-
-                    {#if userLocked}
-                        <Icon icon="material-symbols:lock" />
-                    {/if}
-                </section>
-            </div>
-        {:else}
-            <div class="flex items-center rounded-none outline-1 outline-primary">
-                <button class="flex text-start items-center gap-2 grow">
-                    {#if componentID}
-                        <Icon icon="iconamoon:component-fill" />
-                    {/if}
-
-                    <span class="line-clamp-1">
-                        {name}
-                    </span>
                 </button>
 
-                <section class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
-                    <button
-                        class:opacity-50={visible}
-                        on:click={function () {
-                            object.visible = !object.visible;
-                            canvas.requestRenderAll();
-                        }}
-                    >
-                        {#if visible}
-                            <Icon icon="mdi:eye" />
-                        {:else}
-                            <Icon icon="mdi:eye-off" />
-                        {/if}
-                    </button>
+                <button class:opacity-50={!userLocked} on:click={toggleLock}>
+                    {#if userLocked}
+                        <Icon icon="material-symbols:lock" />
+                    {:else}
+                        <Icon icon="material-symbols:lock-open-right" />
+                    {/if}
+                </button>
 
-                    <button class:opacity-50={!userLocked} on:click={toggleLock}>
-                        {#if userLocked}
-                            <Icon icon="material-symbols:lock" />
-                        {:else}
-                            <Icon icon="material-symbols:lock-open-right" />
-                        {/if}
-                    </button>
-
+                {#if children && children.length > 0}
                     <button on:click={() => (open = !open)}>
                         {#if open}
                             <Icon icon="eva:arrow-up-fill" />
@@ -157,23 +105,26 @@
                             <Icon icon="eva:arrow-down-fill" />
                         {/if}
                     </button>
-                </section>
+                {/if}
+            </section>
 
-                <section class="flex items-center gap-1 group-hover:hidden">
-                    {#if !visible}
-                        <Icon icon="mdi:eye-off" />
-                    {/if}
+            <section class="flex items-center gap-1 group-hover:hidden">
+                {#if !visible}
+                    <Icon icon="mdi:eye-off" />
+                {/if}
 
-                    {#if userLocked}
-                        <Icon icon="material-symbols:lock" />
-                    {/if}
-                </section>
-            </div>
-            <ul hidden={!open}>
-                {#each children as child}
-                    <svelte:self {canvas} {...child} />
-                {/each}
-            </ul>
+                {#if userLocked}
+                    <Icon icon="material-symbols:lock" />
+                {/if}
+            </section>
         {/if}
-    </button>
+    </div>
+
+    {#if children && children.length > 0}
+        <ul hidden={!open}>
+            {#each children as child}
+                <svelte:self {canvas} {showControls} {...child} />
+            {/each}
+        </ul>
+    {/if}
 </li>

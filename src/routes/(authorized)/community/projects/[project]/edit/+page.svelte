@@ -35,7 +35,6 @@
         canvasContainer.appendChild(canvasElement);
 
         canvas = new Canvas(canvasElement, {
-            preserveObjectStacking: true,
             imageSmoothingEnabled: false
         });
 
@@ -55,28 +54,30 @@
         canvas.on('object:added', () => (objects = getCanvasObjects(canvas)));
         canvas.on('object:removed', () => (objects = getCanvasObjects(canvas)));
 
-        canvas.on('selection:created', ({ selected }) => {
-            const objects = selected.filter((object) => !(object.get('userlock') ?? false));
+        canvas.on('selection:created', () => {
+            const objects = canvas.getActiveObjects();
 
-            if (selected.some((object) => object.get('userlock') === true) && objects.length > 0) {
-                canvas.setActiveObject(new ActiveSelection(objects));
+            if (objects.some((object) => object.get('userlock') === true) && objects.length > 0) {
+                canvas.setActiveObject(
+                    new ActiveSelection(objects.filter((object) => object.get('userlock') !== true))
+                );
+                canvas.requestRenderAll();
             }
 
             currentActiveObjects = objects;
-
-            canvas.requestRenderAll();
         });
 
-        canvas.on('selection:updated', ({ selected }) => {
-            const objects = selected.filter((object) => !(object.get('userlock') ?? false));
+        canvas.on('selection:updated', () => {
+            const objects = canvas.getActiveObjects();
 
-            if (selected.some((object) => object.get('userlock') === true) && objects.length > 0) {
-                canvas.setActiveObject(new ActiveSelection(objects));
+            if (objects.some((object) => object.get('userlock') === true) && objects.length > 0) {
+                canvas.setActiveObject(
+                    new ActiveSelection(objects.filter((object) => object.get('userlock') !== true))
+                );
+                canvas.requestRenderAll();
             }
 
             currentActiveObjects = objects;
-
-            canvas.requestRenderAll();
         });
 
         canvas.on('selection:cleared', () => (currentActiveObjects = canvas.getActiveObjects()));
@@ -99,7 +100,13 @@
     <Header bind:element={header} user={data.user} project={data.project} {canvas} />
 
     <div class="flex">
-        <ObjectList bind:element={aside} {canvas} {currentActiveObjects} {objects} />
+        <ObjectList
+            bind:element={aside}
+            {canvas}
+            showControls={hasPermissions(data.user, data.project, ['allow_edit'])}
+            {currentActiveObjects}
+            {objects}
+        />
 
         <div bind:this={canvasContainer} />
     </div>
