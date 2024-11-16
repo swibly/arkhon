@@ -71,7 +71,7 @@ export async function handleKeybinds(
     user: User,
     project: Project
 ) {
-    // TODO: Check if user is typing in textbox
+    if (!hasPermissions(user, project, ['allow_edit'])) return;
     if (getTool() !== Tool.Text && editingText === true) return;
 
     switch (event.key) {
@@ -94,7 +94,7 @@ export async function handleKeybinds(
             setTool(Tool.Square);
             break;
         case 'c':
-            if (event.ctrlKey && hasPermissions(user, project, ['allow_edit'])) {
+            if (event.ctrlKey) {
                 copyObjectsToClipboard(canvas);
                 break;
             }
@@ -102,7 +102,7 @@ export async function handleKeybinds(
             setTool(Tool.Circle);
             break;
         case 'v':
-            if (event.ctrlKey && hasPermissions(user, project, ['allow_edit'])) {
+            if (event.ctrlKey) {
                 await pasteObjectsFromClipboard(canvas);
                 break;
             }
