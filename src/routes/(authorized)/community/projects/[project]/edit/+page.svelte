@@ -6,6 +6,7 @@
     import type { User } from '$lib/user';
     import { loadCanvasFromData, updateCanvasDimensions } from '$lib/editor/utils';
     import {
+        handleKeybinds,
         handleSpaceBarPress,
         handleSpaceBarRelease,
         loadCanvasEventListeners
@@ -60,6 +61,8 @@
     on:keydown={handleSpaceBarPress}
     on:keyup={handleSpaceBarRelease}
 />
+
+<svelte:document on:keydown={(event) => handleKeybinds(event, canvas)} />
 
 <svelte:head>
     <title>Editando {data.project.name} - Swibly Arkhon</title>

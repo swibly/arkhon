@@ -1,5 +1,9 @@
 import { Canvas, Point } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
+import { copyObjectsToClipboard, pasteObjectsFromClipboard } from './objects';
+
+let editingText = false;
+let spaceBarPressed = false;
 
 export function loadCanvasEventListeners(canvas: Canvas) {
     let movingCamera = false;
@@ -48,12 +52,58 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         event.preventDefault();
         event.stopPropagation();
     });
+
+    canvas.on('text:editing:entered', function () {
+        editingText = true;
+    });
+
+    canvas.on('text:editing:exited', function () {
+        editingText = false;
+    });
 }
 
-export function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
-}
+export async function handleKeybinds(event: KeyboardEvent, canvas: Canvas) {
+    // TODO: Check if user is typing in textbox
+    if (getTool() !== Tool.Text && editingText === true) return;
 
-let spaceBarPressed = false;
+    switch (event.key) {
+        case 'h':
+            setTool(Tool.Hand);
+            break;
+        case 's':
+            setTool(Tool.Selection);
+            break;
+        case 'b':
+            setTool(Tool.Brush);
+            break;
+        case 't':
+            setTool(Tool.Text);
+            break;
+        case 'l':
+            setTool(Tool.Line);
+            break;
+        case 'q':
+            setTool(Tool.Square);
+            break;
+        case 'c':
+            if (event.ctrlKey) {
+                copyObjectsToClipboard(canvas);
+                break;
+            }
+
+            setTool(Tool.Circle);
+            break;
+        case 'v':
+            if (event.ctrlKey) {
+                await pasteObjectsFromClipboard(canvas);
+                break;
+            }
+            break;
+        case 'p':
+            setTool(Tool.Polygon);
+            break;
+    }
+}
 
 export function handleSpaceBarPress(event: KeyboardEvent) {
     if (event.key === ' ' && !spaceBarPressed) {
