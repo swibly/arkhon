@@ -42,15 +42,19 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     });
 
     canvas.on('mouse:wheel', function ({ e: event }) {
-        const delta = event.deltaY;
+        const { deltaX, deltaY } = event;
 
-        let zoom = canvas.getZoom();
-        zoom *= 0.999 ** delta;
+        if (event.ctrlKey) {
+            let zoom = canvas.getZoom();
+            zoom *= 0.999 ** deltaY;
 
-        if (zoom > 3) zoom = 3;
-        if (zoom < 0.1) zoom = 0.1;
+            if (zoom > 3) zoom = 3;
+            if (zoom < 0.1) zoom = 0.1;
 
-        canvas.zoomToPoint(new Point({ x: event.offsetX, y: event.offsetY }), zoom);
+            canvas.zoomToPoint(new Point({ x: event.offsetX, y: event.offsetY }), zoom);
+        } else {
+            canvas.relativePan(new Point({ x: -deltaX, y: -deltaY }));
+        }
 
         event.preventDefault();
         event.stopPropagation();
