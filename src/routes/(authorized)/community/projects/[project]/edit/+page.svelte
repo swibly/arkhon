@@ -16,7 +16,8 @@
     import Header from '$lib/components/editor/Header.svelte';
     import ObjectList from '$lib/components/editor/ObjectList.svelte';
     import { getCanvasObjects } from '$lib/editor/objects';
-    import { centerView } from '$lib/editor/camera';
+    import { centerView, setZoomLevel } from '$lib/editor/camera';
+    import { zoom } from '$lib/stores/zoom';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -50,6 +51,8 @@
         loadCanvasEventListeners(canvas);
 
         objects = getCanvasObjects(canvas);
+
+        canvas.on('after:render', () => ($zoom = canvas.getZoom()));
 
         canvas.on('object:added', () => (objects = getCanvasObjects(canvas)));
         canvas.on('object:removed', () => (objects = getCanvasObjects(canvas)));
@@ -110,4 +113,16 @@
 
         <div bind:this={canvasContainer} />
     </div>
+</div>
+
+<div class="absolute right-4 bottom-4">
+    <button class="btn btn-sm btn-square" on:click={() => setZoomLevel(canvas, $zoom - 0.2, 200)}>
+        -
+    </button>
+    <button class="btn btn-sm" on:click={() => setZoomLevel(canvas, 1, 200)}>
+        {($zoom * 100).toFixed(0)}%
+    </button>
+    <button class="btn btn-sm btn-square" on:click={() => setZoomLevel(canvas, $zoom + 0.2, 200)}>
+        +
+    </button>
 </div>

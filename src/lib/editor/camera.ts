@@ -80,3 +80,36 @@ export function centerViewOnObject(canvas: Canvas, object: FabricObject, duratio
         }
     });
 }
+
+export function setZoomLevel(canvas: Canvas, amount: number, duration: number = 500) {
+    const currentZoom = canvas.getZoom();
+    let targetZoom = amount;
+
+    if (targetZoom >= 3) {
+        targetZoom = 3;
+    }
+
+    if (targetZoom <= 0.1) {
+        targetZoom = 0.1;
+    }
+
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+
+    util.animate({
+        startValue: 0,
+        endValue: 1,
+        duration,
+        easing: util.ease.easeInOutCubic,
+        onChange: (value: number) => {
+            const interpolatedZoom = currentZoom + (targetZoom - currentZoom) * value;
+
+            canvas.zoomToPoint(new Point({ x, y }), interpolatedZoom);
+            canvas.renderAll();
+        },
+        onComplete: () => {
+            canvas.setZoom(targetZoom);
+            canvas.renderAll();
+        }
+    });
+}
