@@ -1,9 +1,10 @@
 import { ActiveSelection, Canvas, FabricObject, Point } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
-import { copyObjectsToClipboard, pasteObjectsFromClipboard } from './objects';
+import { copyObjectsToClipboard, cutObjects, pasteObjectsFromClipboard } from './objects';
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
+import { mouseCoords } from '$lib/stores/mouseCoords';
 
 let editingText = false;
 let spaceBarPressed = false;
@@ -25,19 +26,20 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         movingCamera = false;
     });
 
-    canvas.on('mouse:move', function ({ e: event }) {
+    canvas.on('mouse:move', function ({ e: event,scenePoint }) {
+        const { x, y } = canvas.getViewportPoint(event);
+
+        mouseCoords.set(scenePoint);
+
         if (movingCamera) {
-            requestAnimationFrame(() => {
-                const { x, y } = canvas.getViewportPoint(event);
-                const viewport = canvas.viewportTransform;
+            const viewport = canvas.viewportTransform;
 
-                viewport[4] += x - mouseLastClick.x;
-                viewport[5] += y - mouseLastClick.y;
+            viewport[4] += x - mouseLastClick.x;
+            viewport[5] += y - mouseLastClick.y;
 
-                canvas.setViewportTransform(viewport);
+            canvas.setViewportTransform(viewport);
 
-                mouseLastClick = { x, y };
-            });
+            mouseLastClick = { x, y };
         }
     });
 
@@ -129,6 +131,11 @@ export async function handleKeybinds(
             break;
         case 'p':
             setTool(Tool.Polygon);
+            break;
+        case 'x':
+            if (event.ctrlKey) {
+                cutObjects(canvas);
+            }
             break;
         case 'Backspace':
         case 'Delete':

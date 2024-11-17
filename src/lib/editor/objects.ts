@@ -1,6 +1,8 @@
-import { getClipboard, setClipboard } from '$lib/stores/clipboard';
-import { ActiveSelection, Canvas, FabricObject, Group } from 'fabric';
+import { getClipboard, setClipboard, wasCutOperation } from '$lib/stores/clipboard';
+import { ActiveSelection, Canvas, FabricObject, Group, type XY } from 'fabric';
 import { applyObjectPermissions } from './permissions';
+import { mouseCoords } from '$lib/stores/mouseCoords';
+import { get } from 'svelte/store';
 
 export interface CanvasObject {
     object: FabricObject;
@@ -66,17 +68,38 @@ export function copyObjectsToClipboard(canvas: Canvas) {
         });
 }
 
-export async function pasteObjectsFromClipboard(canvas: Canvas) {
+export function cutObjects(canvas: Canvas) {
+    canvas
+        .getActiveObject()
+        ?.clone()
+        .then((cloned) => {
+            setClipboard(cloned, true);
+            canvas.remove(...canvas.getActiveObjects());
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
+        });
+}
+
+export async function pasteObjectsFromClipboard(canvas: Canvas, pasteAt?: XY) {
     const cloned = await getClipboard()?.clone();
     if (cloned === undefined) return;
 
+    if (wasCutOperation()) {
+        setClipboard(null, true);
+    }
+
     canvas.discardActiveObject();
 
-    cloned.set({
-        left: cloned.left + 10,
-        top: cloned.top + 10,
-        evented: true
-    });
+    const buffer = 10 * ~~!wasCutOperation();
+    let left = cloned.left + buffer;
+    let top = cloned.top + buffer;
+
+    if (pasteAt !== undefined || wasCutOperation()) {
+        left = (pasteAt ?? get(mouseCoords)).x - cloned.getBoundingRect().width / 2;
+        top = (pasteAt ?? get(mouseCoords)).y - cloned.getBoundingRect().height / 2;
+    }
+
+    cloned.set({ left, top, evented: true });
 
     if (cloned instanceof ActiveSelection) {
         cloned.canvas = canvas;
@@ -87,8 +110,10 @@ export async function pasteObjectsFromClipboard(canvas: Canvas) {
         canvas.add(cloned);
     }
 
-    getClipboard()!.top += 10;
-    getClipboard()!.left += 10;
+    if (getClipboard() !== null) {
+        getClipboard()!.top += buffer;
+        getClipboard()!.left += buffer;
+    }
 
     canvas.setActiveObject(cloned);
     canvas.requestRenderAll();
