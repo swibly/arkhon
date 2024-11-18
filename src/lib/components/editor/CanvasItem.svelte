@@ -123,7 +123,7 @@
     {#if children && children.length > 0}
         <ul hidden={!open}>
             {#each children as child}
-                <svelte:self {canvas} {showControls} {...child} />
+                <svelte:self {canvas} {currentActiveObjects} {showControls} {...child} />
             {/each}
         </ul>
     {/if}
