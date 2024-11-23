@@ -48,7 +48,7 @@ export const tools = [
         tool: Tool.Square
     },
     {
-        name: 'Circulo (C)',
+        name: 'Círculo (C)',
         icon: 'ic:twotone-circle',
         tool: Tool.Circle
     },
