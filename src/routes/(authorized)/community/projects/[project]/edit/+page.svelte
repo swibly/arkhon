@@ -18,6 +18,7 @@
     import { getCanvasObjects } from '$lib/editor/objects';
     import { centerView, setZoomLevel } from '$lib/editor/camera';
     import { zoom } from '$lib/stores/zoom';
+    import { canvasObjects } from '$lib/stores/objects';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -28,7 +29,6 @@
     let canvas: Canvas;
 
     $: applyCanvasPermissionsBasedOnTool(canvas, $tool);
-    $: objects = getCanvasObjects(canvas);
     $: currentActiveObjects = undefined as FabricObject[] | undefined;
 
     onMount(async function () {
@@ -50,12 +50,7 @@
 
         loadCanvasEventListeners(canvas);
 
-        objects = getCanvasObjects(canvas);
-
-        canvas.on('after:render', () => ($zoom = canvas.getZoom()));
-
-        canvas.on('object:added', () => (objects = getCanvasObjects(canvas)));
-        canvas.on('object:removed', () => (objects = getCanvasObjects(canvas)));
+        canvasObjects.set(getCanvasObjects(canvas));
 
         canvas.on('selection:created', () => {
             const objects = canvas.getActiveObjects();
@@ -118,7 +113,7 @@
             {canvas}
             showControls={hasPermissions(data.user, data.project, ['allow_edit'])}
             {currentActiveObjects}
-            {objects}
+            objects={$canvasObjects}
         />
 
         <div bind:this={canvasContainer} />

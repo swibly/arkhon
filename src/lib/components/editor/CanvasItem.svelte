@@ -61,7 +61,7 @@
             <Icon icon="tdesign:rectangle" />
         {:else if type === 'circle'}
             <Icon icon="material-symbols:circle-outline" />
-        {:else if type === 'i-text'}
+        {:else if type === 'i-text' || type === 'textbox'}
             <Icon icon="ci:text" />
         {:else if type === 'path'}
             <Icon icon="streamline:pen-draw-solid" />
@@ -69,7 +69,7 @@
             <Icon icon="clarity:objects-solid" />
         {/if}
 
-        <span>
+        <span class="line-clamp-1">
             {name}
         </span>
 

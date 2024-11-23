@@ -1,11 +1,27 @@
-import { ActiveSelection, Canvas, Circle, FabricObject, Point, Rect, type XY } from 'fabric';
+import {
+    ActiveSelection,
+    Canvas,
+    Circle,
+    FabricObject,
+    Point,
+    Rect,
+    Textbox,
+    type XY
+} from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
-import { copyObjectsToClipboard, cutObjects, pasteObjectsFromClipboard } from './objects';
+import {
+    copyObjectsToClipboard,
+    cutObjects,
+    getCanvasObjects,
+    pasteObjectsFromClipboard
+} from './objects';
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
 import { mouseCoords } from '$lib/stores/mouseCoords';
 import { applyObjectPermissions } from './permissions';
+import { zoom } from '$lib/stores/zoom';
+import { canvasObjects } from '$lib/stores/objects';
 
 let editingText = false;
 let spaceBarPressed = false;
@@ -14,9 +30,15 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
 
+    let textbox: Textbox;
     let shape: FabricObject;
     let drawingShape: boolean = false;
     let origin: XY;
+
+    canvas.on('after:render', () => zoom.set(canvas.getZoom()));
+
+    canvas.on('object:added', () => canvasObjects.set(getCanvasObjects(canvas)));
+    canvas.on('object:removed', () => canvasObjects.set(getCanvasObjects(canvas)));
 
     canvas.on('mouse:down', function ({ e: event }) {
         switch (getTool()) {
@@ -55,6 +77,16 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 break;
             }
 
+            case Tool.Text: {
+                const { x, y } = canvas.getScenePoint(event);
+
+                textbox = new Textbox('', { left: x, top: y });
+                canvas.add(textbox);
+
+                canvas.requestRenderAll();
+                break;
+            }
+
             default: {
                 break;
             }
@@ -62,6 +94,13 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     });
 
     canvas.on('mouse:up', function ({ e: event }) {
+        if (getTool() === Tool.Text) {
+            textbox.enterEditing(event);
+            canvas.setActiveObject(textbox);
+            canvas.requestRenderAll();
+            return;
+        }
+
         movingCamera = false;
 
         if (drawingShape) {
@@ -188,8 +227,16 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         editingText = true;
     });
 
-    canvas.on('text:editing:exited', function () {
+    canvas.on('text:editing:exited', function ({ target }) {
         editingText = false;
+
+        if (target.text.trim() === '') {
+            canvas.remove(target);
+        }
+
+        setTool(Tool.Selection);
+
+        canvasObjects.set(getCanvasObjects(canvas));
     });
 }
 
@@ -199,8 +246,7 @@ export async function handleKeybinds(
     user: User,
     project: Project
 ) {
-    if (!hasPermissions(user, project, ['allow_edit'])) return;
-    if (getTool() !== Tool.Text && editingText === true) return;
+    if (!hasPermissions(user, project, ['allow_edit']) || editingText) return;
 
     switch (event.key) {
         case 'a':
@@ -269,6 +315,8 @@ export async function handleKeybinds(
 }
 
 export function handleSpaceBarPress(event: KeyboardEvent) {
+    if (editingText) return;
+
     if (event.key === ' ' && !spaceBarPressed) {
         spaceBarPressed = true;
 
@@ -280,6 +328,8 @@ export function handleSpaceBarPress(event: KeyboardEvent) {
 }
 
 export function handleSpaceBarRelease(event: KeyboardEvent) {
+    if (editingText) return;
+
     if (event.key === ' ' && spaceBarPressed) {
         spaceBarPressed = false;
 
