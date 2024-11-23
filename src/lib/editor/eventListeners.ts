@@ -131,12 +131,34 @@ export function loadCanvasEventListeners(canvas: Canvas) {
             if (origin.x === x && origin.y === y) {
                 if (shape instanceof Rect) {
                     shape.set({ width: 100, height: 100 });
+
+                    shape.setX(shape.left - 50);
+                    shape.setY(shape.top - 50);
                 } else if (shape instanceof Circle) {
                     shape.set({ radius: 50 });
-                }
 
-                shape.setX(shape.left - 50);
-                shape.setY(shape.top - 50);
+                    shape.setX(shape.left - 50);
+                    shape.setY(shape.top - 50);
+                } else if (shape instanceof Polyline) {
+                    shape.set('points', [
+                        { x: x - 50, y },
+                        { x: x + 50, y }
+                    ]);
+
+                    var calcDim = shape._calcDimensions();
+
+                    shape.width = calcDim.width;
+                    shape.height = calcDim.height;
+
+                    shape.set({
+                        left: calcDim.left,
+                        top: calcDim.top,
+                        pathOffset: {
+                            x: calcDim.left + shape.width / 2,
+                            y: calcDim.top + shape.height / 2
+                        }
+                    });
+                }
 
                 shape.setCoords();
                 canvas.requestRenderAll();
