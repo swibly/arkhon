@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
+    import {
+        ActiveSelection,
+        Canvas,
+        controlsUtils,
+        FabricObject,
+        InteractiveFabricObject,
+        Path,
+        util
+    } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';

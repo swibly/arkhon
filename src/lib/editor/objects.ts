@@ -1,5 +1,14 @@
 import { getClipboard, setClipboard, wasCutOperation } from '$lib/stores/clipboard';
-import { ActiveSelection, Canvas, FabricObject, Group, type XY } from 'fabric';
+import {
+    ActiveSelection,
+    Canvas,
+    controlsUtils,
+    FabricObject,
+    Group,
+    Polygon,
+    Polyline,
+    type XY
+} from 'fabric';
 import { applyObjectPermissions } from './permissions';
 import { mouseCoords } from '$lib/stores/mouseCoords';
 import { get } from 'svelte/store';
@@ -77,24 +86,22 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
 }
 
 export function copyObjectsToClipboard(canvas: Canvas) {
-    canvas
-        .getActiveObject()
-        ?.clone()
-        .then((cloned) => {
-            setClipboard(cloned);
-        });
+    const object = canvas.getActiveObject();
+
+    object?.clone().then((cloned) => {
+        setClipboard(cloned);
+    });
 }
 
 export function cutObjects(canvas: Canvas) {
-    canvas
-        .getActiveObject()
-        ?.clone()
-        .then((cloned) => {
-            setClipboard(cloned, true);
-            canvas.remove(...canvas.getActiveObjects());
-            canvas.discardActiveObject();
-            canvas.requestRenderAll();
-        });
+    const object = canvas.getActiveObject();
+
+    object?.clone().then((cloned) => {
+        setClipboard(cloned, true);
+        canvas.remove(...canvas.getActiveObjects());
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+    });
 }
 
 export async function pasteObjectsFromClipboard(canvas: Canvas, pasteAt?: XY) {
@@ -110,6 +117,10 @@ export async function pasteObjectsFromClipboard(canvas: Canvas, pasteAt?: XY) {
     const buffer = 10 * ~~!wasCutOperation();
     let left = cloned.left + buffer;
     let top = cloned.top + buffer;
+
+    if (cloned instanceof Polyline || cloned instanceof Polygon) {
+        cloned.controls = controlsUtils.createPolyControls(cloned);
+    }
 
     if (pasteAt !== undefined || wasCutOperation()) {
         const bounds = cloned.getBoundingRect();
