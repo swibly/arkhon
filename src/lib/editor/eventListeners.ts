@@ -131,12 +131,12 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     });
 
     canvas.on('mouse:move', function ({ e: event, scenePoint }) {
+        mouseCoords.set(scenePoint);
+
         switch (getTool()) {
             case Tool.Hand: {
                 if (movingCamera) {
                     const { x, y } = canvas.getViewportPoint(event);
-
-                    mouseCoords.set(scenePoint);
 
                     const viewport = canvas.viewportTransform;
 

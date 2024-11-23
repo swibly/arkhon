@@ -108,8 +108,10 @@ export async function pasteObjectsFromClipboard(canvas: Canvas, pasteAt?: XY) {
     let top = cloned.top + buffer;
 
     if (pasteAt !== undefined || wasCutOperation()) {
-        left = (pasteAt ?? get(mouseCoords)).x - cloned.getBoundingRect().width / 2;
-        top = (pasteAt ?? get(mouseCoords)).y - cloned.getBoundingRect().height / 2;
+        const bounds = cloned.getBoundingRect();
+
+        left = (pasteAt ?? get(mouseCoords)).x - bounds.width / 2;
+        top = (pasteAt ?? get(mouseCoords)).y - bounds.height / 2;
     }
 
     cloned.set({ left, top, evented: true });
