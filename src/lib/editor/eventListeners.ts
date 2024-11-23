@@ -2,8 +2,10 @@ import {
     ActiveSelection,
     Canvas,
     Circle,
+    controlsUtils,
     FabricObject,
     Point,
+    Polyline,
     Rect,
     Textbox,
     type XY
@@ -50,6 +52,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 break;
             }
 
+            case Tool.Line:
             case Tool.Square:
             case Tool.Circle: {
                 drawingShape = true;
@@ -70,6 +73,11 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
                 if (getTool() === Tool.Square) shape = new Rect(options);
                 else if (getTool() === Tool.Circle) shape = new Circle(options);
+                else if (getTool() === Tool.Line) {
+                    shape = new Polyline([origin, origin], options);
+                    shape.dirty = true;
+                    shape.controls = controlsUtils.createPolyControls(shape as Polyline);
+                }
 
                 applyObjectPermissions(canvas, shape, { selectable: false, cursor: 'crosshair' });
 
@@ -150,6 +158,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 break;
             }
 
+            case Tool.Line:
             case Tool.Circle:
             case Tool.Square: {
                 if (drawingShape) {
@@ -188,6 +197,39 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                             radius,
                             left: origin.x - radius,
                             top: origin.y - radius
+                        });
+                    } else if (shape instanceof Polyline) {
+                        if (event.shiftKey) {
+                            const dx = x - origin.x;
+                            const dy = y - origin.y;
+                            const angle = Math.atan2(dy, dx);
+
+                            const snapAngle = Math.PI / 12;
+                            const snappedAngle = Math.round(angle / snapAngle) * snapAngle;
+
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+
+                            x = origin.x + distance * Math.cos(snappedAngle);
+                            y = origin.y + distance * Math.sin(snappedAngle);
+                        }
+
+                        const points = [...shape.get('points')];
+                        points[1] = { x, y };
+
+                        shape.set({ points });
+
+                        var calcDim = shape._calcDimensions();
+
+                        shape.width = calcDim.width;
+                        shape.height = calcDim.height;
+
+                        shape.set({
+                            left: calcDim.left,
+                            top: calcDim.top,
+                            pathOffset: {
+                                x: calcDim.left + shape.width / 2,
+                                y: calcDim.top + shape.height / 2
+                            }
                         });
                     }
 
