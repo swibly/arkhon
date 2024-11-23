@@ -57,7 +57,7 @@ export function drawGrid(canvas: Canvas, data: { project: Project }) {
     const lineGroup = new Path(lines.join(' '), {
         fill: '',
         stroke: '#A3A3A3',
-        strokeWidth: 2,
+        strokeWidth: 1,
         strokeUniform: true,
         selectable: false,
         evented: false,

@@ -1,29 +1,33 @@
+import type { Project } from '$lib/projects';
+import { mouseCoords } from '$lib/stores/mouseCoords';
+import { canvasObjects } from '$lib/stores/objects';
+import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
+import { zoom } from '$lib/stores/zoom';
+import type { User } from '$lib/user';
+import { hasPermissions } from '$lib/utils';
 import {
     ActiveSelection,
+    type BasicTransformEvent,
     Canvas,
     Circle,
     controlsUtils,
     FabricObject,
     Point,
+    Polygon,
     Polyline,
     Rect,
     Textbox,
+    type TPointerEvent,
     type XY
 } from 'fabric';
-import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
+
 import {
     copyObjectsToClipboard,
     cutObjects,
     getCanvasObjects,
     pasteObjectsFromClipboard
 } from './objects';
-import type { Project } from '$lib/projects';
-import type { User } from '$lib/user';
-import { hasPermissions } from '$lib/utils';
-import { mouseCoords } from '$lib/stores/mouseCoords';
 import { applyObjectPermissions } from './permissions';
-import { zoom } from '$lib/stores/zoom';
-import { canvasObjects } from '$lib/stores/objects';
 
 let editingText = false;
 let spaceBarPressed = false;
@@ -41,6 +45,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
     canvas.on('object:added', () => canvasObjects.set(getCanvasObjects(canvas)));
     canvas.on('object:removed', () => canvasObjects.set(getCanvasObjects(canvas)));
+
+    handleObjectOperations(canvas);
 
     canvas.on('mouse:down', function ({ e: event }) {
         switch (getTool()) {
@@ -193,11 +199,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                             radius = Math.round(radius / 50) * 50;
                         }
 
-                        shape.set({
-                            radius,
-                            left: origin.x - radius,
-                            top: origin.y - radius
-                        });
+                        shape.set({ radius, left: origin.x - radius, top: origin.y - radius });
                     } else if (shape instanceof Polyline) {
                         if (event.shiftKey) {
                             const dx = x - origin.x;
@@ -380,4 +382,129 @@ export function handleSpaceBarRelease(event: KeyboardEvent) {
             setPreviousTool(undefined);
         }
     }
+}
+
+function handleObjectOperations(canvas: Canvas) {
+    function handleTransform({
+        e,
+        target,
+        transform
+    }: BasicTransformEvent<TPointerEvent> & { target: FabricObject }) {
+        if (!target.get('startLeft')) {
+            target.set('startLeft', target.left);
+            target.set('startTop', target.top);
+        }
+
+        switch (transform.action) {
+            case 'drag': {
+                if (e.shiftKey) {
+                    if (e.shiftKey) {
+                        const deltaX = target.left - (target.get('startLeft') || 0);
+                        const deltaY = target.top - (target.get('startTop') || 0);
+
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                            target.top = target.get('startTop') || 0;
+                        } else {
+                            target.left = target.get('startLeft') || 0;
+                        }
+                    }
+                }
+
+                if (e.ctrlKey) {
+                    target.left = Math.round(target.left / 50) * 50;
+                    target.top = Math.round(target.top / 50) * 50;
+                }
+
+                break;
+            }
+
+            case 'rotate': {
+                target.snapAngle = ~~e.shiftKey * 15;
+
+                break;
+            }
+
+            case 'scaleX':
+            case 'scaleY':
+            case 'scale': {
+                target.set('strokeUniform', true);
+
+                if (e.ctrlKey) {
+                    const newWidth = Math.round((target.width * target.scaleX) / 50) * 50;
+                    const newHeight = Math.round((target.height * target.scaleY) / 50) * 50;
+
+                    target.scaleX = newWidth / target.width;
+                    target.scaleY = newHeight / target.height;
+                }
+                break;
+            }
+
+            case 'modifyPoly': {
+                const polygon = target as Polygon;
+                const controlIndex = parseInt(transform.corner.replace('p', ''), 10);
+                const point = polygon.points[controlIndex];
+
+                if (!point) return;
+
+                if (e.shiftKey) {
+                    const prevPoint =
+                        polygon.points[controlIndex - 1] ||
+                        polygon.points[polygon.points.length - 1];
+                    const deltaX = point.x - prevPoint.x;
+                    const deltaY = point.y - prevPoint.y;
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                        point.y = prevPoint.y;
+                    } else {
+                        point.x = prevPoint.x;
+                    }
+                }
+
+                if (e.ctrlKey) {
+                    point.x = Math.round(point.x / 50) * 50;
+                    point.y = Math.round(point.y / 50) * 50;
+                }
+
+                polygon.dirty = true;
+
+                var calcDim = polygon._calcDimensions();
+
+                polygon.width = calcDim.width;
+                polygon.height = calcDim.height;
+
+                polygon.set({
+                    left: calcDim.left,
+                    top: calcDim.top,
+                    pathOffset: {
+                        x: calcDim.left + polygon.width / 2,
+                        y: calcDim.top + polygon.height / 2
+                    }
+                });
+
+                polygon.setCoords();
+                canvas.requestRenderAll();
+
+                break;
+            }
+
+            default: {
+                break;
+            }
+        }
+    }
+
+    canvas.on('object:moving', function (event) {
+        handleTransform(event);
+    });
+
+    canvas.on('object:scaling', function (event) {
+        handleTransform(event);
+    });
+
+    canvas.on('object:rotating', function (event) {
+        handleTransform(event);
+    });
+
+    canvas.on('object:modifyPoly', function (event) {
+        handleTransform(event);
+    });
 }
