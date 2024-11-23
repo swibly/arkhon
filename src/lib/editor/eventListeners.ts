@@ -407,11 +407,16 @@ export function handleSpaceBarRelease(event: KeyboardEvent) {
 }
 
 function handleObjectOperations(canvas: Canvas) {
-    function handleTransform({
-        e,
-        target,
-        transform
-    }: BasicTransformEvent<TPointerEvent> & { target: FabricObject }) {
+    const GRID_SIZE = 50;
+    const SNAP_THRESHOLD = 100;
+
+    function snapToGrid(value: number, gridSize: number = GRID_SIZE): number {
+        return Math.round(value / gridSize) * gridSize;
+    }
+
+    function handleTransform(event: BasicTransformEvent<TPointerEvent> & { target: FabricObject }) {
+        const { e, target, transform } = event;
+
         if (!target.get('startLeft')) {
             target.set('startLeft', target.left);
             target.set('startTop', target.top);
@@ -450,14 +455,85 @@ function handleObjectOperations(canvas: Canvas) {
             case 'scaleY':
             case 'scale': {
                 target.set('strokeUniform', true);
+                target.dirty = true;
 
                 if (e.ctrlKey) {
-                    const newWidth = Math.round((target.width * target.scaleX) / 50) * 50;
-                    const newHeight = Math.round((target.height * target.scaleY) / 50) * 50;
+                    target.lockScalingFlip = true;
 
-                    target.scaleX = newWidth / target.width;
-                    target.scaleY = newHeight / target.height;
+                    const { width, height, scaleX, scaleY, left, top } = target;
+                    const originalWidth = (width ?? 0) * (scaleX ?? 1);
+                    const originalHeight = (height ?? 0) * (scaleY ?? 1);
+                    const currentLeft = left ?? 0;
+                    const currentTop = top ?? 0;
+
+                    const snapLeft = snapToGrid(currentLeft);
+                    const snapTop = snapToGrid(currentTop);
+                    const snapRight = snapToGrid(currentLeft + originalWidth);
+                    const snapBottom = snapToGrid(currentTop + originalHeight);
+
+                    const distLeft = Math.abs(snapLeft - currentLeft);
+                    const distTop = Math.abs(snapTop - currentTop);
+                    const distRight = Math.abs(snapRight - (currentLeft + originalWidth));
+                    const distBottom = Math.abs(snapBottom - (currentTop + originalHeight));
+
+                    let newScaleX = scaleX ?? 1;
+                    let newScaleY = scaleY ?? 1;
+                    let newLeft = currentLeft;
+                    let newTop = currentTop;
+
+                    switch (transform.corner) {
+                        case 'tl':
+                            if (distLeft < SNAP_THRESHOLD) {
+                                newScaleX =
+                                    (originalWidth - (snapLeft - currentLeft)) / (width ?? 1);
+                                newLeft = snapLeft;
+                            }
+                            if (distTop < SNAP_THRESHOLD) {
+                                newScaleY =
+                                    (originalHeight - (snapTop - currentTop)) / (height ?? 1);
+                                newTop = snapTop;
+                            }
+                            break;
+                        case 'tr':
+                            if (distRight < SNAP_THRESHOLD) {
+                                newScaleX = (snapRight - currentLeft) / (width ?? 1);
+                            }
+                            if (distTop < SNAP_THRESHOLD) {
+                                newScaleY =
+                                    (originalHeight - (snapTop - currentTop)) / (height ?? 1);
+                                newTop = snapTop;
+                            }
+                            break;
+                        case 'bl':
+                            if (distLeft < SNAP_THRESHOLD) {
+                                newScaleX =
+                                    (originalWidth - (snapLeft - currentLeft)) / (width ?? 1);
+                                newLeft = snapLeft;
+                            }
+                            if (distBottom < SNAP_THRESHOLD) {
+                                newScaleY = (snapBottom - currentTop) / (height ?? 1);
+                            }
+                            break;
+                        case 'br':
+                            if (distRight < SNAP_THRESHOLD) {
+                                newScaleX = (snapRight - currentLeft) / (width ?? 1);
+                            }
+                            if (distBottom < SNAP_THRESHOLD) {
+                                newScaleY = (snapBottom - currentTop) / (height ?? 1);
+                            }
+                            break;
+                    }
+
+                    target.set({
+                        scaleX: newScaleX,
+                        scaleY: newScaleY,
+                        left: newLeft,
+                        top: newTop
+                    });
+
+                    target.setCoords();
                 }
+
                 break;
             }
 
