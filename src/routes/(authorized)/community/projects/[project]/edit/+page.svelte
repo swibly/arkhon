@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActiveSelection, Canvas, FabricObject } from 'fabric';
+    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -36,8 +36,24 @@
         canvasContainer.appendChild(canvasElement);
 
         canvas = new Canvas(canvasElement, {
-            imageSmoothingEnabled: false
+            imageSmoothingEnabled: false,
+            uniformScaling: false
         });
+
+        InteractiveFabricObject.ownDefaults = {
+            ...InteractiveFabricObject.ownDefaults,
+            padding: 10,
+            borderColor: '#0175AF',
+            cornerColor: '#FFA333',
+            cornerSize: 8,
+            transparentCorners: false,
+            _controlsVisibility: {
+                mt: false,
+                ml: false,
+                mr: false,
+                mb: false
+            }
+        };
 
         if (!hasPermissions(data.user, data.project, ['allow_edit'])) {
             setTool(Tool.Hand);
