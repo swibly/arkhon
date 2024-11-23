@@ -83,7 +83,17 @@
             currentActiveObjects = objects;
         });
 
-        canvas.on('selection:cleared', () => (currentActiveObjects = canvas.getActiveObjects()));
+        canvas.on('selection:cleared', ({ deselected }) => {
+            currentActiveObjects = canvas.getActiveObjects();
+
+            for (const object of deselected) {
+                const bounds = object.getBoundingRect();
+
+                if (bounds.width < 1 || bounds.height < 1) {
+                    canvas.remove(object);
+                }
+            }
+        });
     });
 </script>
 
