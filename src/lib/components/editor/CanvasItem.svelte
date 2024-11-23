@@ -9,6 +9,7 @@
     export let showControls: boolean;
     export let object: FabricObject;
     export let name: string;
+    export let typeTranslated: string;
     export let type: string;
     export let componentID: number | undefined = undefined;
     export let children: CanvasObject[] | undefined = [];
@@ -41,18 +42,6 @@
     function center() {
         centerViewOnObject(canvas, object);
     }
-
-    function simpleNaming(type: string, componentID?: number) {
-        if (componentID) return 'Componente';
-
-        switch (type) {
-            case 'textbox':
-            case 'i-text':
-                return 'Texto';
-            default:
-                return name;
-        }
-    }
 </script>
 
 <li
@@ -70,7 +59,7 @@
     >
         <div
             class="tooltip tooltip-secondary tooltip-right"
-            data-tip={simpleNaming(type, componentID)}
+            data-tip={typeTranslated}
         >
             {#if componentID}
                 <Icon icon="iconamoon:component-fill" />

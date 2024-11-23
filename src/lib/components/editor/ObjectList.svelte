@@ -17,6 +17,7 @@
         {#if objects.length === 0}
             <p class="italic text-center opacity-50">Nenhum objeto no projeto</p>
         {/if}
+
         {#each objects as object}
             <CanvasItem {canvas} {showControls} {currentActiveObjects} {...object} />
         {/each}
