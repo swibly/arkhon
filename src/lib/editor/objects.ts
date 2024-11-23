@@ -7,6 +7,7 @@ import { get } from 'svelte/store';
 export interface CanvasObject {
     object: FabricObject;
     name: string;
+    typeTranslated: string;
     type: string;
     componentID?: number;
     children?: CanvasObject[];
@@ -14,43 +15,55 @@ export interface CanvasObject {
 
 export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
     function traverseObjects(objects: FabricObject[]): CanvasObject[] {
-        return objects.map((obj) => {
-            if (obj.type === 'group' && obj instanceof Group) {
-                return {
-                    object: obj,
-                    name: 'name' in obj ? (obj.name as string) : 'Grupo',
-                    type: 'group',
-                    componentID: 'id' in obj ? (obj.id as number) : undefined,
-                    children: traverseObjects(obj.getObjects())
-                };
-            }
-
-            let name = obj.type;
-
-            if ('text' in obj) {
-                name = obj.text as string;
-            }
-
-            if ('name' in obj) {
-                name = (obj.name as string)[0].toUpperCase() + (obj.name as string).slice(1);
-            }
+        return objects.map((object) => {
+            let name = object.type;
+            let typeTranslated = '';
 
             switch (name) {
                 case 'rect':
                     name = 'Retângulo';
+                    typeTranslated = 'Retângulo';
                     break;
                 case 'circle':
-                    name = 'Circulo';
+                    name = 'Círculo';
+                    typeTranslated = 'Círculo';
                     break;
                 case 'path':
                     name = 'Desenho';
+                    typeTranslated = 'Desenho';
+                    break;
+                case 'i-text':
+                case 'textbox':
+                    typeTranslated = 'Texto';
+                    break;
+                case 'group':
+                    typeTranslated = 'Grupo';
+                    break;
+                default:
+                    name = 'Objeto';
+                    typeTranslated = 'Objeto';
                     break;
             }
 
+            if ('text' in object) {
+                name = object.text as string;
+            }
+
+            if ('name' in object) {
+                name = (object.name as string)[0].toUpperCase() + (object.name as string).slice(1);
+            }
+
+            if ('id' in object) {
+                typeTranslated = 'Componente';
+            }
+
             return {
-                object: obj,
-                name: name,
-                type: obj.type
+                object,
+                name,
+                typeTranslated,
+                type: object.type,
+                componentID: 'id' in object ? (object.id as number) : undefined,
+                children: object instanceof Group ? traverseObjects(object.getObjects()) : undefined
             };
         });
     }
