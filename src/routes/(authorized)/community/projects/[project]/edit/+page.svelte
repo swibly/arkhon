@@ -84,7 +84,7 @@
             for (const object of deselected) {
                 const bounds = object.getBoundingRect();
 
-                if (bounds.width < 1 || bounds.height < 1) {
+                if (bounds.width < 3 || bounds.height < 3) {
                     canvas.remove(object);
                 }
             }
