@@ -102,6 +102,19 @@ export function loadCanvasEventListeners(canvas: Canvas) {
             }
 
             default: {
+                const pointer = canvas.getScenePoint(event);
+
+                const objects = canvas.getObjects().reverse();
+
+                for (let obj of objects) {
+                    if (!obj.selectable || (obj.get('userlock') ?? false) || !obj.evented) continue;
+
+                    if (obj.containsPoint(pointer)) {
+                        canvas.setActiveObject(obj);
+                        canvas.requestRenderAll();
+                        break;
+                    }
+                }
                 break;
             }
         }

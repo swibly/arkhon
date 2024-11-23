@@ -145,4 +145,7 @@ export function lockObject(canvas: Canvas, object: FabricObject, lock: boolean) 
         selectable: !lock,
         bordered: true
     });
+
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
 }

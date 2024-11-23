@@ -45,9 +45,10 @@
 </script>
 
 <li
-    class:bg-secondary={canvas.selection && currentActiveObjects?.some((x) => x === object)}
+    class:bg-secondary={canvas.selection &&
+        currentActiveObjects?.some((x) => x === object && !(x.get('userlock') ?? false))}
     class:text-secondary-content={canvas.selection &&
-        currentActiveObjects?.some((x) => x === object)}
+        currentActiveObjects?.some((x) => x === object && !(x.get('userlock') ?? false))}
 >
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-interactive-supports-focus -->
     <div
