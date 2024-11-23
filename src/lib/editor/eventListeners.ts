@@ -573,23 +573,23 @@ function handleObjectOperations(canvas: Canvas) {
                 if (e.ctrlKey) {
                     point.x = Math.round(point.x / 50) * 50;
                     point.y = Math.round(point.y / 50) * 50;
+
+                    polygon.dirty = true;
+
+                    var calcDim = polygon._calcDimensions();
+
+                    polygon.width = calcDim.width;
+                    polygon.height = calcDim.height;
+
+                    polygon.set({
+                        left: calcDim.left,
+                        top: calcDim.top,
+                        pathOffset: {
+                            x: calcDim.left + polygon.width / 2,
+                            y: calcDim.top + polygon.height / 2
+                        }
+                    });
                 }
-
-                polygon.dirty = true;
-
-                var calcDim = polygon._calcDimensions();
-
-                polygon.width = calcDim.width;
-                polygon.height = calcDim.height;
-
-                polygon.set({
-                    left: calcDim.left,
-                    top: calcDim.top,
-                    pathOffset: {
-                        x: calcDim.left + polygon.width / 2,
-                        y: calcDim.top + polygon.height / 2
-                    }
-                });
 
                 polygon.setCoords();
                 canvas.requestRenderAll();
