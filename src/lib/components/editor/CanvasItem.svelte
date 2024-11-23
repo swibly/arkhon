@@ -18,7 +18,7 @@
     $: userLocked = object.get('userlock') ?? false;
 
     function select(event: MouseEvent) {
-        if (!object.selectable || userLocked || !object.evented) return;
+        if (!object.selectable || userLocked || !object.evented || !showControls) return;
 
         const selection = new ActiveSelection(canvas.getActiveObjects());
 
@@ -41,11 +41,24 @@
     function center() {
         centerViewOnObject(canvas, object);
     }
+
+    function simpleNaming(type: string, componentID?: number) {
+        if (componentID) return 'Componente';
+
+        switch (type) {
+            case 'textbox':
+            case 'i-text':
+                return 'Texto';
+            default:
+                return name;
+        }
+    }
 </script>
 
 <li
     class:bg-secondary={canvas.selection && currentActiveObjects?.some((x) => x === object)}
-    class:text-secondary-content={canvas.selection && currentActiveObjects?.some((x) => x === object)}
+    class:text-secondary-content={canvas.selection &&
+        currentActiveObjects?.some((x) => x === object)}
 >
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-interactive-supports-focus -->
     <div
@@ -55,23 +68,26 @@
         class="group"
         class:text-primary={componentID}
     >
-        {#if componentID}
-            <Icon icon="iconamoon:component-fill" />
-        {:else if type === 'rect'}
-            <Icon icon="tdesign:rectangle" />
-        {:else if type === 'circle'}
-            <Icon icon="material-symbols:circle-outline" />
-        {:else if type === 'i-text' || type === 'textbox'}
-            <Icon icon="ci:text" />
-        {:else if type === 'path'}
-            <Icon icon="streamline:pen-draw-solid" />
-        {:else}
-            <Icon icon="clarity:objects-solid" />
-        {/if}
+        <div
+            class="tooltip tooltip-secondary tooltip-right"
+            data-tip={simpleNaming(type, componentID)}
+        >
+            {#if componentID}
+                <Icon icon="iconamoon:component-fill" />
+            {:else if type === 'rect'}
+                <Icon icon="tdesign:rectangle" />
+            {:else if type === 'circle'}
+                <Icon icon="material-symbols:circle-outline" />
+            {:else if type === 'i-text' || type === 'textbox'}
+                <Icon icon="ci:text" />
+            {:else if type === 'path'}
+                <Icon icon="streamline:pen-draw-solid" />
+            {:else}
+                <Icon icon="clarity:objects-solid" />
+            {/if}
+        </div>
 
-        <span class="line-clamp-1">
-            {name}
-        </span>
+        <span class="line-clamp-1">{name}</span>
 
         {#if showControls}
             <section class="hidden items-center gap-1 group-hover:flex">
