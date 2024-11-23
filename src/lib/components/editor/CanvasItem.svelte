@@ -21,13 +21,13 @@
     function select(event: MouseEvent) {
         if (!object.selectable || userLocked || !object.evented || !showControls) return;
 
-        const selection = new ActiveSelection(canvas.getActiveObjects());
+        let selection: FabricObject | ActiveSelection;
 
         if (event.shiftKey) {
-            selection.add(object);
+            selection = new ActiveSelection(canvas.getActiveObjects());
+            (selection as ActiveSelection).add(object);
         } else {
-            selection.removeAll();
-            selection.add(object);
+            selection = object;
         }
 
         canvas.setActiveObject(selection);
@@ -57,10 +57,7 @@
         class="group"
         class:text-primary={componentID}
     >
-        <div
-            class="tooltip tooltip-secondary tooltip-right"
-            data-tip={typeTranslated}
-        >
+        <div class="tooltip tooltip-primary tooltip-right" data-tip={typeTranslated}>
             {#if componentID}
                 <Icon icon="iconamoon:component-fill" />
             {:else if type === 'rect'}
@@ -71,6 +68,8 @@
                 <Icon icon="ci:text" />
             {:else if type === 'path'}
                 <Icon icon="streamline:pen-draw-solid" />
+            {:else if type === 'polyline'}
+                <Icon icon="pepicons-pop:line-x" />
             {:else}
                 <Icon icon="clarity:objects-solid" />
             {/if}

@@ -39,6 +39,10 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
                 case 'group':
                     typeTranslated = 'Grupo';
                     break;
+                case 'polyline':
+                    name = 'Linha';
+                    typeTranslated = 'Linha';
+                    break;
                 default:
                     name = 'Objeto';
                     typeTranslated = 'Objeto';
