@@ -105,7 +105,7 @@ export function applyCanvasPermissionsBasedOnTool(canvas: Canvas, currentTool: T
 
         case Tool.Square:
         case Tool.Circle:
-            applyCanvasPermission(canvas, { selectable: false });
+            applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });
             break;
     }
 }

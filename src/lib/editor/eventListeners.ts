@@ -1,10 +1,11 @@
-import { ActiveSelection, Canvas, FabricObject, Point } from 'fabric';
+import { ActiveSelection, Canvas, Circle, FabricObject, Point, Rect, type XY } from 'fabric';
 import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
 import { copyObjectsToClipboard, cutObjects, pasteObjectsFromClipboard } from './objects';
 import type { Project } from '$lib/projects';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
 import { mouseCoords } from '$lib/stores/mouseCoords';
+import { applyObjectPermissions } from './permissions';
 
 let editingText = false;
 let spaceBarPressed = false;
@@ -13,33 +14,154 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
 
+    let shape: FabricObject;
+    let drawingShape: boolean = false;
+    let origin: XY;
+
     canvas.on('mouse:down', function ({ e: event }) {
-        if (getTool() === Tool.Hand) {
-            const { x, y } = canvas.getViewportPoint(event);
-            mouseLastClick = { x, y };
-            canvas.selection = false;
-            movingCamera = true;
+        switch (getTool()) {
+            case Tool.Hand: {
+                const { x, y } = canvas.getViewportPoint(event);
+                mouseLastClick = { x, y };
+                canvas.selection = false;
+                movingCamera = true;
+                break;
+            }
+
+            case Tool.Square:
+            case Tool.Circle: {
+                drawingShape = true;
+
+                const { x, y } = canvas.getScenePoint(event);
+                origin = { x, y };
+
+                const options = {
+                    left: origin.x,
+                    top: origin.y,
+                    width: x - origin.x,
+                    height: y - origin.y,
+                    fill: null,
+                    stroke: 'white',
+                    strokeWidth: 3,
+                    radius: 0
+                };
+
+                if (getTool() === Tool.Square) shape = new Rect(options);
+                else if (getTool() === Tool.Circle) shape = new Circle(options);
+
+                applyObjectPermissions(canvas, shape, { selectable: false, cursor: 'crosshair' });
+
+                canvas.add(shape);
+                break;
+            }
+
+            default: {
+                break;
+            }
         }
     });
 
-    canvas.on('mouse:up', function () {
+    canvas.on('mouse:up', function ({ e: event }) {
         movingCamera = false;
+
+        if (drawingShape) {
+            setTool(Tool.Selection);
+        }
+
+        drawingShape = false;
+
+        if (shape) {
+            shape.set({ selectable: true });
+
+            const { x, y } = canvas.getScenePoint(event);
+
+            if (origin.x === x && origin.y === y) {
+                if (shape instanceof Rect) {
+                    shape.set({ width: 100, height: 100 });
+                } else if (shape instanceof Circle) {
+                    shape.set({ radius: 50 });
+                }
+
+                shape.setX(shape.left - 50);
+                shape.setY(shape.top - 50);
+
+                shape.setCoords();
+                canvas.requestRenderAll();
+            }
+        }
     });
 
-    canvas.on('mouse:move', function ({ e: event,scenePoint }) {
-        const { x, y } = canvas.getViewportPoint(event);
+    canvas.on('mouse:move', function ({ e: event, scenePoint }) {
+        switch (getTool()) {
+            case Tool.Hand: {
+                if (movingCamera) {
+                    const { x, y } = canvas.getViewportPoint(event);
 
-        mouseCoords.set(scenePoint);
+                    mouseCoords.set(scenePoint);
 
-        if (movingCamera) {
-            const viewport = canvas.viewportTransform;
+                    const viewport = canvas.viewportTransform;
 
-            viewport[4] += x - mouseLastClick.x;
-            viewport[5] += y - mouseLastClick.y;
+                    viewport[4] += x - mouseLastClick.x;
+                    viewport[5] += y - mouseLastClick.y;
 
-            canvas.setViewportTransform(viewport);
+                    canvas.setViewportTransform(viewport);
 
-            mouseLastClick = { x, y };
+                    mouseLastClick = { x, y };
+                }
+                break;
+            }
+
+            case Tool.Circle:
+            case Tool.Square: {
+                if (drawingShape) {
+                    let { x, y } = canvas.getScenePoint(event);
+
+                    if (origin.x > x) {
+                        shape.set({ left: Math.abs(x) });
+                    }
+
+                    if (origin.y > y) {
+                        shape.set({ top: Math.abs(y) });
+                    }
+
+                    if (shape instanceof Rect) {
+                        let width = Math.abs(origin.x - x);
+                        let height = Math.abs(origin.y - y);
+
+                        if (event.shiftKey) {
+                            width = Math.round(width / 50) * 50;
+                            height = Math.round(height / 50) * 50;
+                        }
+
+                        if (event.ctrlKey) {
+                            height = width;
+                        }
+
+                        shape.set({ width, height });
+                    } else if (shape instanceof Circle) {
+                        let radius = Math.max(Math.abs(origin.x - x), Math.abs(origin.y - y));
+
+                        if (event.ctrlKey) {
+                            radius = Math.round(radius / 50) * 50;
+                        }
+
+                        shape.set({
+                            radius,
+                            left: origin.x - radius,
+                            top: origin.y - radius
+                        });
+                    }
+
+                    shape.setCoords();
+                }
+
+                canvas.renderAll();
+                break;
+            }
+
+            default: {
+                break;
+            }
         }
     });
 
