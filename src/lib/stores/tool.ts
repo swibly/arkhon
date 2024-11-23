@@ -43,7 +43,7 @@ export const tools = [
         tool: Tool.Line
     },
     {
-        name: 'Quadrado (Q)',
+        name: 'Retângulo (Q)',
         icon: 'ic:twotone-square',
         tool: Tool.Square
     },

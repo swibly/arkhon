@@ -20,8 +20,8 @@ export function applyObjectPermissions(
     object.lockRotation = !(options?.selectable ?? false);
     object.lockScalingX = !(options?.selectable ?? false);
     object.lockScalingY = !(options?.selectable ?? false);
-    object.lockSkewingX = !(options?.selectable ?? false);
-    object.lockSkewingY = !(options?.selectable ?? false);
+    object.lockSkewingX = true;
+    object.lockSkewingY = true;
     object.lockScalingFlip = !(options?.selectable ?? false);
     object.hasControls = options?.selectable ?? false;
     object.hasBorders = options?.bordered ?? object.hasControls;
