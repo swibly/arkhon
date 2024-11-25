@@ -12,12 +12,14 @@ import {
     Circle,
     controlsUtils,
     FabricObject,
+    Path,
     Point,
     Polygon,
     Polyline,
     Rect,
     Textbox,
     type TPointerEvent,
+    util,
     type XY
 } from 'fabric';
 
@@ -47,6 +49,32 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
     canvas.on('object:added', () => canvasObjects.set(getCanvasObjects(canvas)));
     canvas.on('object:removed', () => canvasObjects.set(getCanvasObjects(canvas)));
+
+    canvas.on('mouse:dblclick', function ({ target }) {
+        if (target) {
+            target.set('editing', !(target.get('editing') ?? false));
+
+            let editing = target.get('editing');
+
+            if (editing) {
+                target.hasBorders = false;
+                target.cornerSize = 8;
+                target.transparentCorners = false;
+
+                if (target instanceof Polygon || target instanceof Polyline) {
+                    target.controls = controlsUtils.createPolyControls(target);
+                } else {
+                    target.hasBorders = true;
+                    target.controls = controlsUtils.createObjectDefaultControls();
+                }
+            } else {
+                target.hasBorders = true;
+                target.controls = controlsUtils.createObjectDefaultControls();
+            }
+            target.setCoords();
+            canvas.requestRenderAll();
+        }
+    });
 
     handleObjectOperations(canvas);
 
@@ -84,7 +112,6 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 else if (getTool() === Tool.Line) {
                     shape = new Polyline([origin, origin], options);
                     shape.dirty = true;
-                    shape.controls = controlsUtils.createPolyControls(shape as Polyline);
                 }
 
                 applyObjectPermissions(canvas, shape, { selectable: false, cursor: 'crosshair' });
