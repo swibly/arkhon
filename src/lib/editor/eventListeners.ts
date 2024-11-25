@@ -29,6 +29,8 @@ import {
 } from './objects';
 import { applyObjectPermissions } from './permissions';
 
+const GRID_SIZE = 50;
+
 let editingText = false;
 let spaceBarPressed = false;
 
@@ -120,7 +122,12 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         }
     });
 
-    canvas.on('mouse:up', function ({ e: event }) {
+    canvas.on('mouse:up', function ({ e: event, target }) {
+        if (target) {
+            target.set('startLeft', target.left);
+            target.set('startTop', target.top);
+        }
+
         if (getTool() === Tool.Text) {
             textbox.enterEditing(event);
             canvas.setActiveObject(textbox);
@@ -145,17 +152,17 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 if (shape instanceof Rect) {
                     shape.set({ width: 100, height: 100 });
 
-                    shape.setX(shape.left - 50);
-                    shape.setY(shape.top - 50);
+                    shape.setX(shape.left - GRID_SIZE);
+                    shape.setY(shape.top - GRID_SIZE);
                 } else if (shape instanceof Circle) {
-                    shape.set({ radius: 50 });
+                    shape.set({ radius: GRID_SIZE });
 
-                    shape.setX(shape.left - 50);
-                    shape.setY(shape.top - 50);
+                    shape.setX(shape.left - GRID_SIZE);
+                    shape.setY(shape.top - GRID_SIZE);
                 } else if (shape instanceof Polyline) {
                     shape.set('points', [
-                        { x: x - 50, y },
-                        { x: x + 50, y }
+                        { x: x - GRID_SIZE, y },
+                        { x: x + GRID_SIZE, y }
                     ]);
 
                     var calcDim = shape._calcDimensions();
@@ -218,8 +225,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                         let height = Math.abs(origin.y - y);
 
                         if (event.shiftKey) {
-                            width = Math.round(width / 50) * 50;
-                            height = Math.round(height / 50) * 50;
+                            width = Math.round(width / GRID_SIZE) * GRID_SIZE;
+                            height = Math.round(height / GRID_SIZE) * GRID_SIZE;
                         }
 
                         if (event.ctrlKey) {
@@ -231,7 +238,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                         let radius = Math.max(Math.abs(origin.x - x), Math.abs(origin.y - y));
 
                         if (event.ctrlKey) {
-                            radius = Math.round(radius / 50) * 50;
+                            radius = Math.round(radius / GRID_SIZE) * GRID_SIZE;
                         }
 
                         shape.set({ radius, left: origin.x - radius, top: origin.y - radius });
@@ -420,7 +427,6 @@ export function handleSpaceBarRelease(event: KeyboardEvent) {
 }
 
 function handleObjectOperations(canvas: Canvas) {
-    const GRID_SIZE = 50;
     const SNAP_THRESHOLD = 100;
 
     function snapToGrid(value: number, gridSize: number = GRID_SIZE): number {
@@ -430,7 +436,7 @@ function handleObjectOperations(canvas: Canvas) {
     function handleTransform(event: BasicTransformEvent<TPointerEvent> & { target: FabricObject }) {
         const { e, target, transform } = event;
 
-        if (!target.get('startLeft')) {
+        if (!target.get('startLeft') && !target.get('startTop')) {
             target.set('startLeft', target.left);
             target.set('startTop', target.top);
         }
@@ -438,21 +444,19 @@ function handleObjectOperations(canvas: Canvas) {
         switch (transform.action) {
             case 'drag': {
                 if (e.shiftKey) {
-                    if (e.shiftKey) {
-                        const deltaX = target.left - (target.get('startLeft') || 0);
-                        const deltaY = target.top - (target.get('startTop') || 0);
+                    const deltaX = target.left - (target.get('startLeft') || 0);
+                    const deltaY = target.top - (target.get('startTop') || 0);
 
-                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                            target.top = target.get('startTop') || 0;
-                        } else {
-                            target.left = target.get('startLeft') || 0;
-                        }
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                        target.top = target.get('startTop') || 0;
+                    } else {
+                        target.left = target.get('startLeft') || 0;
                     }
                 }
 
                 if (e.ctrlKey) {
-                    target.left = Math.round(target.left / 50) * 50;
-                    target.top = Math.round(target.top / 50) * 50;
+                    target.left = Math.round(target.left / GRID_SIZE) * GRID_SIZE;
+                    target.top = Math.round(target.top / GRID_SIZE) * GRID_SIZE;
                 }
 
                 break;
@@ -538,8 +542,8 @@ function handleObjectOperations(canvas: Canvas) {
                     }
 
                     target.set({
-                        scaleX: newScaleX,
-                        scaleY: newScaleY,
+                        scaleX: Math.max(newScaleX, 0.5),
+                        scaleY: Math.max(newScaleY, 0.5),
                         left: newLeft,
                         top: newTop
                     });
@@ -571,8 +575,8 @@ function handleObjectOperations(canvas: Canvas) {
                 }
 
                 if (e.ctrlKey) {
-                    point.x = Math.round(point.x / 50) * 50;
-                    point.y = Math.round(point.y / 50) * 50;
+                    point.x = Math.round(point.x / GRID_SIZE) * GRID_SIZE;
+                    point.y = Math.round(point.y / GRID_SIZE) * GRID_SIZE;
 
                     polygon.dirty = true;
 
