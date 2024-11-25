@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "devDependencies": {
         "@iconify/svelte": "^4.0.2",
-        "@playwright/test": "^1.48.1",
+        "@playwright/test": "^1.49.0",
         "@sveltejs/adapter-auto": "^2.1.1",
         "@sveltejs/kit": "^1.30.4",
         "@types/js-cookie": "^3.0.6",
@@ -11,19 +11,19 @@
         "@typescript-eslint/eslint-plugin": "^6.21.0",
         "@typescript-eslint/parser": "^6.21.0",
         "autoprefixer": "^10.4.20",
-        "daisyui": "^4.12.13",
+        "daisyui": "^4.12.14",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^8.10.0",
         "eslint-plugin-svelte": "^2.46.0",
-        "postcss": "^8.4.47",
+        "postcss": "^8.4.49",
         "prettier": "^2.8.8",
         "prettier-plugin-svelte": "^2.10.1",
         "svelte": "^4.2.19",
         "svelte-check": "^3.8.6",
-        "tailwindcss": "^3.4.14",
+        "tailwindcss": "^3.4.15",
         "toastify-js": "^1.12.0",
-        "tslib": "^2.8.0",
-        "typescript": "^5.6.3",
+        "tslib": "^2.8.1",
+        "typescript": "^5.7.2",
         "vite": "^4.5.5",
         "vitest": "^0.32.4"
     },
@@ -48,7 +48,7 @@
         "@imask/svelte": "^7.6.1",
         "@neodrag/svelte": "^2.0.6",
         "axios": "^1.7.7",
-        "fabric": "^6.4.3",
+        "fabric": "^6.5.1",
         "js-cookie": "^3.0.5"
     }
 }
