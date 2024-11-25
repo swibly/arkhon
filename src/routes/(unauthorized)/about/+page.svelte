@@ -4,6 +4,10 @@
     import Icon from '@iconify/svelte';
 </script>
 
+<svelte:head>
+    <title>Sobre - Swibly Arkhon</title>
+</svelte:head>
+
 <main class="w-full h-full mx-auto mt-24 mb-12">
     <header class="flex flex-col items-center">
         <Logo class="mx-auto mix-blend-difference fill-white" />

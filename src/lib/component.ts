@@ -31,9 +31,9 @@ export type ComponentSearch = Search &
         most_holders: boolean;
     }>;
 
-export async function getPublicComponents(token: string, page: string) {
+export async function getPublicComponents(token: string, page: string, limit: string) {
     try {
-        const res = await axios.get(`/v1/components?page=${page.toString()}`, {
+        const res = await axios.get(`/v1/components?page=${page.toString()}&perpage=${limit}`, {
             headers: { Authorization: token }
         });
 
@@ -154,5 +154,39 @@ export async function searchComponents(
             // @ts-ignore
             status: e.response.status
         };
+    }
+}
+
+export async function restoreComponent(token: string, id: string) {
+    try {
+        await axios.patch(
+            `/v1/components/${id}/trash/restore`,
+            {},
+            {
+                headers: { Authorization: token }
+            }
+        );
+    } catch (error) {
+        return console.error(error);
+    }
+}
+
+export async function deleteComponent(token: string, id: string) {
+    try {
+        await axios.delete(`/v1/components/${id}/trash/force`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        return console.log(error);
+    }
+}
+
+export async function clearComponentTrash(token: string) {
+    try {
+        await axios.delete(`/v1/components/trash`, {
+            headers: { Authorization: token }
+        });
+    } catch (error) {
+        return console.error(error);
     }
 }

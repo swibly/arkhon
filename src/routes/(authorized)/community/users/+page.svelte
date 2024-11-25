@@ -15,7 +15,7 @@
 
     $: ascending = false;
 
-    $: userSearch = undefined as PaginationType<User> | undefined;
+    $: userSearch = undefined as PaginationType<User> | undefined;    
 </script>
 
 <svelte:head>

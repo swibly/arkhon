@@ -17,7 +17,8 @@
         following: 'Seguindo',
         followers: 'Seguidores',
         projects: 'Projetos',
-        trash: 'Lixeira'
+        trash: 'Lixeira',
+        componentTrash: 'Lixeira de Componentes'
     };
 
     const pathIcons: Record<string, string> = {
@@ -25,7 +26,8 @@
         following: 'mdi:users-add',
         followers: 'mdi:users',
         projects: 'eos-icons:project',
-        trash: 'mdi:trash'
+        trash: 'mdi:trash',
+        componentTrash: 'iconamoon:component-fill'
     };
 </script>
 

@@ -37,8 +37,11 @@
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import type { Pagination } from '$lib/utils';
     import ObjectInfo from '$lib/components/ObjectInfo.svelte';
+    import io from 'socket.io-client';
 
     export let data: PageServerData & { user: User; project: Project };
+
+    // const socket = io('http://localhost:3000');
 
     // Váriaveis e todo o funcionamento do canvas
 
@@ -93,6 +96,8 @@
                 });
             }
         }
+
+        // socket.emit('joinProject', data.project.id);
 
         allComponents = data.component;
         ownedComponents = data.allOwnedComponents;
@@ -162,8 +167,6 @@
                         obj.evented = false;
                     });
                 }
-
-                console.log(fabric.toObject());
             }
         });
 

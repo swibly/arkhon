@@ -2,6 +2,10 @@
     import Logo from '$lib/components/Logo.svelte';
 </script>
 
+<svelte:head>
+    <title>FAQ - Swibly Arkhon</title>
+</svelte:head>
+
 <main class="w-full h-full max-w-5xl mx-auto">
     <header class="flex flex-col items-center mt-24 sm:mt-32 md:mt-40 mx-4 sm:mx-20 md:mx-32">
         <Logo

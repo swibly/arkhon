@@ -49,8 +49,7 @@
                         class:btn-primary={path.includes('components')}
                     >
                         <Icon icon="iconamoon:component-fill" />
-                        Componentes
-                        <span class="badge badge-outline">WIP</span>
+                        Componentes                        
                     </a>
 
                     <a

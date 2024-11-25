@@ -23,7 +23,7 @@
     <title>Comunidade - Swibly Arkhon</title>
 </svelte:head>
 
-<div class="flex max-sm:flex-col max-sm:items-center gap-4">
+<div class="w-full flex max-sm:flex-col max-sm:items-center gap-4">
     <aside class="sm:pr-4 sm:border-r sm:border-r-base-200 w-full max-w-96">
         <form
             method="POST"
@@ -135,7 +135,7 @@
         </form>
     </aside>
 
-    <section class="w-full max-sm:w-fit">
+    <section class="w-full">
         {#if projectSearch !== undefined}
             {#if projectSearch.total_records === 0}
                 <p class="italic opacity-50">Nenhum projeto encontrado.</p>
@@ -145,13 +145,16 @@
                 <Pagination pagination={projectSearch} />
             </div>
 
-            <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
+            <ul
+                class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4 max-md:flex max-md:flex-col"
+            >
                 {#each projectSearch.data as project}
-                    <li>
+                    <li class="w=full grid place-items-center">
                         <ProjectCard
                             options={project}
                             lang={data.user.language}
                             currentUser={data.user}
+                            projectPage={false}                                                
                         />
                     </li>
                 {/each}
@@ -169,11 +172,12 @@
                 class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4 max-md:flex max-md:flex-col"
             >
                 {#each projects as project}
-                    <li>
+                    <li class="w=full grid place-items-center">
                         <ProjectCard
                             options={project}
                             lang={data.user.language}
                             currentUser={data.user}
+                            projectPage={false}                                                
                         />
                     </li>
                 {/each}
