@@ -303,11 +303,11 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                     let { x, y } = canvas.getScenePoint(event);
 
                     if (origin.x > x) {
-                        shape.set({ left: Math.abs(x) });
+                        shape.set({ left: x });
                     }
 
                     if (origin.y > y) {
-                        shape.set({ top: Math.abs(y) });
+                        shape.set({ top: y });
                     }
 
                     if (shape instanceof Rect) {
@@ -510,12 +510,12 @@ export async function handleKeybinds(
                 });
 
                 canvas.add(polygon);
-
                 applyObjectPermissions(canvas, polygon, { selectable: false, cursor: 'crosshair' });
 
-                canvas.requestRenderAll();
+                setTool(Tool.Selection);
 
-                setTool(Tool.Polygon);
+                canvas.setActiveObject(polygon);
+                canvas.requestRenderAll();
             }
             break;
     }
