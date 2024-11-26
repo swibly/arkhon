@@ -1,5 +1,6 @@
+import { polygonPath } from '$lib/editor/eventListeners';
 import { applyCanvasPermission } from '$lib/editor/permissions';
-import { Canvas, PencilBrush } from 'fabric';
+import { Canvas, PencilBrush, type XY } from 'fabric';
 import { get, writable } from 'svelte/store';
 
 export enum Tool {
@@ -15,6 +16,7 @@ export enum Tool {
 
 export const tool = writable<Tool>(Tool.Selection);
 export const previousTool = writable<Tool | undefined>(undefined);
+export const polygonPoints = writable<XY[]>([]);
 
 export const tools = [
     {
@@ -69,17 +71,32 @@ export function getPreviousTool(): Tool | undefined {
 
 export function setTool(selectedTool: Tool) {
     tool.set(selectedTool);
+    polygonPoints.set([]);
+    polygonPath.set({ points: get(polygonPoints) });
 }
 
 export function setPreviousTool(selectedTool: Tool | undefined) {
     previousTool.set(selectedTool);
 }
 
+export function addPolygonPoint(point: XY) {
+    polygonPoints.set([...get(polygonPoints), point]);
+}
+
+export function getLastPoint(): XY | null {
+    const points = get(polygonPoints);
+
+    if (points.length === 0) {
+        return null;
+    }
+
+    return points[points.length - 1];
+}
+
 export function applyCanvasPermissionsBasedOnTool(canvas: Canvas, currentTool: Tool) {
     if (canvas === undefined) return;
 
     switch (currentTool) {
-        case Tool.Polygon:
         case Tool.Selection:
             applyCanvasPermission(canvas, { selectable: true });
             break;
@@ -99,10 +116,8 @@ export function applyCanvasPermissionsBasedOnTool(canvas: Canvas, currentTool: T
             applyCanvasPermission(canvas, { selectable: false, cursor: 'text' });
             break;
 
+        case Tool.Polygon:
         case Tool.Line:
-            applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });
-            break;
-
         case Tool.Square:
         case Tool.Circle:
             applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });

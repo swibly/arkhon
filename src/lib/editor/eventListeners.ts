@@ -1,7 +1,15 @@
 import type { Project } from '$lib/projects';
 import { mouseCoords } from '$lib/stores/mouseCoords';
 import { canvasObjects } from '$lib/stores/objects';
-import { getPreviousTool, getTool, setPreviousTool, setTool, Tool } from '$lib/stores/tool';
+import {
+    addPolygonPoint,
+    getPreviousTool,
+    getTool,
+    polygonPoints,
+    setPreviousTool,
+    setTool,
+    Tool
+} from '$lib/stores/tool';
 import { zoom } from '$lib/stores/zoom';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
@@ -12,14 +20,12 @@ import {
     Circle,
     controlsUtils,
     FabricObject,
-    Path,
     Point,
     Polygon,
     Polyline,
     Rect,
     Textbox,
     type TPointerEvent,
-    util,
     type XY
 } from 'fabric';
 
@@ -30,13 +36,25 @@ import {
     pasteObjectsFromClipboard
 } from './objects';
 import { applyObjectPermissions } from './permissions';
+import { spawn } from '$lib/toast';
+import { get } from 'svelte/store';
 
 const GRID_SIZE = 50;
 
 let editingText = false;
 let spaceBarPressed = false;
 
+export const polygonPath = new Polygon([], {
+    stroke: '#FFFFFF',
+    strokeWidth: 3,
+    fill: null,
+    selectable: false,
+    evented: false
+});
+
 export function loadCanvasEventListeners(canvas: Canvas) {
+    canvas.add(polygonPath);
+
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
 
@@ -85,6 +103,29 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 mouseLastClick = { x, y };
                 canvas.selection = false;
                 movingCamera = true;
+                break;
+            }
+
+            case Tool.Polygon: {
+                addPolygonPoint(canvas.getScenePoint(event));
+                polygonPath.set({ points: get(polygonPoints) });
+
+                var calcDim = polygonPath._calcDimensions();
+
+                polygonPath.width = calcDim.width;
+                polygonPath.height = calcDim.height;
+
+                polygonPath.set({
+                    left: calcDim.left,
+                    top: calcDim.top,
+                    pathOffset: {
+                        x: calcDim.left + polygonPath.width / 2,
+                        y: calcDim.top + polygonPath.height / 2
+                    }
+                });
+
+                polygonPath.setCoords();
+                canvas.requestRenderAll();
                 break;
             }
 
@@ -230,6 +271,28 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
                     mouseLastClick = { x, y };
                 }
+                break;
+            }
+
+            case Tool.Polygon: {
+                const { x, y } = canvas.getScenePoint(event);
+                polygonPath.set({ points: [...get(polygonPoints), { x, y }] });
+                var calcDim = polygonPath._calcDimensions();
+
+                polygonPath.width = calcDim.width;
+                polygonPath.height = calcDim.height;
+
+                polygonPath.set({
+                    left: calcDim.left,
+                    top: calcDim.top,
+                    pathOffset: {
+                        x: calcDim.left + polygonPath.width / 2,
+                        y: calcDim.top + polygonPath.height / 2
+                    }
+                });
+
+                polygonPath.setCoords();
+                canvas.requestRenderAll();
                 break;
             }
 
@@ -380,6 +443,7 @@ export async function handleKeybinds(
         case 'h':
             setTool(Tool.Hand);
             break;
+        case 'Escape':
         case 's':
             setTool(Tool.Selection);
             break;
@@ -423,6 +487,36 @@ export async function handleKeybinds(
             canvas.remove(...canvas.getActiveObjects());
             canvas.discardActiveObject();
             canvas.requestRenderAll();
+            break;
+        case 'Enter':
+            if (getTool() === Tool.Polygon) {
+                const points = get(polygonPoints);
+
+                if (points.length < 3) {
+                    spawn({
+                        status: 'error',
+                        message: `Ao menos 3 pontos são necessários.${
+                            points.length === 2
+                                ? ' Caso precise, utilize a ferramenta de linha ao invés da ferramenta de polígono.'
+                                : ''
+                        }`,
+                        duration: 4000
+                    });
+                    return;
+                }
+
+                const polygon = new Polygon(points, {
+                    fill: '#FFFFFF'
+                });
+
+                canvas.add(polygon);
+
+                applyObjectPermissions(canvas, polygon, { selectable: false, cursor: 'crosshair' });
+
+                canvas.requestRenderAll();
+
+                setTool(Tool.Polygon);
+            }
             break;
     }
 }

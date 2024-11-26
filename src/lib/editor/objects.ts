@@ -48,6 +48,10 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
                 case 'group':
                     typeTranslated = 'Grupo';
                     break;
+                case 'polygon':
+                    name = `Polígono de ${object.get('points').length} pontos`;
+                    typeTranslated = 'Polígono';
+                    break;
                 case 'polyline':
                     name = 'Linha';
                     typeTranslated = 'Linha';

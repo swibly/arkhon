@@ -19,6 +19,7 @@
     import { centerView, setZoomLevel } from '$lib/editor/camera';
     import { zoom } from '$lib/stores/zoom';
     import { canvasObjects } from '$lib/stores/objects';
+    import Icon from '@iconify/svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -147,3 +148,13 @@
         +
     </button>
 </div>
+
+{#if $tool === Tool.Polygon}
+    <div class="absolute bottom-0 inset-x-0 glass text-center p-2">
+        Para finalizar o polígono, pressione
+        <kbd class="kbd gap-1">
+            <Icon icon="fluent:arrow-enter-left-20-filled" />
+            Enter
+        </kbd>
+    </div>
+{/if}

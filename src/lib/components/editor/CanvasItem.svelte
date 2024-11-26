@@ -69,6 +69,8 @@
                 <Icon icon="ci:text" />
             {:else if type === 'path'}
                 <Icon icon="streamline:pen-draw-solid" />
+            {:else if type === 'polygon'}
+                <Icon icon="gis:polygon" />
             {:else if type === 'polyline'}
                 <Icon icon="pepicons-pop:line-x" />
             {:else}
