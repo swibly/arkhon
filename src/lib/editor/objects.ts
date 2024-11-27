@@ -43,9 +43,11 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
                     break;
                 case 'i-text':
                 case 'textbox':
+                    name = 'Texto sem conteúdo';
                     typeTranslated = 'Texto';
                     break;
                 case 'group':
+                    name = 'Grupo';
                     typeTranslated = 'Grupo';
                     break;
                 case 'polygon':

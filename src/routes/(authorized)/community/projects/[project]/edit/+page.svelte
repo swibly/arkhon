@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition';
     import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
@@ -150,9 +151,12 @@
 </div>
 
 {#if $tool === Tool.Polygon}
-    <div class="absolute bottom-0 inset-x-0 glass text-center p-2">
+    <div
+        class="absolute bottom-0 inset-x-0 glass text-center p-2"
+        transition:fade={{ duration: 100 }}
+    >
         Para finalizar o polígono, pressione
-        <kbd class="kbd gap-1">
+        <kbd class="kbd gap-1 ml-2">
             <Icon icon="fluent:arrow-enter-left-20-filled" />
             Enter
         </kbd>

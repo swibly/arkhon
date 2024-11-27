@@ -49,7 +49,8 @@ export const polygonPath = new Polygon([], {
     strokeWidth: 3,
     fill: null,
     selectable: false,
-    evented: false
+    evented: false,
+    excludeFromExport: true
 });
 
 export function loadCanvasEventListeners(canvas: Canvas) {
