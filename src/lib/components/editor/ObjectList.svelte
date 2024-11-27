@@ -6,7 +6,7 @@
     export let element: HTMLDivElement;
     export let canvas: Canvas;
     export let showControls: boolean;
-    export let currentActiveObjects: FabricObject[] | undefined = undefined;
+    export let currentActiveObjects: FabricObject[] = [];
     export let objects: CanvasObject[] = [];
 </script>
 

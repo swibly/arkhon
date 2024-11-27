@@ -5,7 +5,7 @@
     import { ActiveSelection, Canvas, FabricObject } from 'fabric';
 
     export let canvas: Canvas;
-    export let currentActiveObjects: FabricObject[] | undefined = undefined;
+    export let currentActiveObjects: FabricObject[] = [];
     export let showControls: boolean;
     export let object: FabricObject;
     export let name: string;

@@ -31,7 +31,7 @@
     let canvas: Canvas;
 
     $: applyCanvasPermissionsBasedOnTool(canvas, $tool);
-    $: currentActiveObjects = undefined as FabricObject[] | undefined;
+    $: currentActiveObjects = [] as FabricObject[];
 
     onMount(async function () {
         const canvasElement = document.createElement('canvas');
