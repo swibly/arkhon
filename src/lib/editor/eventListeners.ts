@@ -423,7 +423,7 @@ export async function handleKeybinds(
     user: User,
     project: Project
 ) {
-    if (!hasPermissions(user, project, ['allow_edit']) || editingText) return;
+    if (!hasPermissions(user, project, ['allow_edit']) || editingText || event.target !== document.body) return;
 
     switch (event.key) {
         case 'a':
@@ -530,7 +530,7 @@ export async function handleKeybinds(
 }
 
 export function handleSpaceBarPress(event: KeyboardEvent) {
-    if (editingText) return;
+    if (editingText || event.target !== document.body) return;
 
     if (event.key === ' ' && !spaceBarPressed) {
         spaceBarPressed = true;
@@ -543,7 +543,7 @@ export function handleSpaceBarPress(event: KeyboardEvent) {
 }
 
 export function handleSpaceBarRelease(event: KeyboardEvent) {
-    if (editingText) return;
+    if (editingText || event.target !== document.body) return;
 
     if (event.key === ' ' && spaceBarPressed) {
         spaceBarPressed = false;
