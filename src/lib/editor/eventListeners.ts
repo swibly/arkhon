@@ -446,6 +446,13 @@ export async function handleKeybinds(
             break;
         case 'Escape':
         case 's':
+            if (event.ctrlKey) {
+                event.preventDefault();
+
+                const button = document.querySelector('#save-project-form>button') as HTMLButtonElement;
+                button!.click();
+                break;
+            }
             setTool(Tool.Selection);
             break;
         case 'b':
