@@ -22,7 +22,7 @@ export interface CanvasObject {
     children?: CanvasObject[];
 }
 
-export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
+export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false): CanvasObject[] {
     function traverseObjects(objects: FabricObject[]): CanvasObject[] {
         return objects.map((object) => {
             let name = object.type;
@@ -69,7 +69,7 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
             }
 
             if ('name' in object) {
-                name = (object.name as string)[0].toUpperCase() + (object.name as string).slice(1);
+                name = object.name as string;
             }
 
             if ('id' in object) {
@@ -87,7 +87,14 @@ export function getCanvasObjects(canvas: Canvas): CanvasObject[] {
         });
     }
 
-    const objects = canvas?.getObjects().filter((x) => x.selectable && x.evented) ?? [];
+    let objects: FabricObject[];
+
+    if (onlySelected) {
+        objects = canvas?.getActiveObjects().filter((x) => x.selectable && x.evented) ?? [];
+    } else {
+        objects = canvas?.getObjects().filter((x) => x.selectable && x.evented) ?? [];
+    }
+
     return traverseObjects(objects);
 }
 
