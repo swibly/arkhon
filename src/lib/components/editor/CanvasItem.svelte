@@ -75,6 +75,8 @@
                 <Icon icon="gis:polygon" />
             {:else if type === 'polyline'}
                 <Icon icon="pepicons-pop:line-x" />
+            {:else if type === 'group'}
+                <Icon icon="uis:layer-group" />
             {:else}
                 <Icon icon="clarity:objects-solid" />
             {/if}

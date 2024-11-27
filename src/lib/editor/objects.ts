@@ -16,6 +16,7 @@ import { get } from 'svelte/store';
 export interface CanvasObject {
     object: FabricObject;
     name: string;
+    nameReset: string;
     typeTranslated: string;
     type: string;
     componentID?: number;
@@ -68,6 +69,8 @@ export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false):
                 name = object.text as string;
             }
 
+            let nameReset = name;
+
             if ('name' in object) {
                 name = object.name as string;
             }
@@ -79,6 +82,7 @@ export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false):
             return {
                 object,
                 name,
+                nameReset,
                 typeTranslated,
                 type: object.type,
                 componentID: 'id' in object ? (object.id as number) : undefined,
