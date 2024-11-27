@@ -16,11 +16,12 @@
     import { hasPermissions } from '$lib/utils';
     import Header from '$lib/components/editor/Header.svelte';
     import ObjectList from '$lib/components/editor/ObjectList.svelte';
-    import { getCanvasObjects } from '$lib/editor/objects';
+    import { type CanvasObject, getCanvasObjects } from '$lib/editor/objects';
     import { centerView, setZoomLevel } from '$lib/editor/camera';
     import { zoom } from '$lib/stores/zoom';
     import { canvasObjects } from '$lib/stores/objects';
     import Icon from '@iconify/svelte';
+    import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -32,6 +33,7 @@
 
     $: applyCanvasPermissionsBasedOnTool(canvas, $tool);
     $: currentActiveObjects = [] as FabricObject[];
+    $: currentActiveObjectsItem = [] as CanvasObject[];
 
     onMount(async function () {
         const canvasElement = document.createElement('canvas');
@@ -39,7 +41,8 @@
 
         canvas = new Canvas(canvasElement, {
             imageSmoothingEnabled: false,
-            uniformScaling: false
+            uniformScaling: false,
+            targetFindTolerance: 12,
         });
 
         InteractiveFabricObject.ownDefaults = {
@@ -49,6 +52,7 @@
             cornerColor: '#FFA333',
             cornerSize: 8,
             transparentCorners: false,
+            perPixelTargetFind: true,
             _controlsVisibility: {
                 mt: false,
                 ml: false,
@@ -81,6 +85,7 @@
             }
 
             currentActiveObjects = objects;
+            currentActiveObjectsItem = getCanvasObjects(canvas, true);
         });
 
         canvas.on('selection:updated', () => {
@@ -94,10 +99,12 @@
             }
 
             currentActiveObjects = objects;
+            currentActiveObjectsItem = getCanvasObjects(canvas, true);
         });
 
         canvas.on('selection:cleared', ({ deselected }) => {
             currentActiveObjects = canvas.getActiveObjects();
+            currentActiveObjectsItem = getCanvasObjects(canvas, true);
 
             for (const object of deselected) {
                 const bounds = object.getBoundingRect();
@@ -134,7 +141,9 @@
             objects={$canvasObjects}
         />
 
-        <div bind:this={canvasContainer} />
+        <div bind:this={canvasContainer} class="relative">
+            <PropertiesTab {canvas} objects={currentActiveObjectsItem} />
+        </div>
     </div>
 </div>
 

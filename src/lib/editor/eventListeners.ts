@@ -171,23 +171,6 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 canvas.requestRenderAll();
                 break;
             }
-
-            default: {
-                const pointer = canvas.getScenePoint(event);
-
-                const objects = canvas.getObjects().reverse();
-
-                for (let obj of objects) {
-                    if (!obj.selectable || (obj.get('userlock') ?? false) || !obj.evented) continue;
-
-                    if (obj.containsPoint(pointer)) {
-                        canvas.setActiveObject(obj);
-                        canvas.requestRenderAll();
-                        break;
-                    }
-                }
-                break;
-            }
         }
     });
 
@@ -423,7 +406,12 @@ export async function handleKeybinds(
     user: User,
     project: Project
 ) {
-    if (!hasPermissions(user, project, ['allow_edit']) || editingText || event.target !== document.body) return;
+    if (
+        !hasPermissions(user, project, ['allow_edit']) ||
+        editingText ||
+        event.target !== document.body
+    )
+        return;
 
     switch (event.key) {
         case 'a':
@@ -449,7 +437,9 @@ export async function handleKeybinds(
             if (event.ctrlKey) {
                 event.preventDefault();
 
-                const button = document.querySelector('#save-project-form>button') as HTMLButtonElement;
+                const button = document.querySelector(
+                    '#save-project-form>button'
+                ) as HTMLButtonElement;
                 button!.click();
                 break;
             }
