@@ -167,34 +167,38 @@
 
     <section class="w-full max-sm:w-fit">
         {#if userSearch !== undefined}
-            <div class="mx-auto w-fit mb-4">
-                <Pagination pagination={userSearch} />
-            </div>
+            {#if userSearch.data.length !== 0}
+                <div class="mx-auto w-fit mb-4">
+                    <Pagination pagination={userSearch} />
+                </div>
 
-            <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
-                {#each userSearch.data as user}
-                    <li>
-                        <UserProfileCard
-                            id={user.id}
-                            pfp={user.pfp}
-                            lastname={user.lastname}
-                            username={user.username}
-                            verified={user.verified}
-                            firstname={user.firstname}
-                            selfID={data.user.id}
-                        >
-                            <a
-                                href="/profile/{user.username}"
-                                class="btn btn-sm btn-outline btn-primary w-full"
+                <ul class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
+                    {#each userSearch.data as user}
+                        <li>
+                            <UserProfileCard
+                                id={user.id}
+                                pfp={user.pfp}
+                                lastname={user.lastname}
+                                username={user.username}
+                                verified={user.verified}
+                                firstname={user.firstname}
+                                selfID={data.user.id}
                             >
-                                <Icon icon="fa6-solid:magnifying-glass" />
-                                Ver perfil
-                            </a>
-                        </UserProfileCard>
-                    </li>
-                {/each}
-            </ul>
-        {:else}
+                                <a
+                                    href="/profile/{user.username}"
+                                    class="btn btn-sm btn-outline btn-primary w-full"
+                                >
+                                    <Icon icon="fa6-solid:magnifying-glass" />
+                                    Ver perfil
+                                </a>
+                            </UserProfileCard>
+                        </li>
+                    {/each}
+                </ul>
+            {:else}
+                <p class="italic opacity-50 text-center">Nenhum usuário encontrado.</p>
+            {/if}
+        {:else if users.length !== 0}
             <div class="mx-auto w-fit mb-4">
                 <Pagination {pagination} />
             </div>
@@ -224,6 +228,8 @@
                     </li>
                 {/each}
             </ul>
+        {:else}
+            <p class="italic opacity-50 text-center">Nenhum usuário encontrado.</p>
         {/if}
     </section>
 </div>

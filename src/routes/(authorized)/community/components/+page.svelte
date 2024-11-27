@@ -23,9 +23,7 @@
 
     $: allComponents, Searching();
 
-    $: searchResult, Searching();
-
-    console.log(data.test);
+    $: searchResult, Searching();    
 
     data.searchComponents.forEach((component: Component) => {
         if (component.owner_username !== data.user.username && !component.bought) {
@@ -182,7 +180,7 @@
                         Pesquisar
                     </button>
                 </div>
-            </div>            
+            </div>
 
             <h1 class="text-3xl font-bold hidden sm:block">Filtrar</h1>
 
@@ -287,7 +285,9 @@
     </aside>
 
     <div class="w-full flex flex-col items-center">
-        <SearchPagination bind:currentPage bind:qtdPages />
+        {#if (notOwnedComponents.length !== 0 && !isSearching) || (searchResult.length !== 0 && isSearching)}
+            <SearchPagination bind:currentPage bind:qtdPages />
+        {/if}
 
         {#if notOwnedComponents.length !== 0 || searchResult.length !== 0}
             <section
@@ -305,12 +305,12 @@
             </section>
 
             {#if isSearching && searchResult.length === 0}
-                <p class="text-center italic">Nenhum componente foi encontrado</p>
+                <p class="italic opacity-50 text-center">Nenhum componente foi encontrado</p>
             {/if}
         {:else if isSearching && searchResult.length === 0}
-            <p class="text-center italic">Nenhum componente foi encontrado</p>
+            <p class="italic opacity-50 text-center">Nenhum componente foi encontrado</p>
         {:else if !isSearching && (notOwnedComponents.length === 0 || searchResult.length === 0)}
-            <p class="text-center italic">Nenhum componente foi encontrado</p>
+            <p class="italic opacity-50 text-center">Nenhum componente foi encontrado</p>
         {/if}
     </div>
 </main>

@@ -1,7 +1,7 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
 import {
     buyComponent,
-    Component,    
+    type Component,    
     getPublicComponents,    
 } from '$lib/component';
 import { getUserByToken } from '$lib/user';
@@ -32,8 +32,7 @@ export const load: PageServerLoad = async function ({ cookies, url }) {
 
     return {
         components: components as Pagination<Component>,
-        searchComponents: searchComponents,        
-        test: cookies.get(JWT_TOKEN_COOKIE_NAME)!
+        searchComponents: searchComponents,                
     };
 };
 

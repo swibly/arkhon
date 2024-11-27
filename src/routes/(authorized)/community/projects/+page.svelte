@@ -35,11 +35,13 @@
                 return function ({ result, update }) {
                     // @ts-ignore
                     projectSearch = result.data.projects;
+                    console.log(projectSearch);
+
                     return update({ reset: false });
                 };
             }}
         >
-            <div class="collapse collapse-arrow sm:hidden">
+            <!-- <div class="collapse collapse-arrow sm:hidden">
                 <input type="checkbox" />
                 <div class="collapse-title text-xl font-medium">
                     <h1 class="text-3xl font-bold">Filtrar</h1>
@@ -144,7 +146,7 @@
                         Pesquisar
                     </button>
                 </div>
-            </div>
+            </div> -->
 
             <h1 class="text-3xl font-bold hidden sm:block">Filtrar</h1>
 
@@ -249,7 +251,7 @@
     <section class="w-full">
         {#if projectSearch !== undefined}
             {#if projectSearch.total_records === 0}
-                <p class="italic opacity-50">Nenhum projeto encontrado.</p>
+                <p class="italic opacity-50 text-center">Nenhum projeto encontrado.</p>
             {/if}
 
             <div class="mx-auto w-fit mb-4">
@@ -272,7 +274,7 @@
             </ul>
         {:else}
             {#if pagination.total_records === 0}
-                <p>Nenhum projeto encontrado.</p>
+                <p class="italic opacity-50 text-center">Nenhum projeto encontrado.</p>
             {/if}
 
             <div class="mx-auto w-fit mb-4">
