@@ -5,10 +5,10 @@
     $: path = $page.url.pathname;
 </script>
 
-<div class="p-4">
+<div class="w-full p-4">
     {#if path.match(/\/community\/(projects|components|users)(\/)?$/)}
-        <div class="mb-4 space-y-2 max-w-xl mx-auto">
-            <h1 class="text-3xl font-bold text-primary">
+        <div class="w-full sm:w-2/3 mb-4 space-y-2 max-w-full mx-auto">
+            <h1 class="text-3xl font-bold text-primary text-center">
                 <Icon icon="fluent:people-community-12-filled" class="inline" />
                 Comunidade
             </h1>
@@ -21,7 +21,7 @@
                     </div>
                 </summary>
                 <div class="collapse-content">
-                    <p>
+                    <p class="text-justify">
                         Explore projetos compartilhados por outras pessoas e descubra novas pessoas
                         com interesses semelhantes. Use os filtros para encontrar tópicos ou tipos
                         de projetos específicos de seu interesse. Mergulhe, inspire-se e conecte-se

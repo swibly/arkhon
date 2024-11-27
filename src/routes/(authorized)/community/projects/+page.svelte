@@ -30,18 +30,17 @@
         <form
             method="POST"
             action="?/search"
-            class="space-y-2"
+            class="space-y-2 block sm:hidden"
             use:enhance={function () {
                 return function ({ result, update }) {
                     // @ts-ignore
                     projectSearch = result.data.projects;
-                    console.log(projectSearch);
 
                     return update({ reset: false });
                 };
             }}
         >
-            <!-- <div class="collapse collapse-arrow sm:hidden">
+            <div class="collapse collapse-arrow">
                 <input type="checkbox" />
                 <div class="collapse-title text-xl font-medium">
                     <h1 class="text-3xl font-bold">Filtrar</h1>
@@ -146,11 +145,25 @@
                         Pesquisar
                     </button>
                 </div>
-            </div> -->
+            </div>
+        </form>
 
-            <h1 class="text-3xl font-bold hidden sm:block">Filtrar</h1>
+        <form
+            method="POST"
+            action="?/search"
+            class="space-y-2 hidden sm:block"
+            use:enhance={function () {
+                return function ({ result, update }) {
+                    // @ts-ignore
+                    projectSearch = result.data.projects;
 
-            <article class="grid-cols-2 hidden sm:grid">
+                    return update({ reset: false });
+                };
+            }}
+        >
+            <h1 class="text-3xl font-bold">Filtrar</h1>
+
+            <article class="grid grid-cols-2">
                 <input type="checkbox" name="ascending" class="hidden" bind:checked={ascending} />
 
                 <button
@@ -174,77 +187,75 @@
                 </button>
             </article>
 
-            <div class="hidden sm:block">
+            <Input
+                name="name"
+                icon="fa6-solid:magnifying-glass"
+                placeholder="Procurar projeto"
+                labels={{ topLeft: 'Procurar' }}
+                disableDefaultLabels
+            />
+
+            <label class="form-control w-full">
+                <div class="label">
+                    <span class="label-text">Ordenar por</span>
+                </div>
+                <select name="order" class="select select-sm select-bordered w-full">
+                    <option value="alphabetic">Ordem Alfabética</option>
+                    <option value="favorites">Mais favoritos</option>
+                    <option value="clones">Mais clones</option>
+                    <option value="order_created" selected>Data de criação</option>
+                </select>
+                <div class="label" />
+            </label>
+
+            <h2 class="text-2xl font-bold">Preço</h2>
+
+            <div class="grid grid-cols-2 gap-2">
                 <Input
-                    name="name"
-                    icon="fa6-solid:magnifying-glass"
-                    placeholder="Procurar projeto"
-                    labels={{ topLeft: 'Procurar' }}
-                    disableDefaultLabels
+                    name="budget-min"
+                    placeholder="Preço mínimo"
+                    labels={{ topLeft: 'Mínimo' }}
+                    type="number"
+                    min="0"
+                    max="1000000000000"
                 />
-
-                <label class="form-control w-full">
-                    <div class="label">
-                        <span class="label-text">Ordenar por</span>
-                    </div>
-                    <select name="order" class="select select-sm select-bordered w-full">
-                        <option value="alphabetic">Ordem Alfabética</option>
-                        <option value="favorites">Mais favoritos</option>
-                        <option value="clones">Mais clones</option>
-                        <option value="order_created" selected>Data de criação</option>
-                    </select>
-                    <div class="label" />
-                </label>
-
-                <h2 class="text-2xl font-bold">Preço</h2>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <Input
-                        name="budget-min"
-                        placeholder="Preço mínimo"
-                        labels={{ topLeft: 'Mínimo' }}
-                        type="number"
-                        min="0"
-                        max="1000000000000"
-                    />
-                    <Input
-                        name="budget-max"
-                        placeholder="Preço máximo"
-                        labels={{ topLeft: 'Máximo' }}
-                        type="number"
-                        min="0"
-                        max="1000000000000"
-                    />
-                </div>
-
-                <h2 class="text-2xl font-bold">Área</h2>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <Input
-                        name="area-min"
-                        placeholder="Mínimo"
-                        labels={{ topLeft: 'Mínimo' }}
-                        type="number"
-                        min="0"
-                        max="1000000"
-                    />
-                    <Input
-                        name="area-max"
-                        placeholder="Máximo"
-                        labels={{ topLeft: 'Máximo' }}
-                        type="number"
-                        min="0"
-                        max="1000000"
-                    />
-                </div>
-
-                <div class="divider divider-start divider-end" />
-
-                <button class="btn btn-sm btn-primary w-full">
-                    <Icon icon="fa6-solid:magnifying-glass" />
-                    Pesquisar
-                </button>
+                <Input
+                    name="budget-max"
+                    placeholder="Preço máximo"
+                    labels={{ topLeft: 'Máximo' }}
+                    type="number"
+                    min="0"
+                    max="1000000000000"
+                />
             </div>
+
+            <h2 class="text-2xl font-bold">Área</h2>
+
+            <div class="grid grid-cols-2 gap-2">
+                <Input
+                    name="area-min"
+                    placeholder="Mínimo"
+                    labels={{ topLeft: 'Mínimo' }}
+                    type="number"
+                    min="0"
+                    max="1000000"
+                />
+                <Input
+                    name="area-max"
+                    placeholder="Máximo"
+                    labels={{ topLeft: 'Máximo' }}
+                    type="number"
+                    min="0"
+                    max="1000000"
+                />
+            </div>
+
+            <div class="divider divider-start divider-end" />
+
+            <button class="btn btn-sm btn-primary w-full">
+                <Icon icon="fa6-solid:magnifying-glass" />
+                Pesquisar
+            </button>
         </form>
     </aside>
 

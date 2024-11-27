@@ -7,6 +7,7 @@
     import Icon from '@iconify/svelte';
     import ComponentCard from '$lib/components/store/ComponentCard.svelte';
     import SearchPagination from '$lib/components/store/SearchPagination.svelte';
+    import { onMount } from 'svelte';
 
     export let data: PageServerData & { user: User };
 
@@ -14,6 +15,9 @@
     let currentPage: number;
     let searchResult: Array<Component> = [];
     let qtdPages: number;
+
+    // let width: number;
+    // let height: number;
 
     let notOwnedComponents: Array<Component> = [];
 
@@ -23,7 +27,7 @@
 
     $: allComponents, Searching();
 
-    $: searchResult, Searching();    
+    $: searchResult, Searching();
 
     data.searchComponents.forEach((component: Component) => {
         if (component.owner_username !== data.user.username && !component.bought) {
@@ -57,7 +61,7 @@
         <form
             method="POST"
             action="?/search"
-            class="space-y-2"
+            class="space-y-2 block sm:hidden"
             use:enhance={({ formData }) => {
                 formData.set('ascending', String(ascending));
                 formData.set('total', data.components.total_records.toString());
@@ -70,7 +74,7 @@
                 };
             }}
         >
-            <div class="collapse collapse-arrow sm:hidden">
+            <div class="collapse collapse-arrow">
                 <input type="checkbox" />
                 <div class="collapse-title text-xl font-medium">
                     <h1 class="text-3xl font-bold">Filtrar</h1>
@@ -181,10 +185,27 @@
                     </button>
                 </div>
             </div>
+        </form>
 
-            <h1 class="text-3xl font-bold hidden sm:block">Filtrar</h1>
+        <form
+            method="POST"
+            action="?/search"
+            class="space-y-2 hidden sm:block"
+            use:enhance={({ formData }) => {
+                formData.set('ascending', String(ascending));
+                formData.set('total', data.components.total_records.toString());
 
-            <article class="grid-cols-2 hidden sm:grid">
+                return (result) => {
+                    // @ts-ignore
+                    allComponents = result.result.data.components;
+                    // @ts-ignore
+                    searchResult = result.result.data.searchComponents;
+                };
+            }}
+        >
+            <h1 class="text-3xl font-bold">Filtrar</h1>
+
+            <article class="grid grid-cols-2">
                 <input type="checkbox" name="ascending" class="hidden" bind:checked={ascending} />
 
                 <button
@@ -208,79 +229,75 @@
                 </button>
             </article>
 
-            <div class="hidden sm:block">
+            <Input
+                name="text"
+                icon="fa6-solid:magnifying-glass"
+                placeholder="Procurar componente"
+                labels={{ topLeft: 'Procurar' }}
+                disableDefaultLabels
+            />
+
+            <h2 class="text-2xl font-bold">Orçamento</h2>
+
+            <div class="grid grid-cols-2 gap-2">
                 <Input
-                    name="text"
-                    icon="fa6-solid:magnifying-glass"
-                    placeholder="Procurar componente"
-                    labels={{ topLeft: 'Procurar' }}
-                    disableDefaultLabels
+                    name="budget-min"
+                    placeholder="Preço mínimo"
+                    labels={{ topLeft: 'Mínimo' }}
+                    type="number"
+                    min="0"
+                    max="1000000000000"
                 />
-
-                <h2 class="text-2xl font-bold">Orçamento</h2>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <Input
-                        name="budget-min"
-                        placeholder="Preço mínimo"
-                        labels={{ topLeft: 'Mínimo' }}
-                        type="number"
-                        min="0"
-                        max="1000000000000"
-                    />
-                    <Input
-                        name="budget-max"
-                        placeholder="Preço máximo"
-                        labels={{ topLeft: 'Máximo' }}
-                        type="number"
-                        min="0"
-                        max="1000000000000"
-                    />
-                </div>
-
-                <h2 class="text-2xl font-bold">Arkhoins</h2>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <Input
-                        name="arkhoins-min"
-                        placeholder="Mínimo"
-                        labels={{ topLeft: 'Mínimo' }}
-                        type="number"
-                        min="0"
-                        max="1000000"
-                    />
-                    <Input
-                        name="arkhoins-max"
-                        placeholder="Máximo"
-                        labels={{ topLeft: 'Máximo' }}
-                        type="number"
-                        min="0"
-                        max="1000000"
-                    />
-                </div>
-
-                <label class="form-control w-full">
-                    <div class="label">
-                        <span class="label-text">Ordenar por</span>
-                    </div>
-                    <select name="order" class="select select-sm select-bordered w-full">
-                        <option value="alphabetic">Ordem Alfabética</option>
-                        <option value="order_created" selected>Data de criação</option>
-                    </select>
-                    <div class="label" />
-                </label>
-
-                <Input name="owned" element="checkbox" size="xs"
-                    >Mostrar componentes adquiridos</Input
-                >
-
-                <div class="divider divider-start divider-end" />
-
-                <button class="btn btn-sm btn-primary w-full" on:click={() => (isSearching = true)}>
-                    <Icon icon="fa6-solid:magnifying-glass" />
-                    Pesquisar
-                </button>
+                <Input
+                    name="budget-max"
+                    placeholder="Preço máximo"
+                    labels={{ topLeft: 'Máximo' }}
+                    type="number"
+                    min="0"
+                    max="1000000000000"
+                />
             </div>
+
+            <h2 class="text-2xl font-bold">Arkhoins</h2>
+
+            <div class="grid grid-cols-2 gap-2">
+                <Input
+                    name="arkhoins-min"
+                    placeholder="Mínimo"
+                    labels={{ topLeft: 'Mínimo' }}
+                    type="number"
+                    min="0"
+                    max="1000000"
+                />
+                <Input
+                    name="arkhoins-max"
+                    placeholder="Máximo"
+                    labels={{ topLeft: 'Máximo' }}
+                    type="number"
+                    min="0"
+                    max="1000000"
+                />
+            </div>
+
+            <label class="form-control w-full">
+                <div class="label">
+                    <span class="label-text">Ordenar por</span>
+                </div>
+                <select name="order" class="select select-sm select-bordered w-full">
+                    <option value="alphabetic">Ordem Alfabética</option>
+                    <option value="order_created" selected>Data de criação</option>
+                </select>
+                <div class="label" />
+            </label>
+
+            <Input name="owned" element="checkbox" size="xs">Mostrar componentes adquiridos</Input>
+
+            <div class="divider divider-start divider-end" />
+
+            <button class="btn btn-sm btn-primary w-full" on:click={() => (isSearching = true)}>
+                <Icon icon="fa6-solid:magnifying-glass" />
+                Pesquisar
+            </button>
         </form>
     </aside>
 
