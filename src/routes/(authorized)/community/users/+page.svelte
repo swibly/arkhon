@@ -15,7 +15,7 @@
 
     $: ascending = false;
 
-    $: userSearch = undefined as PaginationType<User> | undefined;    
+    $: userSearch = undefined as PaginationType<User> | undefined;
 </script>
 
 <svelte:head>
@@ -23,7 +23,9 @@
 </svelte:head>
 
 <div class="flex max-sm:flex-col max-sm:items-center gap-4">
-    <aside class="sm:pr-4 sm:border-r border-r-base-200 w-full max-w-96">
+    <aside
+        class="sm:pr-4 sm:border-r border-r-base-200 w-full max-w-96 sm:sticky sm:h-full sm:top-32"
+    >
         <form
             method="POST"
             action="?/search"
@@ -36,9 +38,76 @@
                 };
             }}
         >
-            <h1 class="text-3xl font-bold">Filtrar</h1>
+            <div class="collapse collapse-arrow sm:hidden">
+                <input type="checkbox" />
+                <div class="collapse-title text-xl font-medium">
+                    <h1 class="text-3xl font-bold">Filtrar</h1>
+                </div>
+                <div class="collapse-content">
+                    <article class="grid-cols-2 hidden sm:grid">
+                        <input
+                            type="checkbox"
+                            name="ascending"
+                            class="hidden"
+                            bind:checked={ascending}
+                        />
 
-            <article class="grid grid-cols-2">
+                        <button
+                            type="button"
+                            class="border-b-2 border-base-200"
+                            class:border-primary={ascending}
+                            class:text-base-200={!ascending}
+                            on:click={() => (ascending = true)}
+                        >
+                            Crescente
+                        </button>
+
+                        <button
+                            type="button"
+                            class="border-b-2 border-base-200"
+                            class:border-primary={!ascending}
+                            class:text-base-200={ascending}
+                            on:click={() => (ascending = false)}
+                        >
+                            Decrescente
+                        </button>
+                    </article>
+
+                    <Input
+                        name="name"
+                        icon="fa6-solid:magnifying-glass"
+                        placeholder="Procurar usuário"
+                        labels={{ topLeft: 'Procurar' }}
+                        disableDefaultLabels
+                    />
+
+                    <label class="form-control w-full">
+                        <div class="label">
+                            <span class="label-text">Ordenar por</span>
+                        </div>
+                        <select name="order" class="select select-sm select-bordered w-full">
+                            <option value="alphabetic">Ordem Alfabética</option>
+                            <option value="order_created" selected>Data de criação</option>
+                        </select>
+                        <div class="label" />
+                    </label>
+
+                    <Input name="verified" element="checkbox" size="xs"
+                        >Apenas usuários verificados</Input
+                    >
+
+                    <div class="divider divider-start divider-end" />
+
+                    <button class="btn btn-sm btn-primary w-full">
+                        <Icon icon="fa6-solid:magnifying-glass" />
+                        Pesquisar
+                    </button>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-bold hidden sm:block">Filtrar</h1>
+
+            <article class="grid-cols-2 hidden sm:grid">
                 <input type="checkbox" name="ascending" class="hidden" bind:checked={ascending} />
 
                 <button
@@ -62,33 +131,37 @@
                 </button>
             </article>
 
-            <Input
-                name="name"
-                icon="fa6-solid:magnifying-glass"
-                placeholder="Procurar usuário"
-                labels={{ topLeft: 'Procurar' }}
-                disableDefaultLabels
-            />
+            <div class="hidden sm:block">
+                <Input
+                    name="name"
+                    icon="fa6-solid:magnifying-glass"
+                    placeholder="Procurar usuário"
+                    labels={{ topLeft: 'Procurar' }}
+                    disableDefaultLabels
+                />
 
-            <label class="form-control w-full">
-                <div class="label">
-                    <span class="label-text">Ordenar por</span>
-                </div>
-                <select name="order" class="select select-sm select-bordered w-full">
-                    <option value="alphabetic">Ordem Alfabética</option>
-                    <option value="order_created" selected>Data de criação</option>
-                </select>
-                <div class="label" />
-            </label>
+                <label class="form-control w-full">
+                    <div class="label">
+                        <span class="label-text">Ordenar por</span>
+                    </div>
+                    <select name="order" class="select select-sm select-bordered w-full">
+                        <option value="alphabetic">Ordem Alfabética</option>
+                        <option value="order_created" selected>Data de criação</option>
+                    </select>
+                    <div class="label" />
+                </label>
 
-            <Input name="verified" element="checkbox" size="xs">Apenas usuários verificados</Input>
+                <Input name="verified" element="checkbox" size="xs"
+                    >Apenas usuários verificados</Input
+                >
 
-            <div class="divider divider-start divider-end" />
+                <div class="divider divider-start divider-end" />
 
-            <button class="btn btn-sm btn-primary w-full">
-                <Icon icon="fa6-solid:magnifying-glass" />
-                Pesquisar
-            </button>
+                <button class="btn btn-sm btn-primary w-full">
+                    <Icon icon="fa6-solid:magnifying-glass" />
+                    Pesquisar
+                </button>
+            </div>
         </form>
     </aside>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import type { LayoutServerData } from './$types';
-    import ThemeToggler from '$lib/components/ThemeToggler.svelte';
+    import ThemeToggler from '$lib/components/ThemeToggler.svelte';    
 
     export let data: LayoutServerData;
 </script>
@@ -24,7 +24,10 @@
         <div class="divider divider-horizontal mx-1 max-sm:hidden" />
 
         <nav class="max-sm:hidden space-x-2">
-            <a href="/profile/{data.user.username}" class="link link-primary inline-flex items-center gap-1">
+            <a
+                href="/profile/{data.user.username}"
+                class="link link-primary inline-flex items-center gap-1"
+            >
                 <Icon icon="mdi:user" />
                 Perfil
             </a>
@@ -35,7 +38,7 @@
         </nav>
 
         <div class="grow" />
-
+        
         <ThemeToggler />
 
         <div class="size-8 dropdown dropdown-end">
@@ -122,5 +125,7 @@
         </div>
     </header>
 
-    <slot />
+    <div id="content">
+        <slot />
+    </div>
 </div>

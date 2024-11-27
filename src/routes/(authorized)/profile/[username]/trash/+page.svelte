@@ -6,7 +6,7 @@
     import Icon from '@iconify/svelte';
     import { enhance } from '$app/forms';
     import Attention from '$lib/components/Attention.svelte';
-    import ComponentCard from '$lib/components/store/ComponentCard.svelte';
+    import ComponentCard from '$lib/components/store/ComponentCard.svelte';    
 
     export let data: PageServerData & { user: User; lookup: User };
 
@@ -18,8 +18,6 @@
     let type: string = 'project';
 
     let clearDialog: HTMLDialogElement;
-
-    console.log(data.componentTrash);
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Lixeira</h1>
