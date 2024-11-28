@@ -1,6 +1,6 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
         drawGrid,
@@ -36,9 +36,9 @@
     import ComponentPagination from '$lib/components/ComponentPagination.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import type { Pagination } from '$lib/utils';
-    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
+    import ObjectInfo from '$lib/components/ObjectInfo.svelte';    
 
-    export let data: PageServerData & { user: User; project: Project };
+    export let data: PageServerData & { user: User; project: Project };    
 
     // Váriaveis e todo o funcionamento do canvas
 
@@ -92,7 +92,7 @@
                     }
                 });
             }
-        }
+        }        
 
         allComponents = data.component;
         ownedComponents = data.allOwnedComponents;
@@ -162,8 +162,6 @@
                         obj.evented = false;
                     });
                 }
-
-                console.log(fabric.toObject());
             }
         });
 

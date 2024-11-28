@@ -24,7 +24,7 @@
     <h1 class="text-4xl font-bold text-primary">Notificações</h1>
 
     {#if !$page.url.searchParams.has('unread', 'true')}
-        <a href="?unread=true" class="link link-secondary">Mostrar apenas não lidos</a>
+        <a href="?unread=true" class="link link-secondary">Mostrar apenas não lidas</a>
     {:else}
         <a href="?unread=false" class="link link-secondary">Mostrar todos</a>
     {/if}
@@ -142,7 +142,7 @@
                                     Carregando...
                                 </button>
                             {:else}
-                                <button class="btn btn-sm btn-wide btn-secondary">
+                                <button class="btn btn-sm btn-wide btn-secondary text-white">
                                     <Icon icon="fluent:mail-read-32-filled" />
                                     Marcar como lida
                                 </button>

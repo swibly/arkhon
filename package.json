@@ -45,10 +45,14 @@
     ],
     "type": "module",
     "dependencies": {
-        "@imask/svelte": "^7.6.1",
         "@neodrag/svelte": "^2.0.6",
+        "@tsparticles/engine": "^3.5.0",
+        "@tsparticles/svelte": "^3.1.1",
         "axios": "^1.7.7",
         "fabric": "^6.4.3",
-        "js-cookie": "^3.0.5"
+        "js-cookie": "^3.0.5",
+        "svelte-particles": "^2.12.0",
+        "tsparticles": "^3.5.0",
+        "tsparticles-slim": "^2.12.0"
     }
 }

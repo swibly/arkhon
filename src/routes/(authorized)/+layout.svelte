@@ -24,7 +24,10 @@
         <div class="divider divider-horizontal mx-1 max-sm:hidden" />
 
         <nav class="max-sm:hidden space-x-2">
-            <a href="/profile/{data.user.username}" class="link link-primary inline-flex items-center gap-1">
+            <a
+                href="/profile/{data.user.username}"
+                class="link link-primary inline-flex items-center gap-1"
+            >
                 <Icon icon="mdi:user" />
                 Perfil
             </a>
@@ -80,6 +83,20 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="/support">
+                        <Icon icon="mdi:faq" />
+                        FAQ
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/about">
+                        <Icon icon="mdi:about" />
+                        Sobre
+                    </a>
+                </li>
+
                 <div class="divider my-1" />
 
                 <li>
@@ -108,5 +125,7 @@
         </div>
     </header>
 
-    <slot />
+    <div id="content">
+        <slot />
+    </div>
 </div>

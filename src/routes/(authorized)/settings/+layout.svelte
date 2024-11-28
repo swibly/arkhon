@@ -29,7 +29,7 @@
                 Ver perfil
             </a>
 
-            <a href="/logout" class="btn btn-sm btn-error">
+            <a href="/logout" class="btn btn-sm btn-error text-white">
                 <Icon icon="pepicons-pop:leave" />
                 Sair
             </a>

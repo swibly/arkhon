@@ -62,7 +62,7 @@
                                         message: `Você parou de seguir ${following.username}`
                                     })}
                             >
-                                <button type="submit" class="w-full btn btn-sm btn-error">
+                                <button type="submit" class="w-full btn btn-sm btn-error text-white">
                                     <Icon icon="ri:user-unfollow-fill" />
                                     Parar de seguir
                                 </button>

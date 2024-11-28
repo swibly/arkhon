@@ -7,7 +7,7 @@
     export let data: PageServerData & { user: User; lookup: User };
 
     $: pagination = data.projects;
-    $: projects = pagination.data;
+    $: projects = pagination.data;            
 </script>
 
 <h1 class="text-3xl font-bold text-primary">Todos os Projetos</h1>
@@ -25,10 +25,10 @@
     </div>
 
     <div
-        class="grid grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4 max-sm:flex max-sm:flex-wrap max-md:place-items-center"
+        class="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(384px,1fr))] grid-flow-dense gap-x-2 gap-y-4 max-sm:flex max-sm:flex-wrap max-md:place-items-center"
     >
         {#each projects as project}
-            <ProjectCard options={project} currentUser={data.user} lang={data.user.language} />
+            <ProjectCard options={project} currentUser={data.user} lang={data.user.language} projectPage={true}/>
         {/each}
     </div>
 {/if}

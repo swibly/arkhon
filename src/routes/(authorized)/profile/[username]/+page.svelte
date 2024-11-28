@@ -26,17 +26,20 @@
                     Meus projetos
                 </a>
 
-                <a href="/community" class="btn btn-sm btn-secondary">
+                <a href="/community" class="btn btn-sm btn-secondary text-white">
                     <Icon icon="fluent:people-community-12-filled" />
                     Comunidade
                 </a>
 
-                <a href="/community/store" class="btn btn-secondary btn-sm">
+                <a href="/community/store" class="btn btn-secondary btn-sm text-white">
                     <Icon icon="mdi:store" />
                     Loja
                 </a>
 
-                <a href="/profile/{data.user.username}/trash" class="btn btn-error btn-sm">
+                <a
+                    href="/profile/{data.user.username}/trash"
+                    class="btn btn-error btn-sm text-white"
+                >
                     <Icon icon="mdi:trash" />
                     Lixeira
                 </a>
@@ -78,18 +81,21 @@
                     </a>
                 {/if}
             {:else}
-                <div class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4">
+                <div
+                    class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+                >
                     {#each projects.data as project}
                         <ProjectCard
                             options={project}
                             currentUser={data.user}
-                            lang={data.user.language}
+                            lang={data.user.language}        
+                            projectPage={false}                                                
                         />
                     {/each}
                     {#if projects.total_records > projects.data.length}
                         <a
                             href="/profile/{data.lookup.username}/projects"
-                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 md:max-w-full shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {projects.total_records - projects.data.length}
@@ -128,18 +134,21 @@
             {#if favorites.total_records === 0}
                 <p class="mb-4 opacity-70">Este usuário ainda não favoritou nenhum projeto.</p>
             {:else}
-                <div class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4">
+                <div
+                    class="flex gap-2 max-md:overflow-auto md:flex-wrap max-md:py-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+                >
                     {#each favorites.data as favorite}
                         <ProjectCard
                             options={favorite}
                             currentUser={data.user}
                             lang={data.user.language}
+                            projectPage={false}                                                
                         />
                     {/each}
                     {#if favorites.total_records > favorites.data.length}
                         <a
                             href="/profile/{data.lookup.username}/favorites"
-                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 shrink-0"
+                            class="btn btn-link border border-primary h-[550px] w-full max-w-96 md:max-w-full shrink-0"
                         >
                             <Icon icon="ph:magnifying-glass-bold" />
                             Ver mais {favorites.total_records - favorites.data.length}

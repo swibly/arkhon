@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 
     return {
         content: await getContentByProjectId(jwt, projectID),
-        component: await getPublicComponents(jwt, '1'),
+        component: await getPublicComponents(jwt, '1', '10'),
         allOwnedComponents: await getAllUserComponents(jwt, String(user?.username), '1')
     };
 };
@@ -110,7 +110,7 @@ export const actions: Actions = {
         const page = data.get('nextPage');
 
         return {
-            component: await getPublicComponents(jwt, page!.toString()),
+            component: await getPublicComponents(jwt, page!.toString(), '10'),
             allOwnedComponents: await getAllUserComponents(
                 jwt,
                 String(user?.username),
@@ -124,7 +124,7 @@ export const actions: Actions = {
         let user = await getUserByToken(jwt);
 
         return {
-            component: await getPublicComponents(jwt, '1'),
+            component: await getPublicComponents(jwt, '1', '10'),
             allOwnedComponents: await getAllUserComponents(jwt, String(user?.username), '1')
         };
     },

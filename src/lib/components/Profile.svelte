@@ -17,7 +17,8 @@
         following: 'Seguindo',
         followers: 'Seguidores',
         projects: 'Projetos',
-        trash: 'Lixeira'
+        trash: 'Lixeira',
+        componentTrash: 'Lixeira de Componentes'
     };
 
     const pathIcons: Record<string, string> = {
@@ -25,7 +26,8 @@
         following: 'mdi:users-add',
         followers: 'mdi:users',
         projects: 'eos-icons:project',
-        trash: 'mdi:trash'
+        trash: 'mdi:trash',
+        componentTrash: 'iconamoon:component-fill'
     };
 </script>
 
@@ -150,7 +152,7 @@
                         use:enhance={() =>
                             spawn({ message: `Você parou de seguir ${lookup.username}` })}
                     >
-                        <button type="submit" class="w-full btn btn-sm btn-error">
+                        <button type="submit" class="w-full btn btn-sm btn-error text-white">
                             <Icon icon="ri:user-unfollow-fill" />
                             Parar de seguir
                         </button>
@@ -294,7 +296,7 @@
                             use:enhance={() =>
                                 spawn({ message: `Você parou de seguir ${lookup.username}` })}
                         >
-                            <button type="submit" class="w-full btn btn-sm btn-error">
+                            <button type="submit" class="w-full btn btn-sm btn-error text-white">
                                 <Icon icon="ri:user-unfollow-fill" />
                                 Parar de seguir
                             </button>
