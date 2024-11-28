@@ -88,7 +88,7 @@
                 {/if}
                 {textShow}
 
-                <input {name} {placeholder} {required} class="grow" bind:value {...$$restProps} />
+                <input {name} {placeholder} {required} class="grow max-md:[appearance:textfield] max-md:[&::-webkit-outer-spin-button]:appearance-none max-md:[&::-webkit-inner-spin-button]:appearance-none" bind:value {...$$restProps} />
             </label>
         {/if}
 

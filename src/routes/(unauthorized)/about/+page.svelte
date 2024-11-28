@@ -20,9 +20,10 @@
         <p class="text-center text-primary font-bold mt-4 mb-12">
             <span class="block">"É de extrema importância promover o acesso democrático ao</span>
             <span class="block">
-                processo de criação e desenvolvimento plantas baixas, tornando-o mais acessível para</span
+                processo de criação e desenvolvimento de plantas baixas, tornando-o mais acessível
+                para</span
             ><span class="block"
-                >profissionais e entusiastas da arquitetura, independentemente de seu nível de
+                >profissionais e entusiastas de arquitetura, independentemente de seu nível de
                 experiência ou recursos disponíveis."
             </span>
         </p>
@@ -93,13 +94,6 @@
                 </p>
             </section>
             <section>
-                <p class="text-justify -mt-4 md:mt-4">
-                    No entanto, a complexidade não se limita apenas às ferramentas de criação. Há
-                    também uma carência preocupante de atenção à acessibilidade no planejamento de
-                    edificações. Em muitos casos, as soluções arquitetônicas negligenciam a inclusão
-                    de tecnologias assistivas e a adaptação dos espaços para atender às necessidades
-                    de pessoas com deficiência.
-                </p>
                 <p class="text-justify mt-4">
                     A falta de acessibilidade nas construções, especialmente em áreas comuns, agrava
                     a segregação de pessoas com deficiência, limitando sua autonomia e segurança.
@@ -112,15 +106,15 @@
                     baixas, permitindo que qualquer pessoa, independentemente de seu nível de
                     conhecimento técnico, possa desenhar seus próprios projetos.
                 </p>
+                <p class="text-justify mt-4">
+                    Além de simplificar o processo de criação, a Arkhon promove a inclusão ao
+                    incentivar a incorporação de princípios de acessibilidade nas construções, de
+                    forma a atender às necessidades de pessoas com deficiência. A plataforma visa
+                    contribuir para a democratização do planejamento arquitetônico, tornando-o mais
+                    inclusivo e alinhado às demandas contemporâneas de acessibilidade e equidade.
+                </p>
             </section>
         </main>
-        <p class="text-justify mt-4">
-            Além de simplificar o processo de criação, a Arkhon promove a inclusão ao incentivar a
-            incorporação de princípios de acessibilidade nas construções, de forma a atender às
-            necessidades de pessoas com deficiência. A plataforma visa contribuir para a
-            democratização do planejamento arquitetônico, tornando-o mais inclusivo e alinhado às
-            demandas contemporâneas de acessibilidade e equidade.
-        </p>
         <div class="divider divider-neutral w-2/3 mx-auto my-8" />
         <section class="block lg:flex justify-around w-full h-72 gap-10 mb-12">
             <section
@@ -135,9 +129,7 @@
             <section
                 class="w-full lg:w-1/2 grid lg:grid-cols-2 place-items-center gap-y-4 mt-8 lg:mt-0"
             >
-                <section
-                    class="gap-4 w-full flex items-center lg:flex-col gap-y-1 xl:gap-y-4"
-                >
+                <section class="gap-4 w-full flex items-center lg:flex-col gap-y-1 xl:gap-y-4">
                     <AboutCard style="w-1/2 h-40 lg:w-40 lg:h-40">
                         <Icon icon="mdi:pencil" font-size="40px" class="mb-4" />
                         <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">Editor</p>
@@ -148,7 +140,9 @@
                             font-size="40px"
                             class="mb-4"
                         />
-                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">Comunidade</p>
+                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">
+                            Comunidade
+                        </p>
                     </AboutCard>
                 </section>
                 <section
@@ -156,11 +150,15 @@
                 >
                     <AboutCard style="w-1/2 h-40 lg:w-40 lg:h-40">
                         <Icon icon="rivet-icons:money" font-size="40px" class="mb-4" />
-                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">Cálculo de Orçamento</p>
+                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">
+                            Cálculo de Orçamento
+                        </p>
                     </AboutCard>
                     <AboutCard style="w-1/2 h-40 lg:w-40 lg:h-40">
                         <Icon icon="fa-solid:crutch" font-size="40px" class="mb-4" />
-                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">Detecção de Acessibilidade</p>
+                        <p class="text-center font-bold text-md xl:text-lg px-2 xl:px-8">
+                            Detecção de Acessibilidade
+                        </p>
                     </AboutCard>
                 </section>
             </section>

@@ -22,7 +22,7 @@
                 </summary>
                 <div class="collapse-content">
                     <p class="text-justify">
-                        Explore projetos compartilhados por outras pessoas e descubra novas pessoas
+                        Explore projetos compartilhados por outras pessoas, adquira componentes personalizados e descubra novas pessoas
                         com interesses semelhantes. Use os filtros para encontrar tópicos ou tipos
                         de projetos específicos de seu interesse. Mergulhe, inspire-se e conecte-se
                         com nossa comunidade criativa!

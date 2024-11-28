@@ -234,7 +234,7 @@
     {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_users === true).length > 0}
         <div class="my-4">
             <Attention type="tip">
-                Para remover um usuário da lista, remove todas as suas permissões.
+                Para remover um usuário da lista, remova todas as suas permissões.
             </Attention>
         </div>
     {/if}

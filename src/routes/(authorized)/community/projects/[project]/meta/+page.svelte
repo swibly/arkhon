@@ -8,11 +8,12 @@
     import Icon from '@iconify/svelte';
     import Attention from '$lib/components/Attention.svelte';
     import { getComparison } from '$lib/utils';
-    import { onMount } from 'svelte';    
+    import { onMount } from 'svelte';
+    import Confetti from '$lib/components/Confetti.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
-    let loadingPublish = false;    
+    let loadingPublish = false;
 
     let publishDialog: HTMLDialogElement;
     let privateDialog: HTMLDialogElement;
@@ -31,6 +32,8 @@
     let fileInput: HTMLInputElement;
     let file: File | null = null;
     let fileError: string | null = null;
+
+    let showConfetti: boolean = false;
 
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -108,6 +111,10 @@
 </svelte:head>
 
 <div class="w-full max-w-3xl p-4 mx-auto">
+    {#if showConfetti}
+        <Confetti />
+    {/if}
+
     <button role="link" class="btn btn-ghost btn-sm mb-4" on:click={() => history.back()}>
         <Icon icon="streamline:return-2-solid" />
         Página anterior
@@ -351,22 +358,12 @@
                         use:enhance={function () {
                             loadingPublish = true;
 
-                            return function ({ result, update }) {
+                            return function ({ update }) {
                                 loadingPublish = false;
 
-                                console.log(result);
-                                // @ts-ignore
-                                if (result.data.error) {
-                                    spawn({
-                                        // @ts-ignore
-                                        message: result.data.error,
-                                        status: 'error'
-                                    });
+                                showConfetti = true;
 
-                                    return update();
-                                }
-
-                                spawn({ message: 'Projeto publicado com sucesso!' });  
+                                spawn({ message: 'Projeto publicado com sucesso!' });
 
                                 return update();
                             };
@@ -379,7 +376,7 @@
                     </form>
 
                     <form method="dialog">
-                        <button class="btn btn-sm btn-error w-full">
+                        <button class="btn btn-sm btn-error w-full text-white">
                             <Icon icon="mdi:block" />
                             Deixar privado. (cancelar)
                         </button>
@@ -395,7 +392,7 @@
         {:else}
             <button
                 type="submit"
-                class="btn btn-sm btn-error"
+                class="btn btn-sm btn-error text-white"
                 on:click={() => privateDialog.show()}
             >
                 <Icon icon="mdi:block" />
@@ -436,13 +433,15 @@
                             return function ({ update }) {
                                 loadingPublish = false;
 
+                                showConfetti = false;
+
                                 spawn({ message: 'Projeto privado com sucesso!' });
 
                                 return update();
                             };
                         }}
                     >
-                        <button type="submit" class="btn btn-sm btn-error w-full">
+                        <button type="submit" class="btn btn-sm btn-error w-full text-white">
                             <Icon icon="mdi:block" />
                             Privar projeto
                         </button>

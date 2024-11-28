@@ -139,7 +139,7 @@
     </Attention>
 
     <button
-        class="btn btn-sm btn-error my-4 hover:animate-pulse"
+        class="btn btn-sm btn-error my-4 hover:animate-pulse text-white"
         on:click={() => deleteDialog.show()}
     >
         <Icon icon="mdi:block" />
@@ -156,8 +156,7 @@
 <dialog bind:this={deleteDialog} class="modal -top-10">
     <div class="modal-box bg-transparent shadow-none flex flex-col gap-2">
         <form action="/settings?/deleteAccount" method="POST">
-            <button class="btn btn-error hover:animate-shake">
-                <Icon icon="pepicons-pop:leave" />
+            <button class="btn btn-error hover:animate-shake text-white">                
                 Deletar PERMANENTEMENTE minha conta e TODOS os meus projetos.
             </button>
         </form>

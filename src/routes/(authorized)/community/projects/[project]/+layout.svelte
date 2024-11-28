@@ -12,15 +12,18 @@
 
 {#if data.project.deleted_at !== null}
     <div
-        class="p-2 w-full bg-warning text-black flex justify-center items-center gap-2 sticky top-[85px]"
+        class="p-2 w-full bg-warning text-black flex flex-col justify-center items-center gap-2 sticky top-[85px] text-white"
     >
-        <Icon icon="mdi:alert" />
-        Este projeto está na lixeira do dono. Você pode estar vendo uma versão antiga.
+        <span class="flex max-md:flex-col items-center justify-center gap-2 text-center">
+            <Icon icon="mdi:alert" />
+            Este projeto está na lixeira do dono. Você pode estar vendo uma versão antiga.
+        </span>
 
         {#if data.user.id === data.project.owner_id || data.project.allowed_users.filter((x) => x.id === data.user.id && x.allow_delete === true).length > 0}
             <form
                 action="/community/projects/{data.project.id}?/restore"
                 method="POST"
+                class="w-full max-w-xl"
                 use:enhance={() => {
                     loading = true;
 
@@ -33,7 +36,7 @@
                     };
                 }}
             >
-                <button class="btn btn-ghost btn-sm" disabled={loading}>
+                <button class="btn btn-ghost btn-sm w-full" disabled={loading}>
                     {#if loading}
                         <Icon icon="mdi:restore" />
                         Restaurando

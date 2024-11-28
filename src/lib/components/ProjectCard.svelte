@@ -250,7 +250,7 @@
                 }}
                 class="grow"
             >
-                <button class="btn btn-error btn-sm w-full">
+                <button class="btn btn-error btn-sm w-full text-white">
                     <Icon icon="mdi:trash" />
                     Deletar
                 </button>

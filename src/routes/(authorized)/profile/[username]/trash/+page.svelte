@@ -61,9 +61,9 @@
 
 {#if type === 'project'}
     {#if data.user.username !== data.lookup.username}
-        <p class="text-error">Você não pode ver a lixeira de outras pessoas.</p>
+        <p class="text-error text-center">Você não pode ver a lixeira de outras pessoas.</p>
     {:else if trashed.length === 0}
-        <p class="mb-4 opacity-70 italic">Você ainda não colocou nenhum projeto na lixeira.</p>
+        <p class="mb-4 opacity-70 italic text-center">Você ainda não colocou nenhum projeto na lixeira.</p>
     {:else}
         <div class="mx-auto w-fit">
             <Pagination {pagination} />
@@ -147,7 +147,7 @@
             {/each}
         </section>
     {:else}
-        <p class="mb-4 opacity-70 italic">Você ainda não colocou nenhum componente na lixeira.</p>
+        <p class="mb-4 opacity-70 italic text-center">Você ainda não colocou nenhum componente na lixeira.</p>
     {/if}
 
     <dialog bind:this={clearDialog} class="modal">

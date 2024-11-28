@@ -3,10 +3,9 @@
     import Logo from '$lib/components/Logo.svelte';
     import Icon from '@iconify/svelte';
     import type { LayoutServerData } from './$types';
+    import { canShowConfetti } from '$lib/stores/confetti';
 
-    let aboutArkhonModal: HTMLDialogElement;
-
-    export let data: LayoutServerData;
+    export let data: LayoutServerData;    
 </script>
 
 <svelte:head>
@@ -43,7 +42,7 @@
         style="background-image: url(/home/banner.png); background-position: center; background-size: cover;"
     >
         <h2 class="pt-12 text-3xl text-center text-white max-md:text-xl">
-            Papel e caneta tornaram-se obsoletos na prototipação.
+            Papel e caneta se tornaram obsoletos na prototipação.
         </h2>
 
         <a href="/about" class="mt-8 btn btn-secondary btn-wide max-sm:btn-sm">
