@@ -42,7 +42,7 @@
         canvas = new Canvas(canvasElement, {
             imageSmoothingEnabled: false,
             uniformScaling: false,
-            targetFindTolerance: 12,
+            targetFindTolerance: 12
         });
 
         InteractiveFabricObject.ownDefaults = {
