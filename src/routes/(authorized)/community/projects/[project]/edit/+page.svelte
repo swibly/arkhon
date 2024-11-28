@@ -1,6 +1,6 @@
 <script lang="ts" type="module">
     import Icon from '@iconify/svelte';
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import { Canvas, Point, ActiveSelection, Rect, Circle, type FabricObject } from 'fabric';
     import {
         drawGrid,
@@ -36,12 +36,9 @@
     import ComponentPagination from '$lib/components/ComponentPagination.svelte';
     import ObjectMenu from '$lib/components/ObjectMenu.svelte';
     import type { Pagination } from '$lib/utils';
-    import ObjectInfo from '$lib/components/ObjectInfo.svelte';
-    import io from 'socket.io-client';
+    import ObjectInfo from '$lib/components/ObjectInfo.svelte';    
 
-    export let data: PageServerData & { user: User; project: Project };
-
-    // const socket = io('http://localhost:3000');
+    export let data: PageServerData & { user: User; project: Project };    
 
     // Váriaveis e todo o funcionamento do canvas
 
@@ -95,9 +92,7 @@
                     }
                 });
             }
-        }
-
-        // socket.emit('joinProject', data.project.id);
+        }        
 
         allComponents = data.component;
         ownedComponents = data.allOwnedComponents;
