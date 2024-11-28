@@ -11,6 +11,7 @@ import {
     Tool
 } from '$lib/stores/tool';
 import { zoom } from '$lib/stores/zoom';
+import { spawn } from '$lib/toast';
 import type { User } from '$lib/user';
 import { hasPermissions } from '$lib/utils';
 import {
@@ -28,6 +29,8 @@ import {
     type TPointerEvent,
     type XY
 } from 'fabric';
+import Cookies from 'js-cookie';
+import { get } from 'svelte/store';
 
 import {
     copyObjectsToClipboard,
@@ -36,8 +39,6 @@ import {
     pasteObjectsFromClipboard
 } from './objects';
 import { applyObjectPermissions } from './permissions';
-import { spawn } from '$lib/toast';
-import { get } from 'svelte/store';
 
 const GRID_SIZE = 50;
 
@@ -45,7 +46,7 @@ let editingText = false;
 let spaceBarPressed = false;
 
 export const polygonPath = new Polygon([], {
-    stroke: '#FFFFFF',
+    stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
     strokeWidth: 3,
     fill: null,
     selectable: false,
@@ -109,7 +110,10 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
             case Tool.Polygon: {
                 addPolygonPoint(canvas.getScenePoint(event));
-                polygonPath.set({ points: get(polygonPoints) });
+                polygonPath.set({
+                    points: get(polygonPoints),
+                    stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black'
+                });
 
                 var calcDim = polygonPath._calcDimensions();
 
@@ -144,7 +148,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                     width: x - origin.x,
                     height: y - origin.y,
                     fill: null,
-                    stroke: 'white',
+                    stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
                     strokeWidth: 3,
                     radius: 0
                 };
@@ -165,7 +169,12 @@ export function loadCanvasEventListeners(canvas: Canvas) {
             case Tool.Text: {
                 const { x, y } = canvas.getScenePoint(event);
 
-                textbox = new Textbox('', { left: x, top: y });
+                textbox = new Textbox('', {
+                    left: x,
+                    top: y,
+                    fill: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
+                    fontFamily: 'arial',
+                });
                 canvas.add(textbox);
 
                 canvas.requestRenderAll();
@@ -260,7 +269,18 @@ export function loadCanvasEventListeners(canvas: Canvas) {
 
             case Tool.Polygon: {
                 const { x, y } = canvas.getScenePoint(event);
-                polygonPath.set({ points: [...get(polygonPoints), { x, y }] });
+                polygonPath.set({
+                    points: [
+                        ...get(polygonPoints),
+                        {
+                            x,
+                            y,
+                            fill: null,
+                            stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
+                            strokeWidth: 3
+                        }
+                    ]
+                });
                 var calcDim = polygonPath._calcDimensions();
 
                 polygonPath.width = calcDim.width;
@@ -504,7 +524,9 @@ export async function handleKeybinds(
                 }
 
                 const polygon = new Polygon(points, {
-                    fill: '#FFFFFF'
+                    fill: null,
+                    stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
+                    strokeWidth: 3
                 });
 
                 canvas.add(polygon);

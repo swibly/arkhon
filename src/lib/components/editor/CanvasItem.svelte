@@ -9,6 +9,7 @@
     export let showControls: boolean;
     export let object: FabricObject;
     export let name: string;
+    export let nameReset: string;
     export let typeTranslated: string;
     export let type: string;
     export let componentID: number | undefined = undefined;
