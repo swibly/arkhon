@@ -9,11 +9,8 @@
     import Attention from '$lib/components/Attention.svelte';
     import { getComparison } from '$lib/utils';
     import { onMount } from 'svelte';
-<<<<<<< HEAD
     import { goto } from '$app/navigation';
-=======
     import Confetti from '$lib/components/Confetti.svelte';
->>>>>>> feat/secondary-pages
 
     export let data: PageServerData & { user: User; project: Project };
 
