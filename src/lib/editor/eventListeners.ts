@@ -115,20 +115,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                     stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black'
                 });
 
-                var calcDim = polygonPath._calcDimensions();
-
-                polygonPath.width = calcDim.width;
-                polygonPath.height = calcDim.height;
-
-                polygonPath.set({
-                    left: calcDim.left,
-                    top: calcDim.top,
-                    pathOffset: {
-                        x: calcDim.left + polygonPath.width / 2,
-                        y: calcDim.top + polygonPath.height / 2
-                    }
-                });
-
+                polygonPath.setBoundingBox(true);
                 polygonPath.setCoords();
                 canvas.requestRenderAll();
                 break;
@@ -157,8 +144,10 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 else if (getTool() === Tool.Circle) shape = new Circle(options);
                 else if (getTool() === Tool.Line) {
                     shape = new Polyline([origin, origin], options);
-                    shape.dirty = true;
+                    (shape as Polyline).setBoundingBox(true);
                 }
+
+                shape.setCoords();
 
                 applyObjectPermissions(canvas, shape, { selectable: false, cursor: 'crosshair' });
 
@@ -173,7 +162,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                     left: x,
                     top: y,
                     fill: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
-                    fontFamily: 'arial',
+                    fontFamily: 'arial'
                 });
                 canvas.add(textbox);
 
@@ -225,20 +214,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                         { x: x - GRID_SIZE, y },
                         { x: x + GRID_SIZE, y }
                     ]);
-
-                    var calcDim = shape._calcDimensions();
-
-                    shape.width = calcDim.width;
-                    shape.height = calcDim.height;
-
-                    shape.set({
-                        left: calcDim.left,
-                        top: calcDim.top,
-                        pathOffset: {
-                            x: calcDim.left + shape.width / 2,
-                            y: calcDim.top + shape.height / 2
-                        }
-                    });
+                    shape.setBoundingBox(true);
                 }
 
                 shape.setCoords();
@@ -281,19 +257,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                         }
                     ]
                 });
-                var calcDim = polygonPath._calcDimensions();
 
-                polygonPath.width = calcDim.width;
-                polygonPath.height = calcDim.height;
-
-                polygonPath.set({
-                    left: calcDim.left,
-                    top: calcDim.top,
-                    pathOffset: {
-                        x: calcDim.left + polygonPath.width / 2,
-                        y: calcDim.top + polygonPath.height / 2
-                    }
-                });
+                polygonPath.setBoundingBox(true);
 
                 polygonPath.setCoords();
                 canvas.requestRenderAll();
@@ -355,20 +320,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                         points[1] = { x, y };
 
                         shape.set({ points });
-
-                        var calcDim = shape._calcDimensions();
-
-                        shape.width = calcDim.width;
-                        shape.height = calcDim.height;
-
-                        shape.set({
-                            left: calcDim.left,
-                            top: calcDim.top,
-                            pathOffset: {
-                                x: calcDim.left + shape.width / 2,
-                                y: calcDim.top + shape.height / 2
-                            }
-                        });
+                        shape.setBoundingBox(true);
                     }
 
                     shape.setCoords();
@@ -599,13 +551,11 @@ function handleObjectOperations(canvas: Canvas) {
                     target.left = Math.round(target.left / GRID_SIZE) * GRID_SIZE;
                     target.top = Math.round(target.top / GRID_SIZE) * GRID_SIZE;
                 }
-
                 break;
             }
 
             case 'rotate': {
                 target.snapAngle = ~~e.shiftKey * 15;
-
                 break;
             }
 
@@ -613,7 +563,6 @@ function handleObjectOperations(canvas: Canvas) {
             case 'scaleY':
             case 'scale': {
                 target.set('strokeUniform', true);
-                target.dirty = true;
 
                 if (e.ctrlKey) {
                     target.lockScalingFlip = true;
@@ -696,16 +645,15 @@ function handleObjectOperations(canvas: Canvas) {
             }
 
             case 'modifyPoly': {
-                const polygon = target as Polygon;
+                const polygon = target as Polygon | Polyline;
                 const controlIndex = parseInt(transform.corner.replace('p', ''), 10);
-                const point = polygon.points[controlIndex];
+                const points = [...polygon.points];
+                const point = points[controlIndex];
 
                 if (!point) return;
 
                 if (e.shiftKey) {
-                    const prevPoint =
-                        polygon.points[controlIndex - 1] ||
-                        polygon.points[polygon.points.length - 1];
+                    const prevPoint = points[controlIndex - 1];
                     const deltaX = point.x - prevPoint.x;
                     const deltaY = point.y - prevPoint.y;
                     if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -718,24 +666,10 @@ function handleObjectOperations(canvas: Canvas) {
                 if (e.ctrlKey) {
                     point.x = Math.round(point.x / GRID_SIZE) * GRID_SIZE;
                     point.y = Math.round(point.y / GRID_SIZE) * GRID_SIZE;
-
-                    polygon.dirty = true;
-
-                    var calcDim = polygon._calcDimensions();
-
-                    polygon.width = calcDim.width;
-                    polygon.height = calcDim.height;
-
-                    polygon.set({
-                        left: calcDim.left,
-                        top: calcDim.top,
-                        pathOffset: {
-                            x: calcDim.left + polygon.width / 2,
-                            y: calcDim.top + polygon.height / 2
-                        }
-                    });
                 }
 
+                polygon.set({ points });
+                polygon.setBoundingBox(true);
                 polygon.setCoords();
                 canvas.requestRenderAll();
 
