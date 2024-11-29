@@ -1,6 +1,13 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
+    import {
+        ActiveSelection,
+        Canvas,
+        FabricObject,
+        InteractiveFabricObject,
+        Polygon,
+        Polyline
+    } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -19,7 +26,11 @@
     import { type CanvasObject, getCanvasObjects } from '$lib/editor/objects';
     import { centerView, setZoomLevel } from '$lib/editor/camera';
     import { zoom } from '$lib/stores/zoom';
-    import { canvasObjects } from '$lib/stores/objects';
+    import {
+        canvasObjects,
+        currentObjectRoundness,
+        currentObjectBorderWidth
+    } from '$lib/stores/objects';
     import Icon from '@iconify/svelte';
     import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
 
@@ -86,6 +97,12 @@
 
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
+
+            $currentObjectBorderWidth = canvas.getActiveObject()!.strokeWidth;
+            $currentObjectRoundness = Math.max(
+                canvas.getActiveObject()!.get('ry') ?? 0,
+                canvas.getActiveObject()!.get('rx') ?? 0
+            );
         });
 
         canvas.on('selection:updated', () => {
@@ -100,6 +117,12 @@
 
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
+
+            $currentObjectBorderWidth = canvas.getActiveObject()!.strokeWidth;
+            $currentObjectRoundness = Math.max(
+                canvas.getActiveObject()!.get('ry') ?? 0,
+                canvas.getActiveObject()!.get('rx') ?? 0
+            );
         });
 
         canvas.on('selection:cleared', ({ deselected }) => {
@@ -111,6 +134,11 @@
 
                 if (bounds.width < 3 || bounds.height < 3) {
                     canvas.remove(object);
+                    continue;
+                }
+
+                if (object instanceof Polygon || object instanceof Polyline) {
+                    object.setBoundingBox(false);
                 }
             }
         });

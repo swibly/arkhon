@@ -548,8 +548,14 @@ function handleObjectOperations(canvas: Canvas) {
                 }
 
                 if (e.ctrlKey) {
-                    target.left = Math.round(target.left / GRID_SIZE) * GRID_SIZE;
-                    target.top = Math.round(target.top / GRID_SIZE) * GRID_SIZE;
+                    let offset = target.strokeWidth - target.strokeWidth / 2;
+
+                    if (target instanceof Polygon || target instanceof Polyline) {
+                        offset = 0;
+                    }
+
+                    target.left = Math.round(target.left / GRID_SIZE) * GRID_SIZE - offset;
+                    target.top = Math.round(target.top / GRID_SIZE) * GRID_SIZE - offset;
                 }
                 break;
             }
@@ -645,34 +651,18 @@ function handleObjectOperations(canvas: Canvas) {
             }
 
             case 'modifyPoly': {
-                const polygon = target as Polygon | Polyline;
-                const controlIndex = parseInt(transform.corner.replace('p', ''), 10);
-                const points = [...polygon.points];
-                const point = points[controlIndex];
+                const polygon = target as Polygon;
+                const currentPointIndex = parseInt(event.transform?.corner.replace('p', ''), 10);
 
-                if (!point) return;
+                if (currentPointIndex !== undefined && polygon.points && e.ctrlKey) {
+                    const point = polygon.points[currentPointIndex];
 
-                if (e.shiftKey) {
-                    const prevPoint = points[controlIndex - 1];
-                    const deltaX = point.x - prevPoint.x;
-                    const deltaY = point.y - prevPoint.y;
-                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                        point.y = prevPoint.y;
-                    } else {
-                        point.x = prevPoint.x;
-                    }
-                }
-
-                if (e.ctrlKey) {
                     point.x = Math.round(point.x / GRID_SIZE) * GRID_SIZE;
                     point.y = Math.round(point.y / GRID_SIZE) * GRID_SIZE;
                 }
 
-                polygon.set({ points });
-                polygon.setBoundingBox(true);
                 polygon.setCoords();
                 canvas.requestRenderAll();
-
                 break;
             }
 
