@@ -83,7 +83,7 @@
             {/if}
         </div>
 
-        <span class="line-clamp-1">{name}</span>
+        <span class="line-clamp-1">{name || nameReset}</span>
 
         {#if showControls}
             <section class="hidden items-center gap-1 group-hover:flex">
