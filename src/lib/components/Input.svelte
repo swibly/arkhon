@@ -27,6 +27,14 @@
     export let disableDefaultLabels: boolean = false;
 
     export let error: boolean = false;
+
+    if ((!labels.topRight || labels.topRight.trim() === '') && !disableDefaultLabels) {
+        if (required) {
+        labels.topRight = '<span class="text-error">Obrigatório</span>';
+        } else {
+            labels.topRight = '<span class="text-base-200">Opcional</span>'
+        }
+    }
 </script>
 
 {#if element === 'checkbox'}
@@ -47,17 +55,7 @@
     <label class="form-control w-full">
         <div class="label">
             <span class="label-text">{@html labels.topLeft ?? ''}</span>
-            <span class="label-text">
-                {@html labels.topRight
-                    ? labels.topRight
-                    : required
-                    ? !disableDefaultLabels
-                        ? '<span class="text-error">Obrigatório</span>'
-                        : ''
-                    : !disableDefaultLabels
-                    ? '<span class="text-base-300">Opcional</span>'
-                    : ''}
-            </span>
+            <span class="label-text">{@html labels.topRight ?? ''}</span>
         </div>
 
         {#if element === 'textarea'}
@@ -109,6 +107,8 @@
                         {...$$restProps}
                     />
                 {/if}
+
+                <slot />
             </label>
         {/if}
 
