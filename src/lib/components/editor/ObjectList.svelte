@@ -18,7 +18,7 @@
             <p class="italic text-center opacity-50">Nenhum objeto no projeto</p>
         {/if}
 
-        {#each objects as object}
+        {#each objects.toReversed() as object}
             <CanvasItem {canvas} {showControls} {currentActiveObjects} {...object} />
         {/each}
     </ul>

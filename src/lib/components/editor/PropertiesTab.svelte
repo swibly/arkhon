@@ -15,6 +15,7 @@
     import Input from '../Input.svelte';
     import Measure from '../Measure.svelte';
     import { spawn } from '$lib/toast';
+    import { bringForward, bringToFront, sendBackwards, sendToBack } from '$lib/editor/layer';
 
     export let canvas: Canvas;
     export let objects: CanvasObject[];
@@ -70,9 +71,11 @@
         }}
         transition:fade={{ duration: 150 }}
     >
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             id="handler"
             class="bg-secondary text-black p-2 w-full text-xs flex justify-center items-center gap-2 cursor-grab"
+            on:dblclick={toggleMenuShow}
         >
             <Icon icon="ic:baseline-drag-indicator" />
             Segure aqui e arraste para mover
@@ -93,6 +96,28 @@
                 class="p-4 h-96 overflow-y-auto opacity-50 bg-base-100 bg-opacity-100 group-hover:opacity-100 transition-opacity"
                 transition:slide={{ axis: 'y' }}
             >
+                <h2 class="text-xs font-bold text-primary">Camada</h2>
+
+                <div class="mt-2">
+                    <button class="btn btn-xs btn-square" on:click={() => sendToBack(canvas)}>
+                        <Icon icon="tabler:arrow-bar-to-down" />
+                    </button>
+
+                    <button class="btn btn-xs btn-square" on:click={() => sendBackwards(canvas)}>
+                        <Icon icon="tabler:arrow-down" />
+                    </button>
+
+                    <button class="btn btn-xs btn-square" on:click={() => bringForward(canvas)}>
+                        <Icon icon="tabler:arrow-up" />
+                    </button>
+
+                    <button class="btn btn-xs btn-square" on:click={() => bringToFront(canvas)}>
+                        <Icon icon="tabler:arrow-bar-up" />
+                    </button>
+                </div>
+
+                <div class="divider" />
+
                 {#if objects.length === 1}
                     <h2 class="text-xs font-bold text-primary">Geral</h2>
 
@@ -169,15 +194,12 @@
                         <Measure
                             bind:value={$currentObjectOpacity}
                             min={0}
-                            step={0.1}
+                            step={0.05}
                             max={1}
                             onInput={function (event) {
-                                const { object } = objects[0];
-
-                                const newOpacity = parseFloat(event.currentTarget.value);
-
-                                object.set({ opacity: newOpacity });
-
+                                objects[0].object.set({
+                                    opacity: parseFloat(event.currentTarget.value)
+                                });
                                 canvas.requestRenderAll();
                             }}
                         />
@@ -421,14 +443,12 @@
                     <Measure
                         bind:value={$currentObjectOpacity}
                         min={0}
-                        step={0.1}
+                        step={0.05}
                         max={1}
                         onInput={function (event) {
-                            const { object } = objects[0];
-
-                            const newOpacity = parseFloat(event.currentTarget.value);
-
-                            object.set({ opacity: newOpacity });
+                            for (const { object } of objects) {
+                                object.set({ opacity: parseFloat(event.currentTarget.value) });
+                            }
 
                             canvas.requestRenderAll();
                         }}
@@ -482,11 +502,7 @@
                     <div class="divider divider-start divider-end" />
 
                     <article>
-                        <p>
-                            {objects[0].type === 'textbox' || objects[0].type === 'i-text'
-                                ? 'Borda'
-                                : 'Parede'}:
-                        </p>
+                        <p>Borda:</p>
 
                         <div class="flex items-center gap-1">
                             <button
@@ -529,12 +545,7 @@
                     <div class="divider divider-start divider-end" />
 
                     <p>
-                        Espessura da
-                        {objects[0].type === 'textbox' ||
-                        objects[0].type === 'i-text' ||
-                        objects[0].type === 'path'
-                            ? 'borda'
-                            : 'parede'}:
+                        Espessura da borda:
                         <span class="text-secondary">{$currentObjectBorderWidth}</span>
                     </p>
 
