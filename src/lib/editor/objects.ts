@@ -24,6 +24,14 @@ export interface CanvasObject {
     children?: CanvasObject[];
 }
 
+export function calculateTotalPrice(objects: CanvasObject[]): number {
+    return objects.reduce((total, obj) => {
+        const currentPrice = obj.price || 0;
+        const childrenPrice = obj.children ? calculateTotalPrice(obj.children) : 0;
+        return total + currentPrice + childrenPrice;
+    }, 0);
+}
+
 export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false): CanvasObject[] {
     function traverseObjects(objects: FabricObject[]): CanvasObject[] {
         return objects.map((object) => {

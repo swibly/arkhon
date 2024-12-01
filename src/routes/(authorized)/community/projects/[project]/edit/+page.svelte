@@ -147,7 +147,7 @@
 </svelte:head>
 
 <div bind:this={body} class="flex flex-col w-full h-[calc(100vh-89px-2rem)]">
-    <Header bind:element={header} user={data.user} project={data.project} {canvas} />
+    <Header bind:element={header} objects={currentActiveObjectsItem} user={data.user} project={data.project} {canvas} />
 
     <div class="flex">
         <ObjectList

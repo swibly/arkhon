@@ -2,7 +2,7 @@
     import { fade } from 'svelte/transition';
     import Icon from '@iconify/svelte';
     import { draggable } from '@neodrag/svelte';
-    import { controlsUtils, Polygon, Polyline, type Canvas, type FabricObject } from 'fabric';
+    import { Polygon, Polyline, type Canvas, type FabricObject } from 'fabric';
     import { getCanvasObjects, type CanvasObject } from '$lib/editor/objects';
     import { enhance } from '$app/forms';
     import {
@@ -13,6 +13,7 @@
     } from '$lib/stores/objects';
     import Input from '../Input.svelte';
     import Measure from '../Measure.svelte';
+    import { spawn } from '$lib/toast';
 
     export let canvas: Canvas;
     export let objects: CanvasObject[];
@@ -25,11 +26,12 @@
         $canvasObjects = getCanvasObjects(canvas);
         (document.querySelector('form#update-name input[name="name"]') as HTMLInputElement).value =
             object.nameReset;
+
+        spawn({ message: 'Nome removido!' });
     }
 
     function changeColor(prop: Property, color: Color) {
         objects.forEach(({ object }) => {
-            object.controls = controlsUtils.createObjectDefaultControls();
             object.set(prop, color);
         });
         canvas.requestRenderAll();
@@ -38,13 +40,13 @@
 
 {#if objects.length > 0}
     <div
-        class="absolute top-0 left-0 bg-base-100 border border-base-200 bg-opacity-100 z-50 opacity-50 hover:opacity-100 transition-opacity"
+        class="absolute top-0 right-0 bg-base-100 border border-base-200 bg-opacity-100 z-10 opacity-50 hover:opacity-100 transition-opacity"
         use:draggable={{ bounds: 'canvas', handle: '#handler' }}
         transition:fade={{ duration: 150 }}
     >
         <div
             id="handler"
-            class="bg-primary p-2 w-full text-xs flex justify-center items-center gap-2 cursor-grab"
+            class="bg-secondary text-black p-2 w-full text-xs flex justify-center items-center gap-2 cursor-grab"
         >
             <Icon icon="ic:baseline-drag-indicator" />
             Segure aqui e arraste para mover
@@ -61,32 +63,56 @@
                         cancel();
 
                         const name = formData.get('name')?.toString();
+                        const price = parseInt(
+                            formData.get('price')?.toString().replace(/[^\d]/gi, '') ?? '0',
+                            10
+                        );
 
-                        if (!name || (name && name.trim() === '') || name === objects[0].nameReset)
-                            return;
+                        if (name && name.trim() !== '' && name === objects[0].nameReset) {
+                            objects[0].object.set('name', name);
+                        }
 
-                        objects[0].object.set('name', name);
+                        if (price && !isNaN(price)) {
+                            objects[0].object.set('price', price);
+                        }
+
                         $canvasObjects = getCanvasObjects(canvas);
+                        spawn({ message: 'Objeto salvo!' });
                     }}
-                    class="mt-2 flex gap-1 items-center"
+                    class="mt-2 flex flex-col gap-1 items-center"
                 >
-                    <Input
-                        name="name"
-                        defaultValue={objects[0].name}
-                        size="sm"
-                        disableDefaultLabels
-                    />
+                    <div class="flex items-end gap-1">
+                        <Input
+                            name="name"
+                            defaultValue={objects[0].name}
+                            size="sm"
+                            disableDefaultLabels
+                            labels={{ topLeft: 'Nome' }}
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-link text-error btn-square btn-xs"
+                                on:click={() => removeName(objects[0])}
+                            >
+                                <Icon icon="material-symbols:close" />
+                            </button>
+                        </Input>
+                    </div>
 
-                    <button class="btn btn-square btn-primary btn-sm">
+                    {#if objects[0].type !== 'group'}
+                        <Input
+                            name="price"
+                            icon="mdi:dollar"
+                            type="number"
+                            size="sm"
+                            defaultValue={(objects[0].price ?? 0).toString()}
+                            disableDefaultLabels
+                        />
+                    {/if}
+
+                    <button class="btn btn-primary btn-sm w-full">
                         <Icon icon="mdi:feather" />
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-square btn-error btn-sm"
-                        on:click={() => removeName(objects[0])}
-                    >
-                        <Icon icon="material-symbols:close" />
+                        Salvar
                     </button>
                 </form>
 
@@ -118,7 +144,7 @@
 
                     <div class="divider divider-start divider-end" />
 
-                    {#if objects[0].type !== 'i-text' && objects[0].type !== 'group'}
+                    {#if objects[0].type !== 'group'}
                         <article>
                             <p>Cor do preenchimento:</p>
                             <div class="flex items-center gap-1">
@@ -233,10 +259,10 @@
 
                         <div class="divider divider-start divider-end" />
 
-                        {#if objects[0].type !== 'polygon' && objects[0].type !== 'polyline' && objects[0].type !== 'circle'}
+                        {#if objects[0].type === 'rect'}
                             <p>
                                 Raio da borda:
-                                <span class="text-secondary">{$currentObjectRoundness * 2}</span>
+                                <span class="text-secondary">{Math.min($currentObjectRoundness * 2, 100)}%</span>
                             </p>
 
                             <Measure
@@ -247,9 +273,11 @@
                                 onInput={function (event) {
                                     const { object } = objects[0];
 
+                                    const newValue = parseInt(event.currentTarget.value);
+
                                     object.set('strokeLineJoin', 'rounded');
-                                    object.set('rx', parseInt(event.currentTarget.value));
-                                    object.set('ry', parseInt(event.currentTarget.value));
+                                    object.set('rx', (newValue / 100) * object.width);
+                                    object.set('ry', (newValue / 100) * object.width);
 
                                     if (object instanceof Polygon || object instanceof Polyline) {
                                         object.setBoundingBox(true);
@@ -259,46 +287,6 @@
                                 }}
                             />
                         {/if}
-                    {:else if objects[0].type === 'i-text'}
-                        <article>
-                            <p>Cor da fonte:</p>
-                            <div>
-                                <button
-                                    class="size-6 bg-black"
-                                    on:click={() => changeColor('fill', 'black')}
-                                />
-                                <button
-                                    class="size-6 bg-red-500"
-                                    on:click={() => changeColor('fill', 'red')}
-                                />
-                                <button
-                                    class="size-6 bg-green-500"
-                                    on:click={() => changeColor('fill', 'green')}
-                                />
-                                <button
-                                    class="size-6 bg-blue-500"
-                                    on:click={() => changeColor('fill', 'blue')}
-                                />
-                                <button
-                                    class="size-6 bg-purple-500"
-                                    on:click={() => changeColor('fill', 'purple')}
-                                />
-                                <button
-                                    class="size-6 bg-yellow-500"
-                                    on:click={() => changeColor('fill', 'yellow')}
-                                />
-                                <button
-                                    class="size-6 bg-white"
-                                    on:click={() => changeColor('fill', 'white')}
-                                />
-                                <button
-                                    class="ml-1 size-6 text-error"
-                                    on:click={() => changeColor('fill', null)}
-                                >
-                                    <Icon icon="emojione-monotone:cross-mark" />
-                                </button>
-                            </div>
-                        </article>
                     {/if}
                 </section>
             {/if}

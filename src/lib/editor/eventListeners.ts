@@ -75,6 +75,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         if (target) {
             target.set('editing', !(target.get('editing') ?? false));
 
+            if (target instanceof Polyline) return;
+
             let editing = target.get('editing');
 
             if (editing) {
@@ -82,7 +84,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 target.cornerSize = 8;
                 target.transparentCorners = false;
 
-                if (target instanceof Polygon || target instanceof Polyline) {
+                if (target instanceof Polygon) {
                     target.controls = controlsUtils.createPolyControls(target);
                 } else {
                     target.hasBorders = true;
@@ -92,7 +94,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 target.hasBorders = true;
                 target.controls = controlsUtils.createObjectDefaultControls();
 
-                if (target instanceof Polygon || target instanceof Polyline) {
+                if (target instanceof Polygon) {
                     target.setBoundingBox(false);
                 }
             }
@@ -150,11 +152,18 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 else if (getTool() === Tool.Line) {
                     shape = new Polyline([origin, origin], options);
                     (shape as Polyline).setBoundingBox(true);
+                    shape.controls = controlsUtils.createPolyControls(shape as Polyline);
                 }
 
                 shape.setCoords();
 
                 applyObjectPermissions(canvas, shape, { selectable: false, cursor: 'crosshair' });
+
+                if (shape instanceof Polyline) {
+                    shape.hasBorders = false;
+                    shape.cornerSize = 8;
+                    shape.transparentCorners = false;
+                }
 
                 canvas.add(shape);
                 break;
@@ -643,15 +652,28 @@ function handleObjectOperations(canvas: Canvas) {
                     }
 
                     target.set({
-                        scaleX: Math.max(newScaleX, 0.5),
-                        scaleY: Math.max(newScaleY, 0.5),
+                        width: Math.max(target.width * newScaleX, 50),
+                        height: Math.max(target.height * newScaleY, 50),
+                        scaleX: 1,
+                        scaleY: 1,
                         left: newLeft,
                         top: newTop
                     });
-
-                    target.setCoords();
                 }
 
+                target.setCoords();
+
+                target.set('rx', target.get('rx') * (1 * target.scaleX));
+                target.set('ry', target.get('ry') * (1 * target.scaleY));
+
+                target.set({
+                    width: Math.max(target.width * target.scaleX, 50),
+                    height: Math.max(target.height * target.scaleY, 50),
+                    scaleX: 1,
+                    scaleY: 1
+                });
+
+                target.setCoords();
                 break;
             }
 

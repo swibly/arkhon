@@ -9,8 +9,11 @@
     import { centerView } from '$lib/editor/camera';
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
+    import { calculateTotalPrice, type CanvasObject } from '$lib/editor/objects';
+    import { canvasObjects } from '$lib/stores/objects';
 
     export let element: HTMLDivElement;
+    export let objects: CanvasObject[];
     export let project: Project;
     export let canvas: Canvas;
     export let user: User;
@@ -27,9 +30,26 @@
         <ToolSelector currentTool={$tool} />
     {/if}
 
-    <div class="divider divider-horizontal"></div>
+    <div class="divider divider-horizontal" />
 
-    <h2 class="text-primary font-semibold">{project.name}</h2>
+    <section class="flex gap-2 items-center">
+        <span class="text-primary font-semibold">{project.name}</span>
+
+        <article class="badge badge-sm gap-1">
+            <Icon icon="material-symbols:favorite" class="text-error" />
+            {project.total_favorites}
+        </article>
+
+        <article class="badge badge-sm gap-1">
+            <Icon icon="fa-solid:clone" class="text-secondary" />
+            {project.total_clones}
+        </article>
+
+        <article class="badge badge-sm">
+            <Icon icon="mdi:dollar" class="text-success" />
+            {calculateTotalPrice($canvasObjects)}
+        </article>
+    </section>
 
     <div class="grow" />
 
