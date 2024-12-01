@@ -1,6 +1,7 @@
 <script lang="ts">
     export let users: { name: string; pfp: string }[];
     export let limit: number = 5;
+    export let tooltipDirection: 'top' | 'left' | 'right' | 'bottom' = 'top';
 
     let overflow = users.length - limit;
 </script>
@@ -15,7 +16,14 @@
     {/if}
 
     {#each users.slice(0, limit) as user}
-        <div class="tooltip tooltip-secondary text-xs size-12" data-tip="@{user.name}">
+        <div
+            class="tooltip tooltip-secondary text-xs size-12"
+            data-tip="@{user.name}"
+            class:tooltip-top={tooltipDirection === 'top'}
+            class:tooltip-bottom={tooltipDirection === 'bottom'}
+            class:tooltip-left={tooltipDirection === 'left'}
+            class:tooltip-right={tooltipDirection === 'right'}
+        >
             <div
                 class="avatar transition size-12 hover:z-50 hover:scale-110 hover:border-4 hover:border-base-100"
             >
