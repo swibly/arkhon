@@ -10,6 +10,7 @@
     export let object: FabricObject;
     export let name: string;
     export let nameReset: string;
+    export let price: number | undefined = undefined;
     export let typeTranslated: string;
     export let type: string;
     export let componentID: number | undefined = undefined;
@@ -80,6 +81,12 @@
                 <Icon icon="uis:layer-group" />
             {:else}
                 <Icon icon="clarity:objects-solid" />
+            {/if}
+
+            {#if price && price > 0}
+                <div class="absolute top-2/4 left-2/4 text-green-500">
+                    <Icon icon="mdi:dollar" />
+                </div>
             {/if}
         </div>
 

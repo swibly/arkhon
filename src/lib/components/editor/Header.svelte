@@ -22,12 +22,16 @@
     }
 </script>
 
-<div bind:this={element} class="flex items-center justify-between pb-4 border-b border-base-200">
+<div bind:this={element} class="flex items-center pb-4 border-b border-base-200">
     {#if hasPermissions(user, project, ['allow_edit'])}
         <ToolSelector currentTool={$tool} />
     {/if}
 
+    <div class="divider divider-horizontal"></div>
+
     <h2 class="text-primary font-semibold">{project.name}</h2>
+
+    <div class="grow" />
 
     <section>
         <button class="btn btn-ghost btn-sm" on:click={centralizeCanvas}>
@@ -50,7 +54,7 @@
                     loadingSave = true;
                     formData.set(
                         'json',
-                        JSON.stringify(canvas.toObject(['id', 'name', 'userlock']))
+                        JSON.stringify(canvas.toObject(['id', 'name', 'userlock', 'price']))
                     );
 
                     return function ({ update, result }) {
@@ -73,17 +77,15 @@
                     };
                 }}
             >
-                {#if !loadingSave}
-                    <button class="btn btn-secondary btn-sm">
+                <button class="btn items-center btn-secondary btn-sm" disabled={loadingSave}>
+                    {#if loadingSave}
+                        <Icon icon="mingcute:loading-line" class="animate-spin" />
+                        Salvando...
+                    {:else}
                         <Icon icon="material-symbols:save-sharp" />
                         Salvar
-                    </button>
-                {:else}
-                    <button type="button" class="btn btn-secondary btn-sm" disabled>
-                        <span class="loading loading-spinner loading-xs" />
-                        Salvando...
-                    </button>
-                {/if}
+                    {/if}
+                </button>
             </form>
         {/if}
     </section>

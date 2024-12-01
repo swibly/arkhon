@@ -17,6 +17,7 @@ export interface CanvasObject {
     object: FabricObject;
     name: string;
     nameReset: string;
+    price?: number;
     typeTranslated: string;
     type: string;
     componentID?: number;
@@ -83,6 +84,7 @@ export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false):
                 object,
                 name,
                 nameReset,
+                price: 'price' in object ? (object.price as number) : undefined,
                 typeTranslated,
                 type: object.type,
                 componentID: 'id' in object ? (object.id as number) : undefined,

@@ -123,4 +123,6 @@ export function applyCanvasPermissionsBasedOnTool(canvas: Canvas, currentTool: T
             applyCanvasPermission(canvas, { selectable: false, cursor: 'crosshair' });
             break;
     }
+
+    canvas.requestRenderAll();
 }

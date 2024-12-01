@@ -1,13 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import {
-        ActiveSelection,
-        Canvas,
-        FabricObject,
-        InteractiveFabricObject,
-        Polygon,
-        Polyline
-    } from 'fabric';
+    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -65,6 +58,7 @@
             cornerSize: 8,
             transparentCorners: false,
             perPixelTargetFind: true,
+            objectCaching: false,
             _controlsVisibility: {
                 mt: false,
                 ml: false,
@@ -102,7 +96,10 @@
             const active = canvas.getActiveObject()!;
 
             $currentObjectBorderWidth = active.strokeWidth;
-            $currentObjectRoundness = Math.max(active.get('ry') ?? 0, active.get('rx') ?? 0);
+            $currentObjectRoundness = Math.max(
+                active.get('rx') ?? 0 / active.width,
+                active.get('ry') ?? 0 / active.height
+            );
             $currentObjectOpacity = active.opacity;
         });
 
@@ -122,7 +119,11 @@
             const active = canvas.getActiveObject()!;
 
             $currentObjectBorderWidth = active.strokeWidth;
-            $currentObjectRoundness = Math.max(active.get('ry') ?? 0, active.get('rx') ?? 0);
+
+            $currentObjectRoundness = Math.max(
+                active.get('rx') ?? 0 / active.width,
+                active.get('ry') ?? 0 / active.height
+            );
             $currentObjectOpacity = active.opacity;
         });
 
@@ -158,7 +159,9 @@
         />
 
         <div bind:this={canvasContainer} class="relative">
-            <PropertiesTab {canvas} objects={currentActiveObjectsItem} />
+            {#if hasPermissions(data.user, data.project, ['allow_edit'])}
+                <PropertiesTab {canvas} objects={currentActiveObjectsItem} />
+            {/if}
         </div>
     </div>
 </div>
