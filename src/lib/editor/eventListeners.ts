@@ -75,8 +75,6 @@ export function loadCanvasEventListeners(canvas: Canvas) {
         if (target) {
             target.set('editing', !(target.get('editing') ?? false));
 
-            if (target instanceof Polyline) return;
-
             let editing = target.get('editing');
 
             if (editing) {

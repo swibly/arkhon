@@ -20,6 +20,8 @@
 
     let loadingSave = false;
 
+    $: price = calculateTotalPrice($canvasObjects);
+
     function centralizeCanvas() {
         centerView(canvas, project);
     }
@@ -47,7 +49,15 @@
 
         <article class="badge badge-sm">
             <Icon icon="mdi:dollar" class="text-success" />
-            {calculateTotalPrice($canvasObjects)}
+            <span class:text-error={price > project.budget}>
+                {price.toLocaleString('pt-br', {
+                    style: 'currency',
+                    currency: 'BRL'
+                })}/{project.budget.toLocaleString('pt-br', {
+                    style: 'currency',
+                    currency: 'BRL'
+                })}
+            </span>
         </article>
     </section>
 

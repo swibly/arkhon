@@ -7,6 +7,7 @@
     import { enhance } from '$app/forms';
     import {
         canvasObjects,
+        currentFontSize,
         currentObjectBorderWidth,
         currentObjectOpacity,
         currentObjectRoundness
@@ -17,6 +18,8 @@
 
     export let canvas: Canvas;
     export let objects: CanvasObject[];
+
+    let showThickness = true;
 
     type Property = 'fill' | 'stroke';
     type Color = 'black' | 'red' | 'green' | 'blue' | 'purple' | 'yellow' | 'white' | null;
@@ -34,6 +37,15 @@
         objects.forEach(({ object }) => {
             object.set(prop, color);
         });
+
+        if (prop === 'stroke') {
+            if (color === null) {
+                showThickness = false;
+            } else {
+                showThickness = true;
+            }
+        }
+
         canvas.requestRenderAll();
     }
 </script>
@@ -142,11 +154,14 @@
                         }}
                     />
 
-                    <div class="divider divider-start divider-end" />
+                    <div class="divider" />
 
                     {#if objects[0].type !== 'group'}
+                        <h2 class="text-xs font-bold text-primary">Estrutural</h2>
+
                         <article>
-                            <p>Cor do preenchimento:</p>
+                            <p>Preenchimento:</p>
+
                             <div class="flex items-center gap-1">
                                 <button
                                     class="size-6 bg-black"
@@ -188,7 +203,12 @@
                         <div class="divider divider-start divider-end" />
 
                         <article>
-                            <p>Cor da borda:</p>
+                            <p>
+                                {objects[0].type === 'textbox' || objects[0].type === 'i-text'
+                                    ? 'Borda'
+                                    : 'Parede'}:
+                            </p>
+
                             <div class="flex items-center gap-1">
                                 <button
                                     class="size-6 bg-black"
@@ -227,61 +247,113 @@
                             </div>
                         </article>
 
-                        <div class="divider divider-start divider-end" />
+                        {#if objects[0].object.stroke !== null || showThickness}
+                            <div class="divider divider-start divider-end" />
 
-                        <p>
-                            Espessura da borda:
-                            <span class="text-secondary">{$currentObjectBorderWidth}</span>
-                        </p>
-
-                        <Measure
-                            bind:value={$currentObjectBorderWidth}
-                            min={0}
-                            step={1}
-                            max={10}
-                            onInput={function (event) {
-                                const { object } = objects[0];
-
-                                const newStrokeWidth = parseInt(event.currentTarget.value, 10);
-                                const strokeDifference = newStrokeWidth - object.strokeWidth;
-
-                                object.set({
-                                    strokeWidth: newStrokeWidth,
-                                    left: object.left - strokeDifference / 2,
-                                    top: object.top - strokeDifference / 2
-                                });
-
-                                object.setCoords();
-
-                                canvas.requestRenderAll();
-                            }}
-                        />
-
-                        <div class="divider divider-start divider-end" />
-
-                        {#if objects[0].type === 'rect'}
                             <p>
-                                Raio da borda:
-                                <span class="text-secondary">{Math.min($currentObjectRoundness * 2, 100)}%</span>
+                                Espessura da
+                                {objects[0].type === 'textbox' ||
+                                objects[0].type === 'i-text' ||
+                                objects[0].type === 'path'
+                                    ? 'borda'
+                                    : 'parede'}:
+                                <span class="text-secondary">{$currentObjectBorderWidth}</span>
                             </p>
 
                             <Measure
-                                bind:value={$currentObjectRoundness}
-                                min={0}
+                                bind:value={$currentObjectBorderWidth}
+                                min={5}
                                 step={1}
                                 max={50}
                                 onInput={function (event) {
                                     const { object } = objects[0];
 
+                                    const newStrokeWidth = parseInt(event.currentTarget.value, 10);
+                                    const strokeDifference = newStrokeWidth - object.strokeWidth;
+
+                                    object.set({
+                                        strokeWidth: newStrokeWidth,
+                                        left: object.left - strokeDifference / 2,
+                                        top: object.top - strokeDifference / 2
+                                    });
+
+                                    object.setCoords();
+
+                                    canvas.requestRenderAll();
+                                }}
+                            />
+
+                            <div class="divider divider-start divider-end" />
+
+                            {#if objects[0].type === 'rect'}
+                                <p>
+                                    Raio da parede:
+                                    <span class="text-secondary">
+                                        {Math.min($currentObjectRoundness * 2, 100)}%
+                                    </span>
+                                </p>
+
+                                <Measure
+                                    bind:value={$currentObjectRoundness}
+                                    min={0}
+                                    step={1}
+                                    max={50}
+                                    onInput={function (event) {
+                                        const { object } = objects[0];
+
+                                        const newValue = parseInt(event.currentTarget.value);
+
+                                        object.set('strokeLineJoin', 'rounded');
+                                        object.set('rx', (newValue / 100) * object.width);
+                                        object.set('ry', (newValue / 100) * object.width);
+
+                                        if (
+                                            object instanceof Polygon ||
+                                            object instanceof Polyline
+                                        ) {
+                                            object.setBoundingBox(true);
+                                        }
+
+                                        canvas.requestRenderAll();
+                                    }}
+                                />
+                            {/if}
+                        {/if}
+
+                        {#if objects[0].type === 'i-text' || objects[0].type === 'textbox'}
+                            <div class="divider" />
+
+                            <h2 class="text-xs font-bold text-primary">Estético</h2>
+
+                            <p>Fonte:</p>
+
+                            <select
+                                class="select select-bordered select-sm w-full"
+                                on:change={function (event) {
+                                    objects[0].object.set('fontFamily', event.currentTarget.value);
+                                    canvas.requestRenderAll();
+                                }}
+                                value={objects[0].object.get('fontFamily')}
+                            >
+                                <option value="arial">Arial</option>
+                                <option value="times new roman">Times New Roman</option>
+                            </select>
+
+                            <div class="divider divider-start divider-end" />
+
+                            <p>Tamanho da fonte: {$currentFontSize}</p>
+
+                            <Measure
+                                bind:value={$currentFontSize}
+                                min={12}
+                                step={3}
+                                max={96}
+                                onInput={function (event) {
+                                    const { object } = objects[0];
+
                                     const newValue = parseInt(event.currentTarget.value);
 
-                                    object.set('strokeLineJoin', 'rounded');
-                                    object.set('rx', (newValue / 100) * object.width);
-                                    object.set('ry', (newValue / 100) * object.width);
-
-                                    if (object instanceof Polygon || object instanceof Polyline) {
-                                        object.setBoundingBox(true);
-                                    }
+                                    object.set('fontSize', newValue);
 
                                     canvas.requestRenderAll();
                                 }}

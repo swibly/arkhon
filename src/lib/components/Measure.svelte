@@ -15,7 +15,7 @@
     <div class="flex w-full justify-between px-2 text-xs">
         {#each Array(steps) as _, i}
             <div
-                class="w-px h-2 bg-white"
+                class="w-px h-2 bg-white mix-blend-difference"
                 class:opacity-0={i % 2 !== 0}
                 class:opacity-20={i % 2 === 0}
             />
@@ -35,7 +35,7 @@
     <div class="flex w-full justify-between px-2 text-xs">
         {#each Array(steps) as _, i}
             <div
-                class="w-px h-2 bg-white"
+                class="w-px h-2 bg-white mix-blend-difference"
                 class:opacity-0={i % 2 === 0}
                 class:opacity-20={i % 2 !== 0}
             />

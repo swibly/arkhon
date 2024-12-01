@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject } from 'fabric';
+    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject, IText, Textbox } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -23,7 +23,10 @@
         canvasObjects,
         currentObjectRoundness,
         currentObjectBorderWidth,
-        currentObjectOpacity
+        currentObjectOpacity,
+
+        currentFontSize
+
     } from '$lib/stores/objects';
     import Icon from '@iconify/svelte';
     import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
@@ -101,6 +104,9 @@
                 active.get('ry') ?? 0 / active.height
             );
             $currentObjectOpacity = active.opacity;
+            if (active instanceof IText || active instanceof Textbox) {
+                $currentFontSize = active.fontSize;
+            }
         });
 
         canvas.on('selection:updated', () => {
@@ -119,12 +125,14 @@
             const active = canvas.getActiveObject()!;
 
             $currentObjectBorderWidth = active.strokeWidth;
-
             $currentObjectRoundness = Math.max(
                 active.get('rx') ?? 0 / active.width,
                 active.get('ry') ?? 0 / active.height
             );
             $currentObjectOpacity = active.opacity;
+            if (active instanceof IText || active instanceof Textbox) {
+                $currentFontSize = active.fontSize;
+            }
         });
 
         canvas.on('selection:cleared', () => {
