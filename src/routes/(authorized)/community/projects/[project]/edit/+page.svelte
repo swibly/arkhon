@@ -1,6 +1,14 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { ActiveSelection, Canvas, FabricObject, InteractiveFabricObject, IText, Textbox } from 'fabric';
+    import {
+        ActiveSelection,
+        Canvas,
+        type FabricObject,
+        Group,
+        InteractiveFabricObject,
+        IText,
+        Textbox
+    } from 'fabric';
     import { onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
@@ -24,9 +32,7 @@
         currentObjectRoundness,
         currentObjectBorderWidth,
         currentObjectOpacity,
-
         currentFontSize
-
     } from '$lib/stores/objects';
     import Icon from '@iconify/svelte';
     import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
@@ -83,6 +89,36 @@
 
         canvasObjects.set(getCanvasObjects(canvas));
 
+        function updateStores() {
+            const active = canvas.getActiveObject()!;
+
+            if (active instanceof Group || active instanceof ActiveSelection) {
+                const objects = active._objects;
+
+                $currentObjectBorderWidth = objects
+                    .map((x) => x.strokeWidth)
+                    .reduce((p, c) => Math.max(c, p), 0);
+                $currentObjectRoundness = objects
+                    .map((x) => ({ rx: x.get('rx') / 100, ry: x.get('rx') / 100 }))
+                    .reduce((p, c) => Math.max(p, Math.max(c.rx, c.ry)), 0);
+                $currentObjectOpacity = objects
+                    .map((x) => x.opacity)
+                    .reduce((p, c) => Math.max(p, c), 0);
+                return;
+            }
+
+            $currentObjectBorderWidth = active.strokeWidth;
+            $currentObjectRoundness = Math.max(
+                active.get('rx') ?? 0 / active.width,
+                active.get('ry') ?? 0 / active.height
+            );
+            $currentObjectOpacity = active.opacity;
+
+            if (active instanceof IText || active instanceof Textbox) {
+                $currentFontSize = active.fontSize;
+            }
+        }
+
         canvas.on('selection:created', () => {
             const objects = canvas.getActiveObjects();
 
@@ -96,17 +132,7 @@
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
 
-            const active = canvas.getActiveObject()!;
-
-            $currentObjectBorderWidth = active.strokeWidth;
-            $currentObjectRoundness = Math.max(
-                active.get('rx') ?? 0 / active.width,
-                active.get('ry') ?? 0 / active.height
-            );
-            $currentObjectOpacity = active.opacity;
-            if (active instanceof IText || active instanceof Textbox) {
-                $currentFontSize = active.fontSize;
-            }
+            updateStores();
         });
 
         canvas.on('selection:updated', () => {
@@ -122,17 +148,7 @@
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
 
-            const active = canvas.getActiveObject()!;
-
-            $currentObjectBorderWidth = active.strokeWidth;
-            $currentObjectRoundness = Math.max(
-                active.get('rx') ?? 0 / active.width,
-                active.get('ry') ?? 0 / active.height
-            );
-            $currentObjectOpacity = active.opacity;
-            if (active instanceof IText || active instanceof Textbox) {
-                $currentFontSize = active.fontSize;
-            }
+            updateStores();
         });
 
         canvas.on('selection:cleared', () => {
@@ -155,7 +171,13 @@
 </svelte:head>
 
 <div bind:this={body} class="flex flex-col w-full h-[calc(100vh-89px-2rem)]">
-    <Header bind:element={header} objects={currentActiveObjectsItem} user={data.user} project={data.project} {canvas} />
+    <Header
+        bind:element={header}
+        objects={currentActiveObjectsItem}
+        user={data.user}
+        project={data.project}
+        {canvas}
+    />
 
     <div class="flex">
         <ObjectList
