@@ -27,6 +27,7 @@ import {
     Rect,
     Textbox,
     type TPointerEvent,
+    util,
     type XY
 } from 'fabric';
 import Cookies from 'js-cookie';
@@ -90,6 +91,10 @@ export function loadCanvasEventListeners(canvas: Canvas) {
             } else {
                 target.hasBorders = true;
                 target.controls = controlsUtils.createObjectDefaultControls();
+
+                if (target instanceof Polygon || target instanceof Polyline) {
+                    target.setBoundingBox(false);
+                }
             }
             target.setCoords();
             canvas.requestRenderAll();
@@ -654,11 +659,28 @@ function handleObjectOperations(canvas: Canvas) {
                 const polygon = target as Polygon;
                 const currentPointIndex = parseInt(event.transform?.corner.replace('p', ''), 10);
 
-                if (currentPointIndex !== undefined && polygon.points && e.ctrlKey) {
+                if (currentPointIndex !== undefined && polygon.points && event.e.ctrlKey) {
                     const point = polygon.points[currentPointIndex];
 
-                    point.x = Math.round(point.x / GRID_SIZE) * GRID_SIZE;
-                    point.y = Math.round(point.y / GRID_SIZE) * GRID_SIZE;
+                    const matrix = polygon.calcTransformMatrix();
+                    const invertedMatrix = util.invertTransform(matrix);
+
+                    const globalPoint = new Point({
+                        x: point.x - polygon.pathOffset.x,
+                        y: point.y - polygon.pathOffset.y
+                    }).transform(matrix);
+
+                    const snappedGlobalPoint = {
+                        x: Math.round(globalPoint.x / GRID_SIZE) * GRID_SIZE,
+                        y: Math.round(globalPoint.y / GRID_SIZE) * GRID_SIZE
+                    };
+
+                    const localSnappedPoint = new Point(snappedGlobalPoint).transform(
+                        invertedMatrix
+                    );
+
+                    point.x = localSnappedPoint.x + polygon.pathOffset.x;
+                    point.y = localSnappedPoint.y + polygon.pathOffset.y;
                 }
 
                 polygon.setCoords();
