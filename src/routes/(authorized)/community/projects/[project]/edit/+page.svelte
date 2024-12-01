@@ -29,7 +29,8 @@
     import {
         canvasObjects,
         currentObjectRoundness,
-        currentObjectBorderWidth
+        currentObjectBorderWidth,
+        currentObjectOpacity
     } from '$lib/stores/objects';
     import Icon from '@iconify/svelte';
     import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
@@ -98,11 +99,11 @@
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
 
-            $currentObjectBorderWidth = canvas.getActiveObject()!.strokeWidth;
-            $currentObjectRoundness = Math.max(
-                canvas.getActiveObject()!.get('ry') ?? 0,
-                canvas.getActiveObject()!.get('rx') ?? 0
-            );
+            const active = canvas.getActiveObject()!;
+
+            $currentObjectBorderWidth = active.strokeWidth;
+            $currentObjectRoundness = Math.max(active.get('ry') ?? 0, active.get('rx') ?? 0);
+            $currentObjectOpacity = active.opacity;
         });
 
         canvas.on('selection:updated', () => {
@@ -118,29 +119,16 @@
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
 
-            $currentObjectBorderWidth = canvas.getActiveObject()!.strokeWidth;
-            $currentObjectRoundness = Math.max(
-                canvas.getActiveObject()!.get('ry') ?? 0,
-                canvas.getActiveObject()!.get('rx') ?? 0
-            );
+            const active = canvas.getActiveObject()!;
+
+            $currentObjectBorderWidth = active.strokeWidth;
+            $currentObjectRoundness = Math.max(active.get('ry') ?? 0, active.get('rx') ?? 0);
+            $currentObjectOpacity = active.opacity;
         });
 
-        canvas.on('selection:cleared', ({ deselected }) => {
+        canvas.on('selection:cleared', () => {
             currentActiveObjects = canvas.getActiveObjects();
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
-
-            for (const object of deselected) {
-                const bounds = object.getBoundingRect();
-
-                if (bounds.width < 3 || bounds.height < 3) {
-                    canvas.remove(object);
-                    continue;
-                }
-
-                if (object instanceof Polygon || object instanceof Polyline) {
-                    object.setBoundingBox(false);
-                }
-            }
         });
     });
 </script>
