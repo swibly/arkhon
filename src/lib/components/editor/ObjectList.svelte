@@ -12,7 +12,7 @@
 
 <div bind:this={element} class="pt-4 pr-4 border-r border-base-200 w-60 shrink-0">
     <ul
-        class="menu p-0 [&_li>*]:rounded-none flex-nowrap menu-sm w-full max-h-full h-[calc(100vh-89px-49px-2rem)] overflow-auto"
+        class="menu p-0 [&_li>*]:rounded-none flex-nowrap menu-sm w-full max-h-full h-[calc(100vh-89px-65px-4rem)] overflow-auto"
     >
         {#if objects.length === 0}
             <p class="italic text-center opacity-50">Nenhum objeto no projeto</p>

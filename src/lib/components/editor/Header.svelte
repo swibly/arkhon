@@ -34,31 +34,41 @@
 
     <div class="divider divider-horizontal" />
 
-    <section class="flex gap-2 items-center">
+    <section>
         <span class="text-primary font-semibold">{project.name}</span>
 
-        <article class="badge badge-sm gap-1">
-            <Icon icon="material-symbols:favorite" class="text-error" />
-            {project.total_favorites}
-        </article>
-
-        <article class="badge badge-sm gap-1">
-            <Icon icon="fa-solid:clone" class="text-secondary" />
-            {project.total_clones}
-        </article>
-
-        <article class="badge badge-sm">
-            <Icon icon="mdi:dollar" class="text-success" />
-            <span class:text-error={price > project.budget}>
-                {price.toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: 'BRL'
-                })}/{project.budget.toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: 'BRL'
+        <div>
+            <article class="badge badge-sm gap-1">
+                <Icon icon="material-symbols:favorite" class="text-error" />
+                {project.total_favorites.toLocaleString('pt-br', {
+                    style: 'decimal',
+                    notation: 'compact',
+                    compactDisplay: 'long'
                 })}
-            </span>
-        </article>
+            </article>
+
+            <article class="badge badge-sm gap-1">
+                <Icon icon="fa-solid:clone" class="text-secondary" />
+                {project.total_clones.toLocaleString('pt-br', {
+                    style: 'decimal',
+                    notation: 'compact',
+                    compactDisplay: 'long'
+                })}
+            </article>
+
+            <article class="badge badge-sm">
+                <Icon icon="mdi:dollar" class="text-success" />
+                <span class:text-error={price > project.budget}>
+                    {price.toLocaleString('pt-br', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    })}/{project.budget.toLocaleString('pt-br', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    })}
+                </span>
+            </article>
+        </div>
     </section>
 
     <div class="grow" />
