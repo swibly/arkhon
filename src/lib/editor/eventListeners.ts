@@ -49,7 +49,7 @@ let spaceBarPressed = false;
 
 export const polygonPath = new Polygon([], {
     stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
-    strokeWidth: 3,
+    strokeWidth: 5,
     fill: null,
     selectable: false,
     evented: false,
@@ -157,7 +157,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                     height: y - origin.y,
                     fill: null,
                     stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
-                    strokeWidth: 3,
+                    strokeWidth: 5,
                     radius: 0
                 };
 
@@ -283,7 +283,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                             y,
                             fill: null,
                             stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
-                            strokeWidth: 3
+                            strokeWidth: 5
                         }
                     ]
                 });
@@ -508,7 +508,7 @@ export async function handleKeybinds(
                 const polygon = new Polygon(points, {
                     fill: null,
                     stroke: Cookies.get('colorscheme') === 'dark' ? 'white' : 'black',
-                    strokeWidth: 3
+                    strokeWidth: 5
                 });
 
                 canvas.add(polygon);
