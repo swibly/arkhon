@@ -21,18 +21,45 @@
     $: userLocked = object.get('userlock') ?? false;
 
     function select(event: MouseEvent) {
-        if (!object.selectable || userLocked || !object.evented || !showControls) return;
+        if (!canvas) return;
 
-        let selection: FabricObject | ActiveSelection;
+        const ctrlOrMeta = event.ctrlKey || event.metaKey;
+        const shiftKey = event.shiftKey;
 
-        if (event.shiftKey) {
-            selection = new ActiveSelection(canvas.getActiveObjects());
-            (selection as ActiveSelection).add(object);
+        if (shiftKey && currentActiveObjects.length > 0) {
+            const allObjects = canvas.getObjects();
+            const lastSelectedIndex = allObjects.indexOf(
+                currentActiveObjects[currentActiveObjects.length - 1]
+            );
+            const currentIndex = allObjects.indexOf(object);
+
+            if (lastSelectedIndex !== -1 && currentIndex !== -1) {
+                const [start, end] = [lastSelectedIndex, currentIndex].sort((a, b) => a - b);
+                const rangeObjects = allObjects.slice(start, end + 1);
+                canvas.discardActiveObject();
+                const activeSelection = new ActiveSelection(rangeObjects, { canvas });
+                canvas.setActiveObject(activeSelection);
+            }
+        } else if (ctrlOrMeta) {
+            const activeObjects = canvas.getActiveObjects();
+            if (activeObjects.includes(object)) {
+                canvas.discardActiveObject();
+                const newSelection = activeObjects.filter((obj) => obj !== object);
+                if (newSelection.length > 1) {
+                    const activeSelection = new ActiveSelection(newSelection, { canvas });
+                    canvas.setActiveObject(activeSelection);
+                } else if (newSelection.length === 1) {
+                    canvas.setActiveObject(newSelection[0]);
+                }
+            } else {
+                activeObjects.push(object);
+                const activeSelection = new ActiveSelection(activeObjects, { canvas });
+                canvas.setActiveObject(activeSelection);
+            }
         } else {
-            selection = object;
+            canvas.setActiveObject(object);
         }
 
-        canvas.setActiveObject(selection);
         canvas.requestRenderAll();
     }
 

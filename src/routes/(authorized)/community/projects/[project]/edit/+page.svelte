@@ -3,7 +3,7 @@
     import {
         ActiveSelection,
         Canvas,
-        type FabricObject,
+        FabricObject,
         Group,
         InteractiveFabricObject,
         IText,
