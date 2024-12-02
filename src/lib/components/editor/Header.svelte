@@ -9,11 +9,10 @@
     import { centerView } from '$lib/editor/camera';
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
-    import { calculateTotalPrice, type CanvasObject } from '$lib/editor/objects';
+    import { calculateTotalPrice } from '$lib/editor/objects';
     import { canvasObjects } from '$lib/stores/objects';
 
     export let element: HTMLDivElement;
-    export let objects: CanvasObject[];
     export let project: Project;
     export let canvas: Canvas;
     export let user: User;

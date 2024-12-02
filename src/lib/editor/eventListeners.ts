@@ -35,6 +35,7 @@ import Cookies from 'js-cookie';
 import { get } from 'svelte/store';
 
 import {
+    calculatePolygonArea,
     copyObjectsToClipboard,
     cutObjects,
     getCanvasObjects,
@@ -62,17 +63,82 @@ export const textDisplaySize = new IText('', {
     excludeFromExport: true,
     fontFamily: 'arial',
     stroke: 'black',
-    fill: 'white',
-    strokeWidth: 1,
+    fill: 'lightgray',
+    strokeWidth: 3,
     paintFirst: 'stroke',
     strokeDashOffset: 10,
+    textAlign: 'center',
+    fontWeight: 900,
     fontSize: 18,
     visible: false
 });
 
+export const textDisplayArea = new IText('', {
+    selectable: false,
+    evented: false,
+    excludeFromExport: true,
+    fontFamily: 'arial',
+    stroke: 'black',
+    fill: 'lightgray',
+    strokeWidth: 3,
+    paintFirst: 'stroke',
+    strokeDashOffset: 10,
+    textAlign: 'center',
+    fontWeight: 900,
+    fontSize: 18,
+    visible: false
+});
+
+export function updateTextDisplayArea(canvas: Canvas) {
+    const activeObjects = canvas.getActiveObjects();
+
+    if (activeObjects.length === 0) {
+        textDisplayArea.visible = false;
+        canvas.requestRenderAll();
+        return;
+    }
+
+    textDisplayArea.visible = true;
+
+    let totalArea = 0;
+
+    activeObjects.forEach((object) => {
+        const scaledX = object.width * object.scaleX;
+        const scaledY = object.height * object.scaleY;
+
+        if (object instanceof Rect) {
+            totalArea += scaledX * scaledY - object.strokeWidth * 4;
+        } else if (object instanceof Circle) {
+            totalArea += scaledX * scaledY * Math.PI;
+        } else if (object instanceof Polygon) {
+            totalArea += calculatePolygonArea(object.points, scaledX, scaledY);
+        }
+    });
+
+    textDisplayArea.set('text', `${(totalArea / 10000).toFixed(2)}m²`);
+
+    const active = canvas.getActiveObject();
+
+    if (active) {
+        const firstBounding = active.getBoundingRect();
+        textDisplayArea.setX(
+            firstBounding.left + firstBounding.width / 2 - textDisplayArea.width / 2
+        );
+        textDisplayArea.setY(firstBounding.top + firstBounding.height + 20);
+    }
+
+    if (totalArea === 0) {
+        textDisplayArea.visible = false;
+    }
+
+    textDisplayArea.setCoords();
+    canvas.requestRenderAll();
+}
+
 export function loadCanvasEventListeners(canvas: Canvas) {
     canvas.add(polygonPath);
     canvas.add(textDisplaySize);
+    canvas.add(textDisplayArea);
 
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
@@ -602,7 +668,7 @@ function handleObjectOperations(canvas: Canvas) {
 
                 const place = transform.corner;
 
-                if (e.ctrlKey) {
+                if (e.ctrlKey && target instanceof Rect) {
                     target.lockScalingFlip = true;
 
                     const { width, height, scaleX, scaleY, left, top } = target;
@@ -670,10 +736,10 @@ function handleObjectOperations(canvas: Canvas) {
                     }
 
                     target.set({
-                        width: target.width * newScaleX,
-                        height: target.height * newScaleY,
-                        scaleX: 1,
-                        scaleY: 1,
+                        width: target instanceof Rect ? target.width * newScaleX : (target as FabricObject).width,
+                        height: target instanceof Rect ? target.height * newScaleY : (target as FabricObject).height,
+                        scaleX: target instanceof Rect ? 1 : (target as FabricObject).scaleX,
+                        scaleY: target instanceof Rect ? 1 : (target as FabricObject).scaleY,
                         left: newLeft,
                         top: newTop
                     });
@@ -685,31 +751,33 @@ function handleObjectOperations(canvas: Canvas) {
                 target.set('ry', target.get('ry') * (1 * target.scaleY));
 
                 target.set({
-                    width: target.width * target.scaleX,
-                    height: target.height * target.scaleY,
-                    scaleX: 1,
-                    scaleY: 1
+                    width: target instanceof Rect ? target.width * target.scaleX : target.width,
+                    height: target instanceof Rect ? target.height * target.scaleY : target.height,
+                    scaleX: target instanceof Rect ? 1 : target.scaleX,
+                    scaleY: target instanceof Rect ? 1 : target.scaleY
                 });
 
                 textDisplaySize.set(
                     'text',
-                    `${(parseInt(target.width.toFixed(0)) / 100).toFixed(1)}mx${(
-                        parseInt(target.height.toFixed(0)) / 100
+                    `${(parseInt((target.width * target.scaleX).toFixed(0)) / 100).toFixed(1)}mx${(
+                        parseInt((target.height * target.scaleY).toFixed(0)) / 100
                     ).toFixed(1)}m`
                 );
 
+                const bounding = target.getBoundingRect();
+
                 if (place === 'br') {
-                    textDisplaySize.setX(target.left + target.width + 20);
-                    textDisplaySize.setY(target.top + target.height + 20);
+                    textDisplaySize.setX(bounding.left + bounding.width + 20);
+                    textDisplaySize.setY(bounding.top + bounding.height + 20);
                 } else if (place === 'bl') {
-                    textDisplaySize.setX(target.left - 20 - textDisplaySize.width);
-                    textDisplaySize.setY(target.top + target.height + 20);
+                    textDisplaySize.setX(bounding.left - 20 - textDisplaySize.width);
+                    textDisplaySize.setY(bounding.top + bounding.height + 20);
                 } else if (place === 'tr') {
-                    textDisplaySize.setX(target.left + target.width + 20);
-                    textDisplaySize.setY(target.top - 20 - textDisplaySize.height);
+                    textDisplaySize.setX(bounding.left + bounding.width + 20);
+                    textDisplaySize.setY(bounding.top - 20 - textDisplaySize.height);
                 } else if (place === 'tl') {
-                    textDisplaySize.setX(target.left - 20 - textDisplaySize.width);
-                    textDisplaySize.setY(target.top - 20 - textDisplaySize.height);
+                    textDisplaySize.setX(bounding.left - 20 - textDisplaySize.width);
+                    textDisplaySize.setY(bounding.top - 20 - textDisplaySize.height);
                 }
 
                 textDisplaySize.setCoords();

@@ -187,3 +187,25 @@ export function lockObject(canvas: Canvas, object: FabricObject, lock: boolean) 
     canvas.discardActiveObject();
     canvas.requestRenderAll();
 }
+
+export function calculatePolygonArea(vertices: XY[], scaleX: number, scaleY: number): number {
+    let area = 0;
+    const n = vertices.length;
+
+    for (let i = 0; i < n; i++) {
+        const current = vertices[i];
+        const next = vertices[(i + 1) % n];
+
+        const scaledCurrentX = current.x * scaleX;
+        const scaledCurrentY = current.y * scaleY;
+        const scaledNextX = next.x * scaleX;
+        const scaledNextY = next.y * scaleY;
+
+        area += scaledCurrentX * scaledNextY - scaledCurrentY * scaledNextX;
+    }
+
+    const areaInPixels = Math.abs(area) / 2;
+    const areaInMeters = areaInPixels / 10000;
+
+    return areaInMeters;
+}

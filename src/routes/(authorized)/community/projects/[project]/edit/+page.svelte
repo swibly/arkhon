@@ -18,7 +18,9 @@
         handleKeybinds,
         handleSpaceBarPress,
         handleSpaceBarRelease,
-        loadCanvasEventListeners
+        loadCanvasEventListeners,
+        textDisplayArea,
+        updateTextDisplayArea
     } from '$lib/editor/eventListeners';
     import { applyCanvasPermissionsBasedOnTool, setTool, tool, Tool } from '$lib/stores/tool';
     import { hasPermissions } from '$lib/utils';
@@ -126,7 +128,6 @@
                 canvas.setActiveObject(
                     new ActiveSelection(objects.filter((object) => object.get('userlock') !== true))
                 );
-                canvas.requestRenderAll();
             }
 
             currentActiveObjects = objects;
@@ -152,9 +153,12 @@
         });
 
         canvas.on('selection:cleared', () => {
+            textDisplayArea.visible = false;
             currentActiveObjects = canvas.getActiveObjects();
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
         });
+
+        canvas.on('after:render', () => updateTextDisplayArea(canvas));
     });
 </script>
 
