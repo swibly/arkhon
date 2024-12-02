@@ -209,3 +209,10 @@ export function calculatePolygonArea(vertices: XY[], scaleX: number, scaleY: num
 
     return areaInMeters;
 }
+
+export function calculateRoundedRectangleArea(width: number, height: number, radius: number): number {
+    const rectangleArea = width * height;
+    const cornerCutoutArea = 4 * (Math.pow(radius, 2) - (Math.PI * Math.pow(radius, 2)) / 4);
+
+    return rectangleArea - cornerCutoutArea;
+}

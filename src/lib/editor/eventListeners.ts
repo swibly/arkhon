@@ -36,6 +36,7 @@ import { get } from 'svelte/store';
 
 import {
     calculatePolygonArea,
+    calculateRoundedRectangleArea,
     copyObjectsToClipboard,
     cutObjects,
     getCanvasObjects,
@@ -107,9 +108,17 @@ export function updateTextDisplayArea(canvas: Canvas) {
         const scaledY = object.height * object.scaleY;
 
         if (object instanceof Rect) {
-            totalArea += scaledX * scaledY - object.strokeWidth * 4;
+            totalArea += calculateRoundedRectangleArea(
+                scaledX,
+                scaledY,
+                Math.max(object.rx, object.ry)
+            );
         } else if (object instanceof Circle) {
-            totalArea += scaledX * scaledY * Math.PI;
+            totalArea +=
+                Math.PI *
+                ((object.width / 100 / 2) * object.scaleX) *
+                ((object.height / 100 / 2) * object.scaleY) *
+                10000;
         } else if (object instanceof Polygon) {
             totalArea += calculatePolygonArea(object.points, scaledX, scaledY);
         }
@@ -736,8 +745,14 @@ function handleObjectOperations(canvas: Canvas) {
                     }
 
                     target.set({
-                        width: target instanceof Rect ? target.width * newScaleX : (target as FabricObject).width,
-                        height: target instanceof Rect ? target.height * newScaleY : (target as FabricObject).height,
+                        width:
+                            target instanceof Rect
+                                ? target.width * newScaleX
+                                : (target as FabricObject).width,
+                        height:
+                            target instanceof Rect
+                                ? target.height * newScaleY
+                                : (target as FabricObject).height,
                         scaleX: target instanceof Rect ? 1 : (target as FabricObject).scaleX,
                         scaleY: target instanceof Rect ? 1 : (target as FabricObject).scaleY,
                         left: newLeft,
