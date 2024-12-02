@@ -2,7 +2,8 @@
     import Icon from '@iconify/svelte';
     import type { ActionData } from './$types';
     import { enhance } from '$app/forms';
-    import { spawn } from '$lib/toast';    
+    import { spawn } from '$lib/toast';
+    import { onMount } from 'svelte';
 
     let showPassword: boolean = false;
     let showConfirmPassword: boolean = false;
@@ -17,12 +18,8 @@
     let passwordRef: HTMLInputElement;
     let confirmPasswordRef: HTMLInputElement;
 
-    let isNameAllowed: boolean = false;
-    let isEmailAllowed: boolean = false;
-    let isUsernameLengthAllowed: boolean = false;
-    let isUsernameCharactersAllowed: boolean = false;
-    let isAllowed: boolean = false;
-    let isSame: boolean = true;
+    let passwordScore: number = 0;
+    let normalizedPasswordScore: string = '';
 
     export let form: ActionData;
 
@@ -36,52 +33,57 @@
         });
     }
 
-    function getNameValue() {
-        if (firstnameRef.value.length >= 3 && lastnameRef.value.length >= 3) {
-            isNameAllowed = true;
-        } else {
-            isNameAllowed = false;
-        }
+    const validationState = {
+        isFirstNameAllowed: true,
+        isLastNameAllowed: true,
+        isEmailAllowed: true,
+        isUsernameLengthAllowed: true,
+        isUsernameCharactersAllowed: true,
+        isPasswordAllowed: true,
+        isPasswordsMatch: true
+    };
+
+    function getPasswordScore(score: number): string {
+        if (score === 1) return 'fraca';
+        if (score === 2) return 'média';
+        if (score === 3) return 'forte';
+        if (score === 4) return 'muito forte';
+        return 'Undefined';
     }
 
-    function getEmailValue() {
-        if (emailRegex.test(emailRef.value)) {
-            isEmailAllowed = true;
-        } else {
-            isEmailAllowed = false;
-        }
+    function validateLength(input: string, length: number) {
+        return input.length >= length || input.length === 0;
     }
 
-    function getUsernameValue() {
-        if (usernameRef.value.length >= 3) {
-            isUsernameLengthAllowed = true;
-        } else {
-            isUsernameLengthAllowed = false;
-        }
-
-        if (regex.test(usernameRef.value)) {
-            isUsernameCharactersAllowed = true;
-        } else {
-            isUsernameCharactersAllowed = false;
-        }
+    function validateRegex(input: string, regex: RegExp) {
+        return regex.test(input) || input.length === 0;
     }
 
-    function getInputValue() {
-        if (passwordRef.value.length >= 6) {
-            isAllowed = true;
-        } else {
-            isAllowed = false;
-        }
-
-        confirmPass();
+    function validadePassword(password: string, confirmPassword: string) {
+        return (
+            password === confirmPassword || (password.length === 0 && confirmPassword.length === 0)
+        );
     }
 
-    function confirmPass() {
-        if (passwordRef.value === confirmPasswordRef.value) {
-            isSame = true;
-        } else {
-            isSame = false;
-        }
+    function validateInputs() {
+        validationState.isFirstNameAllowed = validateLength(firstnameRef.value, 3);
+        validationState.isLastNameAllowed = validateLength(lastnameRef.value, 3);
+        validationState.isEmailAllowed = validateRegex(emailRef.value, emailRegex);
+        validationState.isUsernameLengthAllowed = validateLength(usernameRef.value, 3);
+        validationState.isUsernameCharactersAllowed = validateRegex(usernameRef.value, regex);
+        validationState.isPasswordAllowed = validateLength(passwordRef.value, 6);
+        validationState.isPasswordsMatch = validadePassword(
+            passwordRef.value,
+            confirmPasswordRef.value
+        );
+
+        passwordScore =
+            ~~/[\W\d]/.test(passwordRef.value) +
+            ~~/[^\W]/.test(passwordRef.value) +
+            ~~(passwordRef.value.length > 6) +
+            ~~(passwordRef.value.length > 18);
+
+        normalizedPasswordScore = getPasswordScore(passwordScore);
     }
 </script>
 
@@ -92,6 +94,7 @@
 <form
     method="POST"
     class="flex flex-col gap-2"
+    on:input={validateInputs}
     use:enhance={async () => {
         loading = true;
         error = undefined;
@@ -100,9 +103,9 @@
 >
     <section class="flex gap-2 max-md:flex-col">
         <label
-            class={`flex items-center gap-2 input input-bordered ${
-                isNameAllowed ? 'input' : 'input-error'
-            } grow`}
+            class="flex items-center gap-2 input input-bordered grow input"
+            class:input-error={!validationState.isFirstNameAllowed ||
+                !validationState.isLastNameAllowed}
         >
             <Icon icon="ph:user-fill" />
             <input
@@ -111,14 +114,13 @@
                 placeholder="Nome"
                 required
                 bind:this={firstnameRef}
-                on:input={getNameValue}
             />
         </label>
 
         <label
-            class={`flex items-center gap-2 input input-bordered ${
-                isNameAllowed ? 'input' : 'input-error'
-            } grow`}
+            class="flex items-center gap-2 input input-bordered grow input"
+            class:input-error={!validationState.isFirstNameAllowed ||
+                !validationState.isLastNameAllowed}
         >
             <Icon icon="ph:user-fill" />
             <input
@@ -127,13 +129,18 @@
                 placeholder="Sobrenome"
                 required
                 bind:this={lastnameRef}
-                on:input={getNameValue}
             />
         </label>
     </section>
 
     <section>
-        <p class={`${isNameAllowed ? 'hidden' : 'text-error'}`}>
+        <p
+            class={`${
+                validationState.isFirstNameAllowed && validationState.isLastNameAllowed
+                    ? 'hidden'
+                    : 'text-error'
+            }`}
+        >
             * O nome e o sobrenome devem possuir no mínimo 3 caracteres cada
         </p>
     </section>
@@ -141,29 +148,23 @@
     <div class="divider" />
 
     <label
-        class={`flex items-center gap-2 input input-bordered ${
-            isNameAllowed ? 'input' : 'input-error'
-        }`}
+        class="flex items-center gap-2 input input-bordered input"
+        class:input-error={!validationState.isEmailAllowed}
     >
         <Icon icon="material-symbols:mail" />
-        <input
-            type="text"
-            name="email"
-            placeholder="Email"
-            required
-            bind:this={emailRef}
-            on:input={getEmailValue}
-        />
+        <input type="text" name="email" placeholder="Email" required bind:this={emailRef} />
     </label>
 
     <section>
-        <p class={`${isEmailAllowed ? 'hidden' : 'text-error'}`}>* Formato de email incorreto</p>
+        <p class={`${validationState.isEmailAllowed ? 'hidden' : 'text-error'}`}>
+            * Formato de email incorreto
+        </p>
     </section>
 
     <label
-        class={`flex items-center gap-2 input input-bordered ${
-            isUsernameLengthAllowed && isUsernameCharactersAllowed ? 'input' : 'input-error'
-        }`}
+        class="flex items-center gap-2 input input-bordered input"
+        class:input-error={!validationState.isUsernameCharactersAllowed ||
+            !validationState.isUsernameLengthAllowed}
     >
         <Icon icon="lets-icons:e-mail" />
         <input
@@ -172,15 +173,14 @@
             placeholder="Nome de usuário"
             required
             bind:this={usernameRef}
-            on:input={getUsernameValue}
         />
     </label>
 
     <section>
-        <p class={`${isUsernameLengthAllowed ? 'hidden' : 'text-error'}`}>
+        <p class={`${validationState.isUsernameLengthAllowed ? 'hidden' : 'text-error'}`}>
             * O nome de usuário deve possuir no mínimo 3 caracteres
         </p>
-        <p class={`${isUsernameCharactersAllowed ? 'hidden' : 'text-error'}`}>
+        <p class={`${validationState.isUsernameCharactersAllowed ? 'hidden' : 'text-error'}`}>
             * O nome de usuário deve consistir apenas de caracteres alfanuméricos minúsculos
         </p>
     </section>
@@ -188,9 +188,8 @@
     <div class="divider" />
 
     <label
-        class={`flex items-center gap-2 input input-bordered ${
-            isAllowed ? 'input' : 'input-error'
-        }`}
+        class="flex items-center gap-2 input input-bordered input"
+        class:input-error={!validationState.isPasswordAllowed}
     >
         <Icon icon="ph:lock-fill" />
 
@@ -200,7 +199,6 @@
             placeholder="Senha"
             required
             bind:this={passwordRef}
-            on:input={getInputValue}
         />
 
         <button type="button" on:click={() => (showPassword = !showPassword)}>
@@ -212,14 +210,25 @@
         </button>
     </label>
 
+    <div
+        class="join gap-1 rounded-full border border-base-200 tooltip tooltip-bottom inline-flex"
+        data-tip="Senha {normalizedPasswordScore}"
+    >
+        <div class="join-item grow h-2" class:bg-error={passwordScore > 0} />
+        <div class="join-item grow h-2" class:bg-warning={passwordScore > 1} />
+        <div class="join-item grow h-2" class:bg-success={passwordScore > 2} />
+        <div class="join-item grow h-2" class:bg-success={passwordScore > 3} />
+    </div>
+
     <section>
-        <p class={`${isAllowed ? 'hidden' : 'text-error'}`}>
+        <p class={`${validationState.isPasswordAllowed ? 'hidden' : 'text-error'}`}>
             * A senha deve possuir no mínimo 6 caracteres
         </p>
     </section>
 
     <label
-        class={`flex items-center gap-2 input input-bordered ${isSame ? 'input' : 'input-error'}`}
+        class="flex items-center gap-2 input input-bordered input"
+        class:input-error={!validationState.isPasswordsMatch}
     >
         <Icon icon="ph:lock-fill" />
 
@@ -229,7 +238,6 @@
             placeholder="Confirme sua senha"
             required
             bind:this={confirmPasswordRef}
-            on:input={confirmPass}
         />
 
         <button type="button" on:click={() => (showConfirmPassword = !showConfirmPassword)}>
@@ -242,7 +250,9 @@
     </label>
 
     <section>
-        <p class={`${isSame ? 'hidden' : 'text-error'}`}>*As senhas devem ser as mesmas</p>
+        <p class={`${validationState.isPasswordsMatch ? 'hidden' : 'text-error'}`}>
+            *As senhas devem ser as mesmas
+        </p>
     </section>
 
     {#if loading}

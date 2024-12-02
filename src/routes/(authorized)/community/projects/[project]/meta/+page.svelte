@@ -385,7 +385,7 @@
                 Carregando...
             </button>
         {:else if !data.project.is_public}
-            <button class="btn btn-sm btn-success" on:click={() => publishDialog.show()}>
+            <button class="btn btn-sm btn-success text-white" on:click={() => publishDialog.show()}>
                 <Icon icon="mdi:success" />
                 Publicar projeto
             </button>
@@ -418,7 +418,7 @@
                             };
                         }}
                     >
-                        <button type="submit" class="btn btn-sm btn-primary w-full">
+                        <button type="submit" class="btn btn-sm btn-primary w-full text-white">
                             <Icon icon="mdi:success" />
                             Publicar projeto
                         </button>
