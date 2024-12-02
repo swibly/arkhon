@@ -272,7 +272,7 @@
                         };
                     }}
                 >
-                    <button class="btn btn-error btn-sm">
+                    <button class="btn btn-error btn-sm text-white">
                         <Icon icon="mdi:trash" />
                     </button>
                 </form>
