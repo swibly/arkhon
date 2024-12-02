@@ -21,6 +21,7 @@ import {
     Circle,
     controlsUtils,
     FabricObject,
+    IText,
     Point,
     Polygon,
     Polyline,
@@ -55,8 +56,23 @@ export const polygonPath = new Polygon([], {
     excludeFromExport: true
 });
 
+export const textDisplaySize = new IText('', {
+    selectable: false,
+    evented: false,
+    excludeFromExport: true,
+    fontFamily: 'arial',
+    stroke: 'black',
+    fill: 'white',
+    strokeWidth: 1,
+    paintFirst: 'stroke',
+    strokeDashOffset: 10,
+    fontSize: 18,
+    visible: false
+});
+
 export function loadCanvasEventListeners(canvas: Canvas) {
     canvas.add(polygonPath);
+    canvas.add(textDisplaySize);
 
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
@@ -185,6 +201,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     });
 
     canvas.on('mouse:up', function ({ e: event, target }) {
+        textDisplaySize.visible = false;
+
         if (target) {
             target.set('startLeft', target.left);
             target.set('startTop', target.top);
@@ -582,6 +600,8 @@ function handleObjectOperations(canvas: Canvas) {
             case 'scale': {
                 target.set('strokeUniform', true);
 
+                const place = transform.corner;
+
                 if (e.ctrlKey) {
                     target.lockScalingFlip = true;
 
@@ -606,7 +626,7 @@ function handleObjectOperations(canvas: Canvas) {
                     let newLeft = currentLeft;
                     let newTop = currentTop;
 
-                    switch (transform.corner) {
+                    switch (place) {
                         case 'tl':
                             if (distLeft < SNAP_THRESHOLD) {
                                 newScaleX =
@@ -650,8 +670,8 @@ function handleObjectOperations(canvas: Canvas) {
                     }
 
                     target.set({
-                        width: Math.max(target.width * newScaleX, 50),
-                        height: Math.max(target.height * newScaleY, 50),
+                        width: target.width * newScaleX,
+                        height: target.height * newScaleY,
                         scaleX: 1,
                         scaleY: 1,
                         left: newLeft,
@@ -665,12 +685,34 @@ function handleObjectOperations(canvas: Canvas) {
                 target.set('ry', target.get('ry') * (1 * target.scaleY));
 
                 target.set({
-                    width: Math.max(target.width * target.scaleX, 50),
-                    height: Math.max(target.height * target.scaleY, 50),
+                    width: target.width * target.scaleX,
+                    height: target.height * target.scaleY,
                     scaleX: 1,
                     scaleY: 1
                 });
 
+                textDisplaySize.set(
+                    'text',
+                    `${(parseInt(target.width.toFixed(0)) / 100).toFixed(1)}mx${(
+                        parseInt(target.height.toFixed(0)) / 100
+                    ).toFixed(1)}m`
+                );
+
+                if (place === 'br') {
+                    textDisplaySize.setX(target.left + target.width + 20);
+                    textDisplaySize.setY(target.top + target.height + 20);
+                } else if (place === 'bl') {
+                    textDisplaySize.setX(target.left - 20 - textDisplaySize.width);
+                    textDisplaySize.setY(target.top + target.height + 20);
+                } else if (place === 'tr') {
+                    textDisplaySize.setX(target.left + target.width + 20);
+                    textDisplaySize.setY(target.top - 20 - textDisplaySize.height);
+                } else if (place === 'tl') {
+                    textDisplaySize.setX(target.left - 20 - textDisplaySize.width);
+                    textDisplaySize.setY(target.top - 20 - textDisplaySize.height);
+                }
+
+                textDisplaySize.setCoords();
                 target.setCoords();
                 break;
             }
@@ -719,6 +761,7 @@ function handleObjectOperations(canvas: Canvas) {
     });
 
     canvas.on('object:scaling', function (event) {
+        textDisplaySize.visible = true;
         handleTransform(event);
     });
 
