@@ -6,9 +6,11 @@ import {
     controlsUtils,
     FabricObject,
     Group,
+    Point,
     Polygon,
     Polyline,
     Rect,
+    util,
     type XY
 } from 'fabric';
 import { applyObjectPermissions } from './permissions';
@@ -330,7 +332,12 @@ export function calculateTotalArea(object: FabricObject): number {
     let totalArea = 0;
 
     if (object instanceof Rect) {
-        totalArea = calculateRoundedRectangleArea(scaledX, scaledY, Math.max(object.rx, object.ry), object.stroke !== null ? object.strokeWidth : 0);
+        totalArea = calculateRoundedRectangleArea(
+            scaledX,
+            scaledY,
+            Math.max(object.rx, object.ry),
+            object.stroke !== null ? object.strokeWidth : 0
+        );
     } else if (object instanceof Circle) {
         totalArea = calculateElipsisArea(
             object.width,
@@ -340,7 +347,12 @@ export function calculateTotalArea(object: FabricObject): number {
             object.stroke !== null ? object.strokeWidth : 0
         );
     } else if (object instanceof Polygon) {
-        totalArea = calculatePolygonArea(object.points, scaledX, scaledY, object.stroke !== null ? object.strokeWidth : 0);
+        totalArea = calculatePolygonArea(
+            object.points,
+            scaledX,
+            scaledY,
+            object.stroke !== null ? object.strokeWidth : 0
+        );
     }
 
     return totalArea;
@@ -357,4 +369,84 @@ export function calculatePriceForArea(object: CanvasObject | FabricObject) {
         (calculateTotalArea(obj) / 10000) * (obj.get('price') ?? 0) +
         (calculateStrokeArea(obj) / 10000) * (obj.get('price') ?? 0)
     );
+}
+
+export function group(canvas: Canvas) {
+    const objs = canvas.getActiveObjects();
+
+    if (objs.length < 2) {
+        return;
+    }
+
+    const groupCenter = canvas.getActiveObject()?.getCenterPoint();
+
+    const originalPositions = objs.map((object) => {
+        const center = object.getCenterPoint();
+        const bounding = object.getBoundingRect();
+        return {
+            object,
+            originalLeft: center.x - bounding.width / 2,
+            originalTop: center.y - bounding.height / 2
+        };
+    });
+
+    const newGroup = new Group(objs, {
+        canvas,
+        left: groupCenter?.x || 0,
+        top: groupCenter?.y || 0,
+        originX: 'center',
+        originY: 'center'
+    });
+
+    originalPositions.forEach(({ object, originalLeft, originalTop }) => {
+        const groupLeft = newGroup.left || 0;
+        const groupTop = newGroup.top || 0;
+
+        object.left = originalLeft - groupLeft;
+        object.top = originalTop - groupTop;
+        object.setCoords();
+    });
+
+    newGroup.setCoords();
+
+    canvas.discardActiveObject();
+    canvas.remove(...objs);
+    canvas.add(newGroup);
+    canvas.setActiveObject(newGroup);
+    canvas.requestRenderAll();
+}
+
+export async function ungroup(canvas: Canvas): Promise<void> {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject && activeObject.type === 'group') {
+        const group = activeObject as Group;
+        const items = group.getObjects();
+
+        canvas.remove(group);
+
+        items.forEach(async (item) => {
+            const matrix = group.calcTransformMatrix();
+            const options = util.qrDecompose(matrix);
+
+            const transformedPoint = new Point(item.left!, item.top!).transform(
+                group.calcTransformMatrix()
+            );
+
+            const cloned = await item.clone(['id', 'name', 'userlock', 'price', 'priceWall']);
+
+            cloned.left = transformedPoint.x;
+            cloned.top = transformedPoint.y;
+            cloned.angle += options.angle;
+            cloned.scaleX *= options.scaleX;
+            cloned.scaleY *= options.scaleY;
+
+            cloned.setCoords();
+
+            canvas.add(cloned);
+        });
+
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+    }
 }
