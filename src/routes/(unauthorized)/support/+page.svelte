@@ -11,9 +11,7 @@
         <Logo
             class="mx-auto mix-blend-difference fill-white w-28 h-28 md:w-36 md:h-36 lg:w-48 lg:h-48"
         />
-        <h2 class="font-semibold text-center text-md">
-            Seja bem vindo ao suporte da Arkhon
-        </h2>
+        <h2 class="font-semibold text-center text-md">Seja bem vindo ao suporte da Arkhon</h2>
         <h1 class="font-bold text-center text-2xl sm:text-4xl">
             Perguntas frequentes em nossa plataforma
         </h1>

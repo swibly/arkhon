@@ -22,7 +22,7 @@
         url.searchParams.set('limit', limit.toString());
 
         return '?' + url.searchParams.toString();
-    }       
+    }
 </script>
 
 {#if pagination.total_pages !== 1 && pagination.total_records !== 0}

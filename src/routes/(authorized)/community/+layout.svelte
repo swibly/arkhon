@@ -22,10 +22,10 @@
                 </summary>
                 <div class="collapse-content">
                     <p class="text-justify">
-                        Explore projetos compartilhados por outras pessoas, adquira componentes personalizados e descubra novas pessoas
-                        com interesses semelhantes. Use os filtros para encontrar tópicos ou tipos
-                        de projetos específicos de seu interesse. Mergulhe, inspire-se e conecte-se
-                        com nossa comunidade criativa!
+                        Explore projetos compartilhados por outras pessoas, adquira componentes
+                        personalizados e descubra novas pessoas com interesses semelhantes. Use os
+                        filtros para encontrar tópicos ou tipos de projetos específicos de seu
+                        interesse. Mergulhe, inspire-se e conecte-se com nossa comunidade criativa!
                     </p>
                 </div>
             </details>
@@ -49,7 +49,7 @@
                         class:btn-primary={path.includes('components')}
                     >
                         <Icon icon="iconamoon:component-fill" />
-                        Componentes                        
+                        Componentes
                     </a>
 
                     <a

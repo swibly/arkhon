@@ -5,7 +5,7 @@
     import type { LayoutServerData } from './$types';
     import { canShowConfetti } from '$lib/stores/confetti';
 
-    export let data: LayoutServerData;    
+    export let data: LayoutServerData;
 </script>
 
 <svelte:head>

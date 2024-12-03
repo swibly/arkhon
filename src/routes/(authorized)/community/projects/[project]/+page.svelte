@@ -24,7 +24,7 @@
     if ($canShowConfetti) {
         showConfetti = true;
         canShowConfetti.set(false);
-    }    
+    }
 
     const limit = 3;
     $: users = [
@@ -366,7 +366,10 @@
         </a>
 
         {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0}
-            <a href="/community/projects/{project.id}/meta" class="btn btn-sm btn-secondary text-white">
+            <a
+                href="/community/projects/{project.id}/meta"
+                class="btn btn-sm btn-secondary text-white"
+            >
                 <Icon icon="mdi:pencil" />
                 Editar informações do projeto
             </a>

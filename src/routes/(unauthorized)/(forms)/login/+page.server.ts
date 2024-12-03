@@ -30,7 +30,7 @@ export const actions: Actions = {
                     e.response.data as { error: string | Record<string, string> }
                 );
             }
-        }        
+        }
 
         throw redirect(302, '/community/projects');
     }

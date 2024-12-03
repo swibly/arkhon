@@ -45,7 +45,7 @@ export const actions: Actions = {
             return fail(err.status, {
                 error: err.error
             });
-        }                
+        }
 
         throw redirect(304, `/community/projects/${projectID}`);
     }

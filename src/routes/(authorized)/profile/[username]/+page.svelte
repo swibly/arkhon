@@ -88,8 +88,8 @@
                         <ProjectCard
                             options={project}
                             currentUser={data.user}
-                            lang={data.user.language}        
-                            projectPage={false}                                                
+                            lang={data.user.language}
+                            projectPage={false}
                         />
                     {/each}
                     {#if projects.total_records > projects.data.length}
@@ -142,7 +142,7 @@
                             options={favorite}
                             currentUser={data.user}
                             lang={data.user.language}
-                            projectPage={false}                                                
+                            projectPage={false}
                         />
                     {/each}
                     {#if favorites.total_records > favorites.data.length}

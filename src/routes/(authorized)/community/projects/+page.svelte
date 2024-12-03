@@ -9,7 +9,7 @@
     import type { Project } from '$lib/projects';
     import Input from '$lib/components/Input.svelte';
 
-    export let data: PageServerData & { user: User };    
+    export let data: PageServerData & { user: User };
 
     $: pagination = data.projects;
     $: projects = pagination.data;

@@ -6,7 +6,7 @@
     import Icon from '@iconify/svelte';
     import { enhance } from '$app/forms';
     import Attention from '$lib/components/Attention.svelte';
-    import ComponentCard from '$lib/components/store/ComponentCard.svelte';    
+    import ComponentCard from '$lib/components/store/ComponentCard.svelte';
 
     export let data: PageServerData & { user: User; lookup: User };
 
@@ -63,7 +63,9 @@
     {#if data.user.username !== data.lookup.username}
         <p class="text-error text-center">Você não pode ver a lixeira de outras pessoas.</p>
     {:else if trashed.length === 0}
-        <p class="mb-4 opacity-70 italic text-center">Você ainda não colocou nenhum projeto na lixeira.</p>
+        <p class="mb-4 opacity-70 italic text-center">
+            Você ainda não colocou nenhum projeto na lixeira.
+        </p>
     {:else}
         <div class="mx-auto w-fit">
             <Pagination {pagination} />
@@ -147,7 +149,9 @@
             {/each}
         </section>
     {:else}
-        <p class="mb-4 opacity-70 italic text-center">Você ainda não colocou nenhum componente na lixeira.</p>
+        <p class="mb-4 opacity-70 italic text-center">
+            Você ainda não colocou nenhum componente na lixeira.
+        </p>
     {/if}
 
     <dialog bind:this={clearDialog} class="modal">

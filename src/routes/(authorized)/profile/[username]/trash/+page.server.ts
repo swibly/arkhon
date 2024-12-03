@@ -1,5 +1,10 @@
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { clearComponentTrash, deleteComponent, getAllComponentsinTrash, restoreComponent } from '$lib/component';
+import {
+    clearComponentTrash,
+    deleteComponent,
+    getAllComponentsinTrash,
+    restoreComponent
+} from '$lib/component';
 import { clearTrash, getTrashed } from '$lib/projects';
 import { getPaginationOptionsFromURL } from '$lib/utils';
 import type { Actions } from './$types';
@@ -21,10 +26,10 @@ export const actions: Actions = {
         const data = await request.formData();
         let type = data.get('type');
 
-        if(type?.toString() === 'project'){
+        if (type?.toString() === 'project') {
             await clearTrash(cookies.get(JWT_TOKEN_COOKIE_NAME)!);
-        }else{
-            await clearComponentTrash(cookies.get(JWT_TOKEN_COOKIE_NAME)!);  
+        } else {
+            await clearComponentTrash(cookies.get(JWT_TOKEN_COOKIE_NAME)!);
         }
     },
 

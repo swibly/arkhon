@@ -53,7 +53,7 @@
             <button class="join-item btn btn-sm btn-disabled">...</button>
         {/if}
 
-        {#if pagination.current_page < pagination.total_pages - 1}            
+        {#if pagination.current_page < pagination.total_pages - 1}
             <a href={setupURL(pagination.total_pages)} class="join-item btn btn-sm">
                 {pagination.total_pages}
             </a>
