@@ -416,7 +416,7 @@ export function group(canvas: Canvas) {
     canvas.requestRenderAll();
 }
 
-export async function ungroup(canvas: Canvas): Promise<void> {
+export async function ungroup(canvas: Canvas) {
     const activeObject = canvas.getActiveObject();
 
     if (activeObject && activeObject.type === 'group') {

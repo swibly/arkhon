@@ -19,8 +19,7 @@
         handleSpaceBarPress,
         handleSpaceBarRelease,
         loadCanvasEventListeners,
-        textDisplayArea,
-        updateTextDisplayArea
+        textDisplayArea
     } from '$lib/editor/eventListeners';
     import { applyCanvasPermissionsBasedOnTool, setTool, tool, Tool } from '$lib/stores/tool';
     import { hasPermissions } from '$lib/utils';
@@ -87,7 +86,7 @@
         await loadCanvasFromData(canvas, data);
         centerView(canvas, data.project, 0);
 
-        loadCanvasEventListeners(canvas);
+        loadCanvasEventListeners(canvas, data.user, data.project);
 
         canvasObjects.set(getCanvasObjects(canvas));
 

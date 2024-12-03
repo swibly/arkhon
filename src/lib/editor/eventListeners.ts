@@ -33,11 +33,7 @@ import {
 } from 'fabric';
 import Cookies from 'js-cookie';
 import { get } from 'svelte/store';
-
 import {
-    calculatePolygonArea,
-    calculatePriceForArea,
-    calculateRoundedRectangleArea,
     calculateTotalArea,
     calculateTotalPrice,
     copyObjectsToClipboard,
@@ -46,6 +42,7 @@ import {
     pasteObjectsFromClipboard
 } from './objects';
 import { applyObjectPermissions } from './permissions';
+import { HistoryManager } from './history';
 
 const GRID_SIZE = 50;
 
@@ -93,6 +90,8 @@ export const textDisplayArea = new IText('', {
     visible: false
 });
 
+export let historyManager: HistoryManager;
+
 export function updateTextDisplayArea(canvas: Canvas) {
     const activeObjects = canvas.getActiveObjects();
 
@@ -132,6 +131,8 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     canvas.add(polygonPath);
     canvas.add(textDisplaySize);
     canvas.add(textDisplayArea);
+
+    historyManager = new HistoryManager(canvas);
 
     let movingCamera = false;
     let mouseLastClick = { x: 0, y: 0 };
@@ -543,6 +544,26 @@ export async function handleKeybinds(
         case 'x':
             if (event.ctrlKey) {
                 cutObjects(canvas);
+            }
+            break;
+        case 'y':
+            if (event.ctrlKey) {
+                event.preventDefault();
+                historyManager.redo();
+                break;
+            }
+            break;
+        case 'z':
+            if (event.ctrlKey) {
+                event.preventDefault();
+
+                if (event.shiftKey) {
+                    historyManager.redo();
+                    break;
+                }
+
+                historyManager.undo();
+                break;
             }
             break;
         case 'Backspace':
