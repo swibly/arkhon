@@ -121,7 +121,7 @@
         />
 
         <div class="absolute -bottom-6 right-0">
-            <UserIcon {users} {limit} />
+            <UserIcon {users} {limit} tooltipDirection="left" />
         </div>
     </div>
 

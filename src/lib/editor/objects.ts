@@ -1,537 +1,218 @@
+import { getClipboard, setClipboard, wasCutOperation } from '$lib/stores/clipboard';
 import {
-    Group,
-    IText,
-    Rect,
-    Circle,
-    Polygon,
     ActiveSelection,
-    type Canvas,
-    type FabricObject
+    Canvas,
+    controlsUtils,
+    FabricObject,
+    Group,
+    Polygon,
+    Polyline,
+    type XY
 } from 'fabric';
-import { renderAll } from './canvas';
+import { applyObjectPermissions } from './permissions';
+import { mouseCoords } from '$lib/stores/mouseCoords';
+import { get } from 'svelte/store';
 
-let capturedPoints: Array<{ x: number; y: number }> = [];
-let visiblePoints: FabricObject[] = [];
-let count: number = 0;
-
-export function getActive(canvas: Canvas): Array<FabricObject> {
-    return canvas.getActiveObjects();
+export interface CanvasObject {
+    object: FabricObject;
+    name: string;
+    nameReset: string;
+    price?: number;
+    typeTranslated: string;
+    type: string;
+    componentID?: number;
+    children?: CanvasObject[];
 }
 
-export function add(canvas: Canvas, ...objects: FabricObject[]): void {
-    canvas.add(...objects);
+export function calculateTotalPrice(objects: CanvasObject[]): number {
+    return objects.reduce((total, obj) => {
+        const currentPrice = obj.price || 0;
+        const childrenPrice = obj.children ? calculateTotalPrice(obj.children) : 0;
+        return total + currentPrice + childrenPrice;
+    }, 0);
 }
 
-export function remove(canvas: Canvas, ...objects: FabricObject[]): FabricObject[] {
-    canvas.discardActiveObject();
+export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false): CanvasObject[] {
+    function traverseObjects(objects: FabricObject[]): CanvasObject[] {
+        return objects.map((object) => {
+            let name = object.type;
+            let typeTranslated = '';
 
-    return canvas.remove(...objects);
-}
-
-export function removeGroup(canvas: Canvas, ...objects: FabricObject[]) {
-    const groups = getActive(canvas).filter((x) => x.type === 'group') as Group[];
-
-    if (groups.length > 0) {
-        for (const objs of groups) {
-            remove(canvas, objs);
-
-            for (const item of objs.removeAll()) {
-                remove(canvas, item);
-            }
-        }
-    }
-}
-
-export function group(canvas: Canvas) {
-    canvas.remove(...getActive(canvas));
-
-    const group = new Group(getActive(canvas));    
-
-    canvas.add(group);
-    canvas.discardActiveObject();
-}
-
-export async function ungroup(canvas: Canvas): Promise<void> {
-    const groups = canvas.getActiveObjects().filter((x) => x.type === 'group') as Group[];
-
-    for (const objs of groups) {
-        remove(canvas, objs);
-
-        for (const item of objs.removeAll()) {
-            let obj = await remove(canvas, item)[0].clone();
-
-            add(canvas, obj);            
-
-            // @ts-ignore
-            if (item.isComponent) {
-                obj.set({
-                    lockMovementX: item.lockMovementX,
-                    lockMovementY: item.lockMovementY,
-                    lockScalingX: item.lockScalingX,
-                    lockScalingY: item.lockScalingY,
-                    lockRotation: item.lockRotation
-                });
-
-                // @ts-ignore
-                setInfo(
-                    obj,
-                    // @ts-ignore
-                    item.name,
-                    // @ts-ignore
-                    item.price,
-                    // @ts-ignore
-                    item.id,
-                    // @ts-ignore
-                    item.description,
-                    // @ts-ignore
-                    item.arkhoins,
-                    // @ts-ignore
-                    item.isPublic
-                );
-            } else {
-                obj.set({
-                    lockMovementX: item.lockMovementX,
-                    lockMovementY: item.lockMovementY,
-                    lockScalingX: item.lockScalingX,
-                    lockScalingY: item.lockScalingY,
-                    lockRotation: item.lockRotation,
-                    // @ts-ignore
-                    isComponent: item.isComponent,
-                    // @ts-ignore
-                    material: item.material,
-                    // @ts-ignore
-                    structureType: item.structureType
-                });
-            }
-        }
-    }
-}
-
-export function lock(canvas: Canvas) {
-    getActive(canvas).forEach((obj: FabricObject) => {
-        obj.lockMovementX = true;
-        obj.lockMovementY = true;
-        obj.lockScalingX = true;
-        obj.lockScalingY = true;
-        obj.lockRotation = true;
-    });
-
-    renderAll(canvas);
-}
-
-export function unlock(canvas: Canvas) {
-    getActive(canvas).forEach((obj: FabricObject) => {
-        obj.lockMovementX = false;
-        obj.lockMovementY = false;
-        obj.lockScalingX = false;
-        obj.lockScalingY = false;
-        obj.lockRotation = false;
-    });
-
-    renderAll(canvas);
-}
-
-export function copy(canvas: Canvas) {
-    return canvas.getActiveObject()!.clone();
-}
-
-export async function paste(
-    canvas: Canvas,
-    clipboard: FabricObject,
-    copiedObjects: FabricObject[]
-) {
-    let count: number = 0;
-
-    const clonedObj = await clipboard.clone();
-
-    canvas.discardActiveObject();
-    clonedObj.set({
-        left: clonedObj.left + 10,
-        top: clonedObj.top + 10,
-        evented: true
-    });
-    if (clonedObj instanceof ActiveSelection) {
-        clonedObj.canvas = canvas;
-        clonedObj.forEachObject((obj) => {
-            canvas.add(obj);
-
-            // @ts-ignore
-            if (copiedObjects[count].isComponent) {
-                obj.set({
-                    lockMovementX: copiedObjects[count].lockMovementX,
-                    lockMovementY: copiedObjects[count].lockMovementY,
-                    lockScalingX: copiedObjects[count].lockScalingX,
-                    lockScalingY: copiedObjects[count].lockScalingY,
-                    lockRotation: copiedObjects[count].lockRotation,
-                    // @ts-ignore
-                    isComponent: copiedObjects[count].isComponent,
-                    // @ts-ignore
-                    material: copiedObjects[count].material,
-                    // @ts-ignore
-                    structureType: copiedObjects[count].structureType
-                });
-
-                // @ts-ignore
-                setInfo(
-                    obj,
-                    // @ts-ignore
-                    copiedObjects[count].name,
-                    // @ts-ignore
-                    copiedObjects[count].price,
-                    // @ts-ignore
-                    copiedObjects[count].id,
-                    // @ts-ignore
-                    copiedObjects[count].description,
-                    // @ts-ignore
-                    copiedObjects[count].arkhoins,
-                    // @ts-ignore
-                    copiedObjects[count].isPublic
-                );
-            } else {
-                obj.set({
-                    lockMovementX: copiedObjects[count].lockMovementX,
-                    lockMovementY: copiedObjects[count].lockMovementY,
-                    lockScalingX: copiedObjects[count].lockScalingX,
-                    lockScalingY: copiedObjects[count].lockScalingY,
-                    lockRotation: copiedObjects[count].lockRotation,
-                    // @ts-ignore
-                    isComponent: copiedObjects[count].isComponent
-                });
+            switch (name) {
+                case 'rect':
+                    name = 'Retângulo';
+                    typeTranslated = 'Retângulo';
+                    break;
+                case 'circle':
+                    name = 'Círculo';
+                    typeTranslated = 'Círculo';
+                    break;
+                case 'path':
+                    name = 'Desenho';
+                    typeTranslated = 'Desenho';
+                    break;
+                case 'i-text':
+                case 'textbox':
+                    name = 'Texto sem conteúdo';
+                    typeTranslated = 'Texto';
+                    break;
+                case 'group':
+                    name = 'Grupo';
+                    typeTranslated = 'Grupo';
+                    break;
+                case 'polygon':
+                    name = `Polígono de ${object.get('points').length} pontos`;
+                    typeTranslated = 'Polígono';
+                    break;
+                case 'polyline':
+                    name = 'Linha';
+                    typeTranslated = 'Linha';
+                    break;
+                default:
+                    name = 'Objeto';
+                    typeTranslated = 'Objeto';
+                    break;
             }
 
-            count++;
+            if ('text' in object) {
+                name = object.text as string;
+            }
+
+            let nameReset = name;
+
+            if ('name' in object) {
+                name = object.name as string;
+            }
+
+            if ('id' in object) {
+                typeTranslated = 'Componente';
+            }
+
+            return {
+                object,
+                name,
+                nameReset,
+                price: 'price' in object ? (object.price as number) : undefined,
+                typeTranslated,
+                type: object.type,
+                componentID: 'id' in object ? (object.id as number) : undefined,
+                children: object instanceof Group ? traverseObjects(object.getObjects()) : undefined
+            };
         });
-        clonedObj.setCoords();
-    } else {
-        canvas.add(clonedObj);
-
-        // @ts-ignore
-        if (copiedObjects[0].isComponent) {
-            clonedObj.set({
-                lockMovementX: copiedObjects[0].lockMovementX,
-                lockMovementY: copiedObjects[0].lockMovementY,
-                lockScalingX: copiedObjects[0].lockScalingX,
-                lockScalingY: copiedObjects[0].lockScalingY,
-                lockRotation: copiedObjects[0].lockRotation,
-                // @ts-ignore
-                isComponent: copiedObjects[0].isComponent,
-                // @ts-ignore
-                material: copiedObjects[0].material,
-                // @ts-ignore
-                structureType: copiedObjects[0].structureType
-            });
-
-            // @ts-ignore
-            setInfo(
-                clonedObj,
-                // @ts-ignore
-                copiedObjects[0].name,
-                // @ts-ignore
-                copiedObjects[0].price,
-                // @ts-ignore
-                copiedObjects[0].id,
-                // @ts-ignore
-                copiedObjects[0].description,
-                // @ts-ignore
-                copiedObjects[0].arkhoins,
-                // @ts-ignore
-                copiedObjects[0].isPublic
-            );
-        } else {
-            clonedObj.set({
-                lockMovementX: copiedObjects[0].lockMovementX,
-                lockMovementY: copiedObjects[0].lockMovementY,
-                lockScalingX: copiedObjects[0].lockScalingX,
-                lockScalingY: copiedObjects[0].lockScalingY,
-                lockRotation: copiedObjects[0].lockRotation,
-                // @ts-ignore
-                isComponent: copiedObjects[0].isComponent,
-                // @ts-ignore
-                material: copiedObjects[0].material,
-                // @ts-ignore
-                structureType: copiedObjects[0].structureType
-            });
-        }
     }
-    clipboard.top += 10;
-    clipboard.left += 10;
-    canvas.setActiveObject(clonedObj);
-    canvas.requestRenderAll();
+
+    let objects: FabricObject[];
+
+    if (onlySelected) {
+        objects = canvas?.getActiveObjects().filter((x) => x.selectable && x.evented) ?? [];
+    } else {
+        objects = canvas?.getObjects().filter((x) => x.selectable && x.evented) ?? [];
+    }
+
+    return traverseObjects(objects);
 }
 
-export function addText(canvas: Canvas, points: Array<{ x: number; y: number }>, text: string) {
-    const itext = new IText(text, {
-        width: 100,
-        height: 100,
-        top: points[0].y - 25,
-        left: points[0].x - 165,
-        fill: 'white',
-        stroke: 'black',
-        strokeWidth: 2,
-        strokeUniform: true,
-        lockSkewingX: true,
-        lockSkewingY: true,
-        fontFamily: 'sans-serif',
-        cursorColor: `gray`
+export function copyObjectsToClipboard(canvas: Canvas) {
+    const object = canvas.getActiveObject();
+
+    object?.clone().then((cloned) => {
+        setClipboard(cloned);
     });
-
-    add(canvas, itext);
-
-    canvas.setActiveObject(itext);
-    itext.enterEditing();
-
-    renderAll(canvas);
 }
 
-export function addRect(canvas: Canvas, points: Array<{ x: number; y: number }>) {
-    const rect = new Rect({
-        width: 100,
-        height: 100,
-        top: points[0].y - 50,
-        left: points[0].x - 50,
-        fill: 'white',
-        stroke: 'gray',
-        strokeWidth: 3,
-        strokeUniform: true,
-        lockSkewingX: true,
-        lockSkewingY: true,
-        lockScalingFlip: true
+export function cutObjects(canvas: Canvas) {
+    const object = canvas.getActiveObject();
+
+    object?.clone().then((cloned) => {
+        setClipboard(cloned, true);
+        canvas.remove(...canvas.getActiveObjects());
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
     });
-
-    add(canvas, rect);
-
-    rect.set({
-        isComponent: false,
-        material: 'cimento',
-        structureType: 'chão'
-    });
-    rect.setCoords();
-
-    renderAll(canvas);
 }
 
-export function addCircle(canvas: Canvas, points: Array<{ x: number; y: number }>) {
-    const circle = new Circle({
-        radius: 60,
-        top: points[0].y - 50,
-        left: points[0].x - 50,
-        fill: 'white',
-        stroke: 'gray',
-        strokeWidth: 3,
-        strokeUniform: true,
-        lockSkewingX: true,
-        lockSkewingY: true
-    });
+export async function pasteObjectsFromClipboard(canvas: Canvas, pasteAt?: XY) {
+    const cloned = await getClipboard()?.clone();
+    if (cloned === undefined) return;
 
-    add(canvas, circle);
+    if (wasCutOperation()) {
+        setClipboard(null, true);
+    }
 
-    circle.set({
-        isComponent: false,
-        material: 'cimento',
-        structureType: 'chão'
-    });
-    circle.setCoords();
-
-    renderAll(canvas);
-}
-
-export function addPoints(canvas: Canvas, points: { x: number; y: number }) {
-    capturedPoints.push(points);
-    count += 1;
-
-    const point = new IText(`${count}`, {
-        fontSize: 25,
-        top: points.y - 5,
-        left: points.x - 5,
-        fill: 'black',
-        stroke: 'gray',
-        strokeWidth: 3,
-        strokeUniform: true,
-        fontFamily: 'sans-serif',
-        selectable: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        lockRotation: true,
-        lockScalingFlip: true,
-        lockScalingX: true,
-        lockScalingY: true,
-        lockSkewingX: true,
-        lockSkewingY: true
-    });
-
-    add(canvas, point);
-
-    visiblePoints.push(point);
-}
-
-export function addLine(canvas: Canvas) {
-    const line = new Polygon(capturedPoints, {
-        fill: 'white',
-        stroke: 'gray',
-        strokeWidth: 2,
-        originX: 'center',
-        originY: 'center'
-    });
-
-    add(canvas, line);
-
-    line.set({
-        isComponent: false,
-        material: 'cimento',
-        structureType: 'chão'
-    });
-    line.setCoords();
-
-    renderAll(canvas);
-
-    count = 0;
-}
-
-export function stopLine(canvas: Canvas) {
-    remove(canvas, ...visiblePoints);
-    capturedPoints = [];
-    visiblePoints = [];
-    count = 0;
     canvas.discardActiveObject();
-}
 
-export function changeBorder(canvas: Canvas, color: string, ...objects: FabricObject[]) {
-    if (objects.length > 1) {
-        for (const objs of objects) {
-            if (color === 'null') {
-                objs.set('stroke', null);
-            } else {
-                objs.set('stroke', color);
-            }
-        }
-    } else {
-        if (color === 'null') {
-            objects[0].set('stroke', null);
-        } else {
-            objects[0].set('stroke', color);
-        }
+    const buffer = 10 * ~~!wasCutOperation();
+    let left = cloned.left + buffer;
+    let top = cloned.top + buffer;
+
+    if (cloned instanceof Polyline || cloned instanceof Polygon) {
+        cloned.controls = controlsUtils.createPolyControls(cloned);
     }
 
-    renderAll(canvas);
-}
+    if (pasteAt !== undefined || wasCutOperation()) {
+        const bounds = cloned.getBoundingRect();
 
-export function changeFill(canvas: Canvas, color: string, ...objects: FabricObject[]) {
-    if (objects.length > 1) {
-        for (const objs of objects) {
-            if (color === 'null') {
-                objs.set('fill', null);
-            } else {
-                objs.set('fill', color);
-            }
-        }
-    } else {
-        if (color === 'null') {
-            objects[0].set('fill', null);
-        } else {
-            objects[0].set('fill', color);
-        }
+        left = (pasteAt ?? get(mouseCoords)).x - bounds.width / 2;
+        top = (pasteAt ?? get(mouseCoords)).y - bounds.height / 2;
     }
 
-    renderAll(canvas);
-}
+    cloned.set({ left, top, evented: true });
 
-export function changeOpacity(canvas: Canvas, opacitySlider: HTMLInputElement) {
-    if (getActive(canvas).length > 1) {
-        canvas.getActiveObject()?.set('opacity', parseInt(opacitySlider.value) / 10);
-        for (const objs of getActive(canvas)) {
-            objs.set('opacity', parseInt(opacitySlider.value) / 10);
-        }
+    if (cloned instanceof ActiveSelection) {
+        cloned.canvas = canvas;
+        cloned.forEachObject((object) => canvas.add(object));
+
+        cloned.setCoords();
     } else {
-        getActive(canvas)[0]?.set('opacity', parseInt(opacitySlider.value) / 10);
+        canvas.add(cloned);
     }
 
-    renderAll(canvas);
-
-    return takeOpacity(canvas);
-}
-
-export function changeStroke(canvas: Canvas, strokeSlider: HTMLInputElement) {
-    if (getActive(canvas).length > 1) {
-        canvas.getActiveObject()?.set('strokeWidth', parseInt(strokeSlider.value));
-        for (const objs of getActive(canvas)) {
-            objs.set('strokeWidth', parseInt(strokeSlider.value));
-        }
-    } else {
-        getActive(canvas)[0]?.set('strokeWidth', parseInt(strokeSlider.value));
+    if (getClipboard() !== null) {
+        getClipboard()!.top += buffer;
+        getClipboard()!.left += buffer;
     }
 
-    renderAll(canvas);
-
-    return takeOpacity(canvas);
-}
-
-export function takeOpacity(canvas: Canvas) {
-    return getActive(canvas)[0].opacity * 10;
-}
-
-export function takeStroke(canvas: Canvas) {
-    return getActive(canvas)[0].strokeWidth;
-}
-
-export function resetOpacity(canvas: Canvas, obj: FabricObject) {
-    obj.set({
-        opacity: 0
-    });
-
+    canvas.setActiveObject(cloned);
     canvas.requestRenderAll();
 }
 
-export function verifyObject(x: any): any {
-    return x;
-}
+export function lockObject(canvas: Canvas, object: FabricObject, lock: boolean) {
+    object.set('userlock', lock);
 
-export function setInfo(
-    object: FabricObject,
-    name: string,
-    price: number,
-    id: number,
-    description: string,
-    arkhoins: number,
-    isPublic: boolean,
-    owner: string
-) {
-    object.set({
-        id: id,
-        name: name,
-        price: price,
-        isComponent: true,
-        description: description,
-        arkhoins: arkhoins,
-        isPublic: isPublic,
-        owner: owner
+    applyObjectPermissions(canvas, object, {
+        selectable: !lock,
+        bordered: true
     });
-    object.setCoords();
-}
-
-export function changeMaterial(canvas: Canvas, objects: FabricObject[], material: string) {
-    for (const obj of objects) {
-        // @ts-ignore
-        if (!obj.isComponent) {
-            obj.set({
-                material: material
-            });
-        }
-    }
 
     canvas.discardActiveObject();
     canvas.requestRenderAll();
 }
 
-export function changeType(canvas: Canvas, objects: FabricObject[], type: string) {
-    for (const obj of objects) {
-        // @ts-ignore
-        if (!obj.isComponent) {
-            obj.set({
-                structureType: type
-            });
-        }
+export function calculatePolygonArea(vertices: XY[], scaleX: number, scaleY: number): number {
+    let area = 0;
+    const n = vertices.length;
+
+    for (let i = 0; i < n; i++) {
+        const current = vertices[i];
+        const next = vertices[(i + 1) % n];
+
+        const scaledCurrentX = current.x * scaleX;
+        const scaledCurrentY = current.y * scaleY;
+        const scaledNextX = next.x * scaleX;
+        const scaledNextY = next.y * scaleY;
+
+        area += scaledCurrentX * scaledNextY - scaledCurrentY * scaledNextX;
     }
 
-    canvas.discardActiveObject();
-    canvas.requestRenderAll();
+    const areaInPixels = Math.abs(area) / 2;
+    const areaInMeters = areaInPixels / 10000;
+
+    return areaInMeters;
+}
+
+export function calculateRoundedRectangleArea(width: number, height: number, radius: number): number {
+    const rectangleArea = width * height;
+    const cornerCutoutArea = 4 * (Math.pow(radius, 2) - (Math.PI * Math.pow(radius, 2)) / 4);
+
+    return rectangleArea - cornerCutoutArea;
 }

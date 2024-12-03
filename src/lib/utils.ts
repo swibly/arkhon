@@ -1,3 +1,6 @@
+import type { Project } from './projects';
+import type { User, UserProjectPermissions } from './user';
+
 export type Pagination<T> = {
     data: T[];
     total_records: number;
@@ -86,4 +89,24 @@ export function getComparison(width: number, height: number): string {
     if (area <= 700) return 'uma propriedade luxuosa';
     if (area <= 1000) return 'uma grande propriedade rural';
     return 'um vasto terreno ou complexo comercial';
+}
+
+type Permissions = keyof Pick<
+    UserProjectPermissions,
+    | 'allow_view'
+    | 'allow_edit'
+    | 'allow_share'
+    | 'allow_delete'
+    | 'allow_publish'
+    | 'allow_manage_users'
+    | 'allow_manage_metadata'
+>;
+
+export function hasPermissions(user: User, project: Project, permissions: Permissions[]): boolean {
+    if (user.id === project.owner_id) return true;
+
+    return project.allowed_users.some(
+        (allowedUser) =>
+            allowedUser.id === user.id && permissions.every((permission) => allowedUser[permission])
+    );
 }
