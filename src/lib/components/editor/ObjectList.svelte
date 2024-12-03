@@ -14,12 +14,12 @@
     <ul
         class="menu p-0 [&_li>*]:rounded-none flex-nowrap menu-sm w-full max-h-full h-[calc(100vh-89px-65px-4rem)] overflow-auto"
     >
-        {#if objects.length === 0}
+        {#if !objects || (objects && objects.length === 0)}
             <p class="italic text-center opacity-50">Nenhum objeto no projeto</p>
+        {:else}
+            {#each objects.toReversed() as object}
+                <CanvasItem {canvas} {showControls} {currentActiveObjects} {...object} />
+            {/each}
         {/if}
-
-        {#each objects.toReversed() as object}
-            <CanvasItem {canvas} {showControls} {currentActiveObjects} {...object} />
-        {/each}
     </ul>
 </div>
