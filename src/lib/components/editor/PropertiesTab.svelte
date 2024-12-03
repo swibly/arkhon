@@ -146,33 +146,50 @@
                         }}
                         class="mt-2 flex flex-col gap-1 items-center"
                     >
-                        <div class="flex items-end gap-1">
-                            <Input
-                                name="name"
-                                defaultValue={objects[0].name}
-                                size="sm"
-                                disableDefaultLabels
-                                labels={{ topLeft: 'Nome' }}
+                        <Input
+                            name="name"
+                            defaultValue={objects[0].name}
+                            size="sm"
+                            disableDefaultLabels
+                            labels={{ topLeft: 'Nome' }}
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-link text-error btn-square btn-xs"
+                                on:click={() => removeName(objects[0])}
                             >
-                                <button
-                                    type="button"
-                                    class="btn btn-link text-error btn-square btn-xs"
-                                    on:click={() => removeName(objects[0])}
-                                >
-                                    <Icon icon="material-symbols:close" />
-                                </button>
-                            </Input>
-                        </div>
+                                <Icon icon="material-symbols:close" />
+                            </button>
+                        </Input>
 
                         {#if objects[0].type !== 'group'}
+                            {#if objects[0].type !== 'polyline'}
+                                <Input
+                                    name="price"
+                                    icon="mdi:dollar"
+                                    type="number"
+                                    size="sm"
+                                    defaultValue={(objects[0].price ?? 0).toString()}
+                                    labels={{
+                                        topLeft: 'Preço da área'
+                                    }}
+                                    disableDefaultLabels
+                                />
+                            {/if}
+
                             <Input
-                                name="price"
+                                name="priceWall"
                                 icon="mdi:dollar"
                                 type="number"
                                 size="sm"
-                                defaultValue={(objects[0].price ?? 0).toString()}
+                                defaultValue={(objects[0].priceWall ?? 0).toString()}
+                                labels={{
+                                    topLeft: 'Preço da parede'
+                                }}
                                 disableDefaultLabels
                             />
+
+                            <p class="italic opacity-70">* o calculo será: <span class="text-primary">Preço x m²</span></p>
                         {/if}
 
                         <button class="btn btn-primary btn-sm w-full">

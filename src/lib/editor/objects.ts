@@ -2,11 +2,13 @@ import { getClipboard, setClipboard, wasCutOperation } from '$lib/stores/clipboa
 import {
     ActiveSelection,
     Canvas,
+    Circle,
     controlsUtils,
     FabricObject,
     Group,
     Polygon,
     Polyline,
+    Rect,
     type XY
 } from 'fabric';
 import { applyObjectPermissions } from './permissions';
@@ -18,6 +20,7 @@ export interface CanvasObject {
     name: string;
     nameReset: string;
     price?: number;
+    priceWall?: number;
     typeTranslated: string;
     type: string;
     componentID?: number;
@@ -26,9 +29,11 @@ export interface CanvasObject {
 
 export function calculateTotalPrice(objects: CanvasObject[]): number {
     return objects.reduce((total, obj) => {
-        const currentPrice = obj.price || 0;
+        const objectPrice = calculatePriceForArea(obj);
+
         const childrenPrice = obj.children ? calculateTotalPrice(obj.children) : 0;
-        return total + currentPrice + childrenPrice;
+
+        return total + objectPrice + childrenPrice;
     }, 0);
 }
 
@@ -93,6 +98,7 @@ export function getCanvasObjects(canvas: Canvas, onlySelected: boolean = false):
                 name,
                 nameReset,
                 price: 'price' in object ? (object.price as number) : undefined,
+                priceWall: 'priceWall' in object ? (object.priceWall as number) : undefined,
                 typeTranslated,
                 type: object.type,
                 componentID: 'id' in object ? (object.id as number) : undefined,
@@ -188,7 +194,50 @@ export function lockObject(canvas: Canvas, object: FabricObject, lock: boolean) 
     canvas.requestRenderAll();
 }
 
-export function calculatePolygonArea(vertices: XY[], scaleX: number, scaleY: number): number {
+export function calculateStrokeArea(obj: FabricObject): number {
+    const strokeWidth = obj.strokeWidth ?? 0;
+
+    if (strokeWidth === 0 || obj.stroke === null) {
+        return 0;
+    }
+
+    if (obj instanceof Rect) {
+        const scaledWidth = obj.width * obj.scaleX;
+        const scaledHeight = obj.height * obj.scaleY;
+        const perimeter = 2 * (scaledWidth + scaledHeight);
+        return perimeter * strokeWidth;
+    } else if (obj instanceof Circle) {
+        const radius = (obj.width / 2) * obj.scaleX;
+        const perimeter = 2 * Math.PI * radius;
+        return perimeter * strokeWidth;
+    } else if (obj instanceof Polygon || obj instanceof Polyline) {
+        const points = obj.points ?? [];
+        if (points.length < 2) return 0;
+
+        let perimeter = 0;
+
+        for (let i = 0; i < points.length; i++) {
+            const current = points[i];
+            const next = points[(i + 1) % points.length];
+            const distance = Math.sqrt(
+                Math.pow((next.x - current.x) * obj.scaleX, 2) +
+                    Math.pow((next.y - current.y) * obj.scaleY, 2)
+            );
+            perimeter += distance;
+        }
+
+        return perimeter * strokeWidth;
+    }
+
+    return 0;
+}
+
+export function calculatePolygonArea(
+    vertices: XY[],
+    scaleX: number,
+    scaleY: number,
+    strokeWidth: number = 0
+): number {
     let area = 0;
     const n = vertices.length;
 
@@ -207,16 +256,105 @@ export function calculatePolygonArea(vertices: XY[], scaleX: number, scaleY: num
     const areaInPixels = Math.abs(area) / 2;
     const areaInMeters = areaInPixels / 10000;
 
-    return areaInMeters;
+    const perimeter = calculatePolygonPerimeter(vertices, scaleX, scaleY);
+    const strokeArea = perimeter * strokeWidth;
+
+    return areaInMeters + strokeArea / 10000;
+}
+
+function calculatePolygonPerimeter(vertices: XY[], scaleX: number, scaleY: number): number {
+    let perimeter = 0;
+    const n = vertices.length;
+
+    for (let i = 0; i < n; i++) {
+        const current = vertices[i];
+        const next = vertices[(i + 1) % n];
+
+        const dx = (next.x - current.x) * scaleX;
+        const dy = (next.y - current.y) * scaleY;
+
+        perimeter += Math.sqrt(dx * dx + dy * dy);
+    }
+
+    return perimeter;
 }
 
 export function calculateRoundedRectangleArea(
     width: number,
     height: number,
-    radius: number
+    radius: number,
+    strokeWidth: number = 0
 ): number {
-    const rectangleArea = width * height;
-    const cornerCutoutArea = 4 * (Math.pow(radius, 2) - (Math.PI * Math.pow(radius, 2)) / 4);
+    const adjustedWidth = width + strokeWidth;
+    const adjustedHeight = height + strokeWidth;
+    const adjustedRadius = radius + strokeWidth / 2;
+
+    const rectangleArea = adjustedWidth * adjustedHeight;
+    const cornerCutoutArea =
+        4 * (Math.pow(adjustedRadius, 2) - (Math.PI * Math.pow(adjustedRadius, 2)) / 4);
 
     return rectangleArea - cornerCutoutArea;
+}
+
+export function calculateElipsisArea(
+    width: number,
+    height: number,
+    scaleX: number,
+    scaleY: number,
+    strokeWidth: number = 0
+): number {
+    const adjustedWidth = width + strokeWidth;
+    const adjustedHeight = height + strokeWidth;
+
+    const radiusX = (adjustedWidth / 100 / 2) * scaleX;
+    const radiusY = (adjustedHeight / 100 / 2) * scaleY;
+
+    const baseArea = Math.PI * radiusX * radiusY * 10000;
+
+    if (strokeWidth === 0) {
+        return baseArea;
+    }
+
+    const outerRadiusX = radiusX + strokeWidth / 100 / 2;
+    const outerRadiusY = radiusY + strokeWidth / 100 / 2;
+
+    const outerArea = Math.PI * outerRadiusX * outerRadiusY * 10000;
+
+    return outerArea;
+}
+
+export function calculateTotalArea(object: FabricObject): number {
+    const scaledX = object.width * object.scaleX;
+    const scaledY = object.height * object.scaleY;
+
+    let totalArea = 0;
+
+    if (object instanceof Rect) {
+        totalArea = calculateRoundedRectangleArea(scaledX, scaledY, Math.max(object.rx, object.ry), object.stroke !== null ? object.strokeWidth : 0);
+    } else if (object instanceof Circle) {
+        totalArea = calculateElipsisArea(
+            object.width,
+            object.height,
+            object.scaleX,
+            object.scaleY,
+            object.stroke !== null ? object.strokeWidth : 0
+        );
+    } else if (object instanceof Polygon) {
+        totalArea = calculatePolygonArea(object.points, scaledX, scaledY, object.stroke !== null ? object.strokeWidth : 0);
+    }
+
+    return totalArea;
+}
+
+export function calculatePriceForArea(object: CanvasObject | FabricObject) {
+    let obj = object;
+
+    if (!(obj instanceof FabricObject)) {
+        obj = obj.object;
+    }
+
+    return (
+        (calculateTotalArea(obj) / 10000) * (obj.get('price') ?? 0) +
+        (calculateStrokeArea(obj) / 10000) * (obj.get('price') ?? 0)
+    );
 }

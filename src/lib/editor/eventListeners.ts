@@ -1,6 +1,6 @@
 import type { Project } from '$lib/projects';
 import { mouseCoords } from '$lib/stores/mouseCoords';
-import { canvasObjects } from '$lib/stores/objects';
+import { canvasObjects, totalPrice } from '$lib/stores/objects';
 import {
     addPolygonPoint,
     getPreviousTool,
@@ -36,7 +36,10 @@ import { get } from 'svelte/store';
 
 import {
     calculatePolygonArea,
+    calculatePriceForArea,
     calculateRoundedRectangleArea,
+    calculateTotalArea,
+    calculateTotalPrice,
     copyObjectsToClipboard,
     cutObjects,
     getCanvasObjects,
@@ -103,26 +106,7 @@ export function updateTextDisplayArea(canvas: Canvas) {
 
     let totalArea = 0;
 
-    activeObjects.forEach((object) => {
-        const scaledX = object.width * object.scaleX;
-        const scaledY = object.height * object.scaleY;
-
-        if (object instanceof Rect) {
-            totalArea += calculateRoundedRectangleArea(
-                scaledX,
-                scaledY,
-                Math.max(object.rx, object.ry)
-            );
-        } else if (object instanceof Circle) {
-            totalArea +=
-                Math.PI *
-                ((object.width / 100 / 2) * object.scaleX) *
-                ((object.height / 100 / 2) * object.scaleY) *
-                10000;
-        } else if (object instanceof Polygon) {
-            totalArea += calculatePolygonArea(object.points, scaledX, scaledY);
-        }
-    });
+    activeObjects.forEach((object) => (totalArea += calculateTotalArea(object)));
 
     textDisplayArea.set('text', `${(totalArea / 10000).toFixed(2)}m²`);
 
@@ -157,7 +141,11 @@ export function loadCanvasEventListeners(canvas: Canvas) {
     let drawingShape: boolean = false;
     let origin: XY;
 
-    canvas.on('after:render', () => zoom.set(canvas.getZoom()));
+    canvas.on('after:render', () => {
+        zoom.set(canvas.getZoom());
+        updateTextDisplayArea(canvas);
+        totalPrice.set(calculateTotalPrice(get(canvasObjects)));
+    });
 
     canvas.on('object:added', () => canvasObjects.set(getCanvasObjects(canvas)));
     canvas.on('object:removed', () => canvasObjects.set(getCanvasObjects(canvas)));
@@ -173,7 +161,7 @@ export function loadCanvasEventListeners(canvas: Canvas) {
                 target.cornerSize = 8;
                 target.transparentCorners = false;
 
-                if (target instanceof Polygon) {
+                if (target instanceof Polygon || target instanceof Polyline) {
                     target.controls = controlsUtils.createPolyControls(target);
                 } else {
                     target.hasBorders = true;

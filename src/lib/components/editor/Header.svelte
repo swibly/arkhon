@@ -9,8 +9,7 @@
     import { centerView } from '$lib/editor/camera';
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
-    import { calculateTotalPrice } from '$lib/editor/objects';
-    import { canvasObjects } from '$lib/stores/objects';
+    import { totalPrice } from '$lib/stores/objects';
 
     export let element: HTMLDivElement;
     export let project: Project;
@@ -18,8 +17,6 @@
     export let user: User;
 
     let loadingSave = false;
-
-    $: price = calculateTotalPrice($canvasObjects);
 
     function centralizeCanvas() {
         centerView(canvas, project);
@@ -29,9 +26,9 @@
 <div bind:this={element} class="flex items-center pb-4 border-b border-base-200">
     {#if hasPermissions(user, project, ['allow_edit'])}
         <ToolSelector currentTool={$tool} />
-    {/if}
 
-    <div class="divider divider-horizontal" />
+        <div class="divider divider-horizontal" />
+    {/if}
 
     <section>
         <span class="text-primary font-semibold">{project.name}</span>
@@ -57,8 +54,8 @@
 
             <article class="badge badge-sm">
                 <Icon icon="mdi:dollar" class="text-success" />
-                <span class:text-error={price > project.budget}>
-                    {price.toLocaleString('pt-br', {
+                <span class:text-error={$totalPrice > project.budget}>
+                    {$totalPrice.toLocaleString('pt-br', {
                         style: 'currency',
                         currency: 'BRL'
                     })}/{project.budget.toLocaleString('pt-br', {
@@ -93,7 +90,7 @@
                     loadingSave = true;
                     formData.set(
                         'json',
-                        JSON.stringify(canvas.toObject(['id', 'name', 'userlock', 'price']))
+                        JSON.stringify(canvas.toObject(['id', 'name', 'userlock', 'price', 'priceWall']))
                     );
 
                     return function ({ update, result }) {

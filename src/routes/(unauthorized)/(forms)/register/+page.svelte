@@ -3,7 +3,6 @@
     import type { ActionData } from './$types';
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
-    import { onMount } from 'svelte';
 
     let showPassword: boolean = false;
     let showConfirmPassword: boolean = false;
@@ -48,7 +47,8 @@
         if (score === 2) return 'média';
         if (score === 3) return 'forte';
         if (score === 4) return 'muito forte';
-        return 'Undefined';
+
+        return 'vazia';
     }
 
     function validateLength(input: string, length: number) {
@@ -103,7 +103,7 @@
 >
     <section class="flex gap-2 max-md:flex-col">
         <label
-            class="flex items-center gap-2 input input-bordered grow input"
+            class="flex items-center gap-2 input input-bordered grow"
             class:input-error={!validationState.isFirstNameAllowed ||
                 !validationState.isLastNameAllowed}
         >
@@ -118,7 +118,7 @@
         </label>
 
         <label
-            class="flex items-center gap-2 input input-bordered grow input"
+            class="flex items-center gap-2 input input-bordered grow"
             class:input-error={!validationState.isFirstNameAllowed ||
                 !validationState.isLastNameAllowed}
         >
@@ -148,7 +148,7 @@
     <div class="divider" />
 
     <label
-        class="flex items-center gap-2 input input-bordered input"
+        class="flex items-center gap-2 input input-bordered"
         class:input-error={!validationState.isEmailAllowed}
     >
         <Icon icon="material-symbols:mail" />
@@ -162,7 +162,7 @@
     </section>
 
     <label
-        class="flex items-center gap-2 input input-bordered input"
+        class="flex items-center gap-2 input input-bordered"
         class:input-error={!validationState.isUsernameCharactersAllowed ||
             !validationState.isUsernameLengthAllowed}
     >
@@ -188,7 +188,7 @@
     <div class="divider" />
 
     <label
-        class="flex items-center gap-2 input input-bordered input"
+        class="flex items-center gap-2 input input-bordered"
         class:input-error={!validationState.isPasswordAllowed}
     >
         <Icon icon="ph:lock-fill" />
@@ -227,7 +227,7 @@
     </section>
 
     <label
-        class="flex items-center gap-2 input input-bordered input"
+        class="flex items-center gap-2 input input-bordered"
         class:input-error={!validationState.isPasswordsMatch}
     >
         <Icon icon="ph:lock-fill" />

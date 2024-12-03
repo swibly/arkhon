@@ -157,8 +157,6 @@
             currentActiveObjects = canvas.getActiveObjects();
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
         });
-
-        canvas.on('after:render', () => updateTextDisplayArea(canvas));
     });
 </script>
 
