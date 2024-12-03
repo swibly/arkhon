@@ -83,7 +83,7 @@
         await loadCanvasFromData(canvas, data);
         centerView(canvas, data.project, 0);
 
-        loadCanvasEventListeners(canvas, data.user, data.project);
+        loadCanvasEventListeners(canvas);
 
         canvasObjects.set(getCanvasObjects(canvas));
 
@@ -117,17 +117,19 @@
             }
         }
 
-        canvas.on('selection:created', () => {
-            const objects = canvas.getActiveObjects();
-
-            const filter: (x: FabricObject) => boolean = (x) =>
-                x.selectable === false || x.evented === false || x.get('userlock') === true;
-            const invert: (x: FabricObject) => boolean = (x) =>
-                x.selectable === true && x.evented === true && x.get('userlock') !== true;
+        function filter(objects: FabricObject[]) {
+            const filter: (x: FabricObject) => boolean = (x) => x.get('userlock') === true;
+            const invert: (x: FabricObject) => boolean = (x) => x.get('userlock') === false;
 
             if (objects.some(filter) && objects.length > 0) {
                 canvas.setActiveObject(new ActiveSelection(objects.filter(invert)));
             }
+        }
+
+        canvas.on('selection:created', () => {
+            const objects = canvas.getActiveObjects();
+
+            filter(objects);
 
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
@@ -138,14 +140,7 @@
         canvas.on('selection:updated', () => {
             const objects = canvas.getActiveObjects();
 
-            const filter: (x: FabricObject) => boolean = (x) =>
-                x.selectable === false || x.evented === false || x.get('userlock') === true;
-            const invert: (x: FabricObject) => boolean = (x) =>
-                x.selectable === true && x.evented === true && x.get('userlock') !== true;
-
-            if (objects.some(filter) && objects.length > 0) {
-                canvas.setActiveObject(new ActiveSelection(objects.filter(invert)));
-            }
+            filter(objects);
 
             currentActiveObjects = objects;
             currentActiveObjectsItem = getCanvasObjects(canvas, true);

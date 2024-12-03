@@ -102,6 +102,7 @@ export function updateTextDisplayArea(canvas: Canvas) {
     }
 
     textDisplayArea.visible = true;
+    canvas.bringObjectToFront(textDisplayArea);
 
     let totalArea = 0;
 

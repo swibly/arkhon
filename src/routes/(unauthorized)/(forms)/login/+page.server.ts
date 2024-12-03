@@ -3,7 +3,6 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import type { Actions } from './$types';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
-import { canShowConfetti } from '$lib/stores/confetti';
 
 export const actions: Actions = {
     default: async ({ request, cookies }) => {
@@ -20,7 +19,8 @@ export const actions: Actions = {
 
             cookies.set(JWT_TOKEN_COOKIE_NAME, res.data.token, {
                 path: '/',
-                httpOnly: true,
+                //httpOnly: true,
+                secure: false,
                 maxAge: 604800
             });
         } catch (e: any) {
