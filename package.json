@@ -6,6 +6,7 @@
         "@playwright/test": "^1.49.0",
         "@sveltejs/adapter-auto": "^2.1.1",
         "@sveltejs/kit": "^1.30.4",
+        "@tsparticles/svelte": "^3.1.1",
         "@types/js-cookie": "^3.0.6",
         "@types/toastify-js": "^1.12.3",
         "@typescript-eslint/eslint-plugin": "^6.21.0",
