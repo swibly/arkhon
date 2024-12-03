@@ -10,11 +10,14 @@
     import { enhance } from '$app/forms';
     import { spawn } from '$lib/toast';
     import { totalPrice } from '$lib/stores/objects';
+    import { saveJPEG, savePNG, saveSVG } from '$lib/editor/export';
 
     export let element: HTMLDivElement;
     export let project: Project;
     export let canvas: Canvas;
     export let user: User;
+
+    let exportModal: HTMLDialogElement;
 
     let loadingSave = false;
 
@@ -76,10 +79,67 @@
         </button>
 
         {#if hasPermissions(user, project, ['allow_edit'])}
-            <button class="btn btn-ghost btn-sm">
+            <button type="button" class="btn btn-ghost btn-sm" on:click={() => exportModal.show()}>
                 <Icon icon="ic:sharp-save-alt" />
                 Exportar
             </button>
+
+            <dialog bind:this={exportModal} class="modal">
+                <div class="modal-box shadow-none space-y-4">
+                    <span class="text-xl font-bold text-center">
+                        Como você deseja exportar o projeto?
+                    </span>
+
+                    <div class="divider" />
+
+                    <div class="flex gap-2 justify-evenly p-2">
+                        <button
+                            class="transition hover:scale-110"
+                            on:click={() =>
+                                saveJPEG(
+                                    canvas,
+                                    project.width * 100,
+                                    project.height * 100,
+                                    canvas.viewportTransform.slice()[4],
+                                    canvas.viewportTransform.slice()[5]
+                                )}
+                        >
+                            <Icon icon="teenyicons:jpg-solid" class="size-20" />
+                        </button>
+
+                        <button
+                            class="transition hover:scale-110"
+                            on:click={() =>
+                                savePNG(
+                                    canvas,
+                                    project.width * 100,
+                                    project.height * 100,
+                                    canvas.viewportTransform.slice()[4],
+                                    canvas.viewportTransform.slice()[5]
+                                )}
+                        >
+                            <Icon icon="teenyicons:png-solid" class="size-20" />
+                        </button>
+
+                        <button class="transition hover:scale-110" on:click={() => saveSVG(canvas)}>
+                            <Icon icon="teenyicons:svg-solid" class="size-20" />
+                        </button>
+                    </div>
+
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-error w-full">
+                            <Icon icon="material-symbols:close" />
+                            Cancelar
+                        </button>
+                    </form>
+                </div>
+                <form
+                    method="dialog"
+                    class="modal-backdrop backdrop-grayscale bg-black/60 backdrop:transition-all"
+                >
+                    <button class="cursor-default">close</button>
+                </form>
+            </dialog>
 
             <form
                 method="POST"
@@ -90,7 +150,9 @@
                     loadingSave = true;
                     formData.set(
                         'json',
-                        JSON.stringify(canvas.toObject(['id', 'name', 'userlock', 'price', 'priceWall']))
+                        JSON.stringify(
+                            canvas.toObject(['id', 'name', 'userlock', 'price', 'priceWall'])
+                        )
                     );
 
                     return function ({ update, result }) {
