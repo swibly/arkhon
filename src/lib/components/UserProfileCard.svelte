@@ -25,7 +25,7 @@
         </span>
     </a>
 {:else}
-    <div class="flex flex-col gap-4 p-4 lg:min-w-96 rounded-xl border border-base-200">
+    <div class="flex flex-col gap-4 p-4 w-full lg:min-w-96 rounded-xl border border-base-200">
         <div class="flex items-center gap-2">
             <div class="relative shrink-0">
                 <img src={pfp} alt="" class="rounded-full object-cover size-16" />

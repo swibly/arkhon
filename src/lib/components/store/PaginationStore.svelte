@@ -7,14 +7,14 @@
     function setupURL(pageNumber: number) {
         const url = $page.url;
 
-        let limit = 15;
+        let limit = 10;
         let urlLimit = url.searchParams.get('limit');
 
         if (urlLimit) {
             try {
                 limit = parseInt(urlLimit);
             } catch (e) {
-                limit = 15;
+                limit = 10;
             }
         }
 
@@ -22,7 +22,7 @@
         url.searchParams.set('limit', limit.toString());
 
         return '?' + url.searchParams.toString();
-    }
+    }       
 </script>
 
 {#if pagination.total_pages !== 1 && pagination.total_records !== 0}
@@ -53,7 +53,7 @@
             <button class="join-item btn btn-sm btn-disabled">...</button>
         {/if}
 
-        {#if pagination.current_page < pagination.total_pages - 1}            
+        {#if pagination.current_page < pagination.total_pages - 1}
             <a href={setupURL(pagination.total_pages)} class="join-item btn btn-sm">
                 {pagination.total_pages}
             </a>

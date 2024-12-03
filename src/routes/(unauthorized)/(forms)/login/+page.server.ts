@@ -3,6 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import type { Actions } from './$types';
 import { JWT_TOKEN_COOKIE_NAME } from '$env/static/private';
+import { canShowConfetti } from '$lib/stores/confetti';
 
 export const actions: Actions = {
     default: async ({ request, cookies }) => {
@@ -29,8 +30,8 @@ export const actions: Actions = {
                     e.response.data as { error: string | Record<string, string> }
                 );
             }
-        }
+        }        
 
-        throw redirect(302, '/home');
+        throw redirect(302, '/community/projects');
     }
 };

@@ -9,6 +9,7 @@
     import type { ActionData } from './$types';
     import { onMount } from 'svelte';
     import { getComparison } from '$lib/utils';
+    import { canShowConfetti } from '$lib/stores/confetti';
 
     let imgPreview: HTMLImageElement;
     let fileInput: HTMLInputElement;
@@ -17,7 +18,7 @@
 
     let width = 30;
     let height = 30;
-    let comparison = getComparison(width, height);
+    let comparison = getComparison(width, height);    
 
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -135,6 +136,9 @@
             loading = true;
             error = undefined;
             errorField = '';
+            
+            canShowConfetti.set(true);
+
             return ({ update }) => update({ reset: false });
         }}
     >

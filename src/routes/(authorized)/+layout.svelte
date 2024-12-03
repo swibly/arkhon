@@ -83,6 +83,20 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="/support">
+                        <Icon icon="mdi:faq" />
+                        FAQ
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/about">
+                        <Icon icon="mdi:about" />
+                        Sobre
+                    </a>
+                </li>
+
                 <div class="divider my-1" />
 
                 <li>
@@ -111,5 +125,7 @@
         </div>
     </header>
 
-    <slot />
+    <div id="content">
+        <slot />
+    </div>
 </div>

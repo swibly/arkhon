@@ -39,7 +39,7 @@
     import Icon from '@iconify/svelte';
     import PropertiesTab from '$lib/components/editor/PropertiesTab.svelte';
 
-    export let data: PageServerData & { user: User; project: Project };
+    export let data: PageServerData & { user: User; project: Project };    
 
     let body: HTMLDivElement;
     let header: HTMLDivElement;
@@ -119,7 +119,7 @@
             if (active instanceof IText || active instanceof Textbox) {
                 $currentFontSize = active.fontSize;
             }
-        }
+        }        
 
         canvas.on('selection:created', () => {
             const objects = canvas.getActiveObjects();
@@ -177,7 +177,6 @@
 <div bind:this={body} class="flex flex-col w-full h-[calc(100vh-89px-2rem)]">
     <Header
         bind:element={header}
-        objects={currentActiveObjectsItem}
         user={data.user}
         project={data.project}
         {canvas}

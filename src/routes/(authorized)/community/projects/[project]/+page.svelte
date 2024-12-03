@@ -7,6 +7,8 @@
     import type { LayoutServerData } from './$types';
     import { goto } from '$app/navigation';
     import Attention from '$lib/components/Attention.svelte';
+    import { canShowConfetti } from '$lib/stores/confetti';
+    import Confetti from '$lib/components/Confetti.svelte';
 
     export let data: LayoutServerData & { user: User };
 
@@ -15,7 +17,14 @@
     let unlinkDialog: HTMLDialogElement;
     let loadingFavorite = false;
 
+    let showConfetti: boolean = false;
+
     $: project = data.project;
+
+    if ($canShowConfetti) {
+        showConfetti = true;
+        canShowConfetti.set(false);
+    }    
 
     const limit = 3;
     $: users = [
@@ -36,6 +45,9 @@
 </svelte:head>
 
 <div class="w-full max-w-3xl p-4 mx-auto">
+    {#if showConfetti}
+        <Confetti />
+    {/if}
     <button role="link" class="btn btn-ghost btn-sm" on:click={() => history.back()}>
         <Icon icon="streamline:return-2-solid" />
         Página anterior
@@ -155,7 +167,7 @@
                     };
                 }}
             >
-                <button class="btn btn-error btn-sm" disabled={loadingDelete}>
+                <button class="btn btn-error btn-sm text-white" disabled={loadingDelete}>
                     {#if loadingDelete}
                         <Icon icon="mdi:trash" />
                         Enviando para lixeira
@@ -354,7 +366,7 @@
         </a>
 
         {#if data.user.id === project.owner_id || project.allowed_users.filter((x) => x.id === data.user.id && x.allow_manage_metadata === true).length > 0}
-            <a href="/community/projects/{project.id}/meta" class="btn btn-sm btn-secondary">
+            <a href="/community/projects/{project.id}/meta" class="btn btn-sm btn-secondary text-white">
                 <Icon icon="mdi:pencil" />
                 Editar informações do projeto
             </a>

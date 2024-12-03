@@ -30,9 +30,9 @@
 
     if ((!labels.topRight || labels.topRight.trim() === '') && !disableDefaultLabels) {
         if (required) {
-        labels.topRight = '<span class="text-error">Obrigatório</span>';
+            labels.topRight = '<span class="text-error">Obrigatório</span>';
         } else {
-            labels.topRight = '<span class="text-base-200">Opcional</span>'
+            labels.topRight = '<span class="text-base-200">Opcional</span>';
         }
     }
 </script>

@@ -6,12 +6,13 @@
     import type { User } from '$lib/user';
     import Icon from '@iconify/svelte';
 
+    export let projectPage: boolean; 
     export let options: Project;
     export let currentUser: User;
     export let lang: 'pt' | 'en' | 'ru';
-    export let showDeleteOperations = false;
+    export let showDeleteOperations = false;       
 
-    let loadingFavorite = false;
+    let loadingFavorite = false;    
 
     const limit = 3;
     $: users = [
@@ -23,7 +24,7 @@
     ];
 </script>
 
-<article class="p-4 rounded-lg w-full max-w-96 shrink-0 overflow-hidden border border-base-200">
+<article class={`p-4 rounded-lg w-full ${projectPage ? 'max-w-full' : 'max-w-96 md:max-w-full'} shrink-0 overflow-hidden border border-base-200`}>
     <article class="min-h-6 flex gap-1">
         {#if options.is_public}
             <p class="badge badge-primary badge-outline gap-1">
@@ -249,7 +250,7 @@
                 }}
                 class="grow"
             >
-                <button class="btn btn-error btn-sm w-full">
+                <button class="btn btn-error btn-sm w-full text-white">
                     <Icon icon="mdi:trash" />
                     Deletar
                 </button>
@@ -271,7 +272,7 @@
                         };
                     }}
                 >
-                    <button class="btn btn-error btn-sm">
+                    <button class="btn btn-error btn-sm text-white">
                         <Icon icon="mdi:trash" />
                     </button>
                 </form>

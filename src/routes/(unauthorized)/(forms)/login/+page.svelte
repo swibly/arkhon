@@ -3,6 +3,7 @@
     import { enhance } from '$app/forms';
     import Icon from '@iconify/svelte';
     import { spawn } from '$lib/toast';
+    import { canShowConfetti } from '$lib/stores/confetti';
 
     let showPassword: boolean = false;
     let loading: boolean = false;
@@ -17,7 +18,7 @@
             status: 'error',
             duration: 7000
         });
-    }
+    }    
 </script>
 
 <svelte:head>
@@ -29,7 +30,7 @@
     class="flex flex-col gap-2"
     use:enhance={async () => {
         loading = true;
-        error = undefined;
+        error = undefined;             
         return ({ update }) => update({ reset: false });
     }}
 >
@@ -37,7 +38,7 @@
         <Icon icon="ph:user-fill" />
         <input type="text" name="login" placeholder="Email ou nome de usuário" required />
     </label>
-
+    
     <label class="flex items-center gap-2 input input-bordered">
         <Icon icon="ph:lock-fill" />
 

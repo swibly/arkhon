@@ -8,7 +8,7 @@
 </script>
 
 {#if $page.url.pathname !== '/'}
-    <header class="fixed top-0 flex justify-between w-full p-4">
+    <header class="fixed top-0 flex items-center justify-between w-full p-4">
         <a
             href="/{data.token ? 'home' : ''}"
             class="transition-opacity opacity-50 hover:opacity-100"

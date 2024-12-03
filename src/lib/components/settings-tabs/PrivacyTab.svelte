@@ -151,7 +151,7 @@
 
             <button
                 type="button"
-                class="btn btn-sm btn-error"
+                class="btn btn-sm btn-error text-white"
                 on:click={privateProfile}
                 disabled={!hasVisibleProfileOptions}
             >

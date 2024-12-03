@@ -10,7 +10,7 @@ export const handle: Handle = async function ({ event, resolve }) {
     }
 
     const UNAUTHORIZED_ROUTES = ['/login', '/register', '/forgot'];
-    const AVAILABLE_ALL_TIMES_ROUTES = ['/tos', '/support'];
+    const AVAILABLE_ALL_TIMES_ROUTES = ['/tos', '/support', '/about'];
 
     const token = event.cookies.get(JWT_TOKEN_COOKIE_NAME);
 

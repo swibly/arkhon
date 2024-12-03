@@ -10,6 +10,7 @@
     import { getComparison } from '$lib/utils';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import Confetti from '$lib/components/Confetti.svelte';
 
     export let data: PageServerData & { user: User; project: Project };
 
@@ -32,6 +33,8 @@
     let fileInput: HTMLInputElement;
     let file: File | null = null;
     let fileError: string | null = null;
+
+    let showConfetti: boolean = false;
 
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -109,6 +112,10 @@
 </svelte:head>
 
 <div class="w-full max-w-3xl p-4 mx-auto">
+    {#if showConfetti}
+        <Confetti />
+    {/if}
+
     <button role="link" class="btn btn-ghost btn-sm mb-4" on:click={() => history.back()}>
         <Icon icon="streamline:return-2-solid" />
         Página anterior
@@ -378,7 +385,7 @@
                 Carregando...
             </button>
         {:else if !data.project.is_public}
-            <button class="btn btn-sm btn-success" on:click={() => publishDialog.show()}>
+            <button class="btn btn-sm btn-success text-white" on:click={() => publishDialog.show()}>
                 <Icon icon="mdi:success" />
                 Publicar projeto
             </button>
@@ -400,7 +407,7 @@
                         use:enhance={function () {
                             loadingPublish = true;
 
-                            return function ({ result, update }) {
+                            return function ({ update, result }) {
                                 loadingPublish = false;
 
                                 // @ts-ignore
@@ -414,20 +421,22 @@
                                     return update();
                                 }
 
+                                showConfetti = true;
+
                                 spawn({ message: 'Projeto publicado com sucesso!' });
 
                                 return update();
                             };
                         }}
                     >
-                        <button type="submit" class="btn btn-sm btn-primary w-full">
+                        <button type="submit" class="btn btn-sm btn-primary w-full text-white">
                             <Icon icon="mdi:success" />
                             Publicar projeto
                         </button>
                     </form>
 
                     <form method="dialog">
-                        <button class="btn btn-sm btn-error w-full">
+                        <button class="btn btn-sm btn-error w-full text-white">
                             <Icon icon="mdi:block" />
                             Deixar privado. (cancelar)
                         </button>
@@ -443,7 +452,7 @@
         {:else}
             <button
                 type="submit"
-                class="btn btn-sm btn-error"
+                class="btn btn-sm btn-error text-white"
                 on:click={() => privateDialog.show()}
             >
                 <Icon icon="mdi:block" />
@@ -484,13 +493,15 @@
                             return function ({ update }) {
                                 loadingPublish = false;
 
+                                showConfetti = false;
+
                                 spawn({ message: 'Projeto privado com sucesso!' });
 
                                 return update();
                             };
                         }}
                     >
-                        <button type="submit" class="btn btn-sm btn-error w-full">
+                        <button type="submit" class="btn btn-sm btn-error w-full text-white">
                             <Icon icon="mdi:block" />
                             Privar projeto
                         </button>
