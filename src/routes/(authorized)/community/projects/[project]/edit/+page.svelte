@@ -51,10 +51,7 @@
     $: currentActiveObjectsItem = [] as CanvasObject[];
 
     onMount(async function () {
-        const canvasElement = document.createElement('canvas');
-        canvasContainer.appendChild(canvasElement);
-
-        canvas = new Canvas(canvasElement, {
+        canvas = new Canvas('canvas', {
             imageSmoothingEnabled: false,
             uniformScaling: false,
             targetFindTolerance: 12
@@ -189,6 +186,8 @@
         />
 
         <div bind:this={canvasContainer} class="relative">
+            <canvas id="canvas" />
+
             {#if hasPermissions(data.user, data.project, ['allow_edit'])}
                 <PropertiesTab {canvas} objects={currentActiveObjectsItem} />
             {/if}
