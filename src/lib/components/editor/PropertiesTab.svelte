@@ -133,7 +133,7 @@
                                 10
                             );
 
-                            if (name && name.trim() !== '' && name === objects[0].nameReset) {
+                            if (name && name.trim() !== '' && name !== objects[0].nameReset) {
                                 objects[0].object.set('name', name);
                             }
 
