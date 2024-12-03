@@ -9,7 +9,7 @@
         IText,
         Textbox
     } from 'fabric';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import type { PageServerData } from './$types';
     import type { Project } from '$lib/projects';
     import type { User } from '$lib/user';
@@ -153,6 +153,12 @@
             currentActiveObjects = canvas.getActiveObjects();
             currentActiveObjectsItem = getCanvasObjects(canvas, true);
         });
+    });
+
+    onDestroy(async () => {
+        if (canvas) {
+            await canvas.dispose();
+        }
     });
 </script>
 

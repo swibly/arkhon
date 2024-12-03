@@ -353,6 +353,10 @@ export function calculateTotalArea(object: FabricObject): number {
             scaledY,
             object.stroke !== null ? object.strokeWidth : 0
         );
+    } else if (object instanceof Group) {
+        object.forEachObject((child: FabricObject) => {
+            totalArea += calculateTotalArea(child);
+        });
     }
 
     return totalArea;
