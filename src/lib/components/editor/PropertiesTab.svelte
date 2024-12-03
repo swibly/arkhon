@@ -3,7 +3,7 @@
     import Icon from '@iconify/svelte';
     import { draggable } from '@neodrag/svelte';
     import { Polygon, Polyline, type Canvas, type FabricObject } from 'fabric';
-    import { getCanvasObjects, type CanvasObject } from '$lib/editor/objects';
+    import { getCanvasObjects, group, ungroup, type CanvasObject } from '$lib/editor/objects';
     import { enhance } from '$app/forms';
     import {
         canvasObjects,
@@ -189,7 +189,9 @@
                                 disableDefaultLabels
                             />
 
-                            <p class="italic opacity-70">* o calculo será: <span class="text-primary">Preço x m²</span></p>
+                            <p class="italic opacity-70">
+                                * o calculo será: <span class="text-primary">Preço x m²</span>
+                            </p>
                         {/if}
 
                         <button class="btn btn-primary btn-sm w-full">
@@ -441,7 +443,7 @@
                             <button
                                 class="w-full btn btn-error btn-sm"
                                 on:click={function () {
-                                    // TODO: Implement ungroup
+                                    ungroup(canvas);
                                 }}
                             >
                                 <Icon icon="icon-park-outline:ungroup" />
@@ -600,7 +602,7 @@
                     <button
                         class="w-full btn btn-primary btn-sm"
                         on:click={function () {
-                            // TODO: Implement group
+                            group(canvas);
                         }}
                     >
                         <Icon icon="icon-park-outline:ungroup" />

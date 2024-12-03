@@ -124,10 +124,13 @@
         canvas.on('selection:created', () => {
             const objects = canvas.getActiveObjects();
 
-            if (objects.some((object) => object.get('userlock') === true) && objects.length > 0) {
-                canvas.setActiveObject(
-                    new ActiveSelection(objects.filter((object) => object.get('userlock') !== true))
-                );
+            const filter: (x: FabricObject) => boolean = (x) =>
+                x.selectable === false || x.evented === false || x.get('userlock') === true;
+            const invert: (x: FabricObject) => boolean = (x) =>
+                x.selectable === true && x.evented === true && x.get('userlock') !== true;
+
+            if (objects.some(filter) && objects.length > 0) {
+                canvas.setActiveObject(new ActiveSelection(objects.filter(invert)));
             }
 
             currentActiveObjects = objects;
@@ -139,11 +142,13 @@
         canvas.on('selection:updated', () => {
             const objects = canvas.getActiveObjects();
 
-            if (objects.some((object) => object.get('userlock') === true) && objects.length > 0) {
-                canvas.setActiveObject(
-                    new ActiveSelection(objects.filter((object) => object.get('userlock') !== true))
-                );
-                canvas.requestRenderAll();
+            const filter: (x: FabricObject) => boolean = (x) =>
+                x.selectable === false || x.evented === false || x.get('userlock') === true;
+            const invert: (x: FabricObject) => boolean = (x) =>
+                x.selectable === true && x.evented === true && x.get('userlock') !== true;
+
+            if (objects.some(filter) && objects.length > 0) {
+                canvas.setActiveObject(new ActiveSelection(objects.filter(invert)));
             }
 
             currentActiveObjects = objects;
