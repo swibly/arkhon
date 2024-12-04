@@ -132,13 +132,24 @@
                                 formData.get('price')?.toString().replace(/[^\d]/gi, '') ?? '0',
                                 10
                             );
+                            const priceWall = parseInt(
+                                formData.get('priceWall')?.toString().replace(/[^\d]/gi, '') ?? '0',
+                                10
+                            );
+
+                            console.log(price);
+                            console.log(priceWall);
 
                             if (name && name.trim() !== '' && name !== objects[0].nameReset) {
                                 objects[0].object.set('name', name);
                             }
 
-                            if (price && !isNaN(price)) {
+                            if (!isNaN(price)) {
                                 objects[0].object.set('price', price);
+                            }
+
+                            if (!isNaN(priceWall)) {
+                                objects[0].object.set('priceWall', priceWall);
                             }
 
                             $canvasObjects = getCanvasObjects(canvas);

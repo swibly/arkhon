@@ -371,7 +371,7 @@ export function calculatePriceForArea(object: CanvasObject | FabricObject) {
 
     return (
         (calculateTotalArea(obj) / 10000) * (obj.get('price') ?? 0) +
-        (calculateStrokeArea(obj) / 10000) * (obj.get('price') ?? 0)
+        (calculateStrokeArea(obj) / 10000) * (obj.get('priceWall') ?? 0)
     );
 }
 
